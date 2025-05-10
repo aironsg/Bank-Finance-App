@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".presenter.splash.SplashFragment">
 
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="198dp"
+        android:layout_width="wrap_content"
         android:layout_height="298dp"
-        android:src="@drawable/logo_app"
-        app:tint="@color/white"
+        android:src="@drawable/logo_app_bf"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bank Finance"
+        android:textColor="@color/color_default"
         android:textAlignment="center"
         android:textSize="48sp"
         app:layout_constraintEnd_toEndOf="parent"
