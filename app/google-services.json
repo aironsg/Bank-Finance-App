@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "573013747606",
+    "project_id": "bf-solucoes-cd845",
+    "storage_bucket": "bf-solucoes-cd845.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573013747606:android:2851bd316619c655339fb7",
+        "android_client_info": {
+          "package_name": "dev.airon.bankfinance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlPJBRsCeWvUcqFKDETwTUzYZCM97Cyw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

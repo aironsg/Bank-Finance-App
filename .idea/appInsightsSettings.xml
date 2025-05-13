@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="dev.airon.bankfinance" />
+                  <option name="mobileSdkAppId" value="1:573013747606:android:2851bd316619c655339fb7" />
+                  <option name="projectId" value="bf-solucoes-cd845" />
+                  <option name="projectNumber" value="573013747606" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

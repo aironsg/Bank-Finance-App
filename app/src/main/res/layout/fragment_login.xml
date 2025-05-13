@@ -98,7 +98,7 @@
             app:layout_constraintTop_toBottomOf="@+id/btn_login" />
 
         <TextView
-            android:id="@+id/btn_recover_account"
+            android:id="@+id/btn_recover"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
@@ -114,13 +114,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminateTint="@color/color_default"
-            android:visibility="visible"
-            app:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_login" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
