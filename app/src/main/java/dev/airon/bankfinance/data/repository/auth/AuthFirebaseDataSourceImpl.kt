@@ -58,6 +58,21 @@ class AuthFirebaseDataSourceImpl(
     override suspend fun recover(
         email: String
     ) {
+        return suspendCoroutine { continuation ->
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        // Password reset email sent
+                        continuation.resumeWith(Result.success(Unit))
+                    } else {
+                        // Failed to send password reset email
+                        task.exception?.let {
+                            continuation.resumeWith(Result.failure(it))
+
+                        }
+                    }
+                }
+        }
 
     }
 
