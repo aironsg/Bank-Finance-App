@@ -3,19 +3,21 @@ package dev.airon.bankfinance.data.repository.auth
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.FirebaseDatabase
+import dev.airon.bankfinance.data.model.User
+import jakarta.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 
-class AuthFirebaseDataSourceImpl(
+class AuthFirebaseDataSourceImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : AuthFirebaseDataSource {
 
     override suspend fun login(email: String, password: String) {
-        return suspendCoroutine {continuation ->
+        return suspendCoroutine { continuation ->
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // navegação para tela home
-                            continuation.resumeWith(Result.success(Unit))
+                        continuation.resumeWith(Result.success(Unit))
                     } else {
                         // Login failed
                         task.exception?.let {
@@ -28,21 +30,14 @@ class AuthFirebaseDataSourceImpl(
     }
 
     override suspend fun register(
-        name: String,
-        phone: String,
-        email: String,
-        password: String
-    ): FirebaseUser {
+        user: User
+    ): User {
         return suspendCoroutine { continuation ->
-            auth.createUserWithEmailAndPassword(email, password)
+            auth.createUserWithEmailAndPassword(user.email, user.password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Registration successful
-                        val user = task.result.user
-                        user?.let {
-                            continuation.resumeWith(Result.success(it))
-
-                        }
+                        continuation.resumeWith(Result.success(user))
 
                     } else {
                         // Registration failed
