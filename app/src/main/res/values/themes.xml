@@ -2,9 +2,34 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.BankFinance" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+         <item name="colorPrimary">@color/color_default</item>
         <item name="android:windowBackground">@color/color_default</item>
     </style>
 
     <style name="Theme.BankFinance" parent="Base.Theme.BankFinance" />
+
+    <style name="Theme.BankFinance.TelaComAppBarDiferente" parent="Theme.BankFinance">
+        <!-- Defina a cor da barra de status para corresponder à sua AppBar -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="colorPrimary">@color/white</item>
+        <!-- Opcional: Se a AppBar for translúcida ou flutuante, você pode precisar ajustar outros itens -->
+    </style>
+
+    <style name="Theme.EditText" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <item name="android:background">@drawable/bg_edit</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:textColorHint">@color/color_hint_default</item>
+        <item name="android:textColor">@color/color_default</item>
+        <item name="android:padding">14dp</item>
+        <item name="android:drawablePadding">10dp</item>
+        <item name="android:textSize">16sp</item>
+
+        <item name="android:drawableTint">@color/color_default</item>
+
+
+
+        <item name="android:windowBackground">@color/color_default</item>
+    </style>
 </resources>

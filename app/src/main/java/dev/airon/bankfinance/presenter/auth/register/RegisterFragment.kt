@@ -9,6 +9,8 @@ import android.widget.Toast
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.databinding.FragmentRegisterBinding
+import dev.airon.bankfinance.util.ColorStatusBar
+import dev.airon.bankfinance.util.initToolbar
 
 private var _binding: FragmentRegisterBinding? = null
 private val binding get() = _binding!!
@@ -26,6 +28,8 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ColorStatusBar(R.color.white)
+        initToolbar(binding.toolbar)
         initListener()
     }
 

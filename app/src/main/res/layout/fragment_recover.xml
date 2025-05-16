@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:fillViewport="true"
+    android:theme="@style/Theme.BankFinance.TelaComAppBarDiferente"
     tools:context=".presenter.auth.recover.RecoverFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,17 +27,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/btn_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_arrow_back" />
+
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
                     android:text="Recuperar conta"
+                    android:layout_marginEnd="32dp"
                     android:textColor="@color/color_default"
                     android:textSize="24sp" />
             </androidx.appcompat.widget.Toolbar>
@@ -73,14 +71,9 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/appCompatEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_edit"
+                style="@style/Theme.EditText"
                 android:drawableStart="@drawable/ic_mail"
-                android:drawablePadding="10dp"
-                android:drawableTint="@color/color_default"
-                android:inputType="textEmailAddress"
-                android:textColor="@color/color_default" />
+                android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -108,6 +101,8 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_recover"
+            android:visibility="invisible"
+            tools:visibility="visible"
              />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

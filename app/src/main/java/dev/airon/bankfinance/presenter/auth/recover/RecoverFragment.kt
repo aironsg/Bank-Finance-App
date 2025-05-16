@@ -1,14 +1,16 @@
 package dev.airon.bankfinance.presenter.auth.recover
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.databinding.FragmentRecoverBinding
+import dev.airon.bankfinance.util.ColorStatusBar
+import dev.airon.bankfinance.util.initToolbar
 
 private var _binding : FragmentRecoverBinding? = null
 private val binding get() = _binding!!
@@ -26,6 +28,8 @@ class RecoverFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ColorStatusBar(R.color.white)
+        initToolbar(binding.toolbar)
         initListener()
     }
 

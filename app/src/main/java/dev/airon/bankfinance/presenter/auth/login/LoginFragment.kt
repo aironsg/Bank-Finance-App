@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.databinding.FragmentLoginBinding
+import dev.airon.bankfinance.util.ColorStatusBar
 
 private var _binding : FragmentLoginBinding?  = null
 private val binding get() = _binding!!
@@ -27,6 +29,7 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        ColorStatusBar(R.color.color_default)
         initListener()
     }
 
@@ -37,11 +40,11 @@ class LoginFragment : Fragment() {
 
         binding.btnRecover.setOnClickListener {
             // Navigate to RecoverFragment
-            // findNavController().navigate(R.id.action_loginFragment_to_recoverFragment)
+             findNavController().navigate(R.id.action_loginFragment_to_recoverFragment)
         }
         binding.btnCreateAccount.setOnClickListener {
-            // Navigate to CreateAccountFragment
-            // findNavController().navigate(R.id.action_loginFragment_to_createAccountFragment)
+             //Navigate to CreateAccountFragment
+             findNavController().navigate(R.id.action_loginFragment_to_registerFragment)
         }
     }
 
