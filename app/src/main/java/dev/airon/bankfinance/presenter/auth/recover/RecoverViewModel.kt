@@ -13,7 +13,7 @@ class RecoverViewModel @Inject constructor(
     private val recoverUsecase: RecoverUsecase
 ) : ViewModel() {
 
-    fun login(email: String) = liveData(Dispatchers.IO){
+    fun recover(email: String) = liveData(Dispatchers.IO){
 
         try {
 

@@ -6,17 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.databinding.FragmentRecoverBinding
 import dev.airon.bankfinance.util.ColorStatusBar
+import dev.airon.bankfinance.util.FirebaseHelper
+import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.initToolbar
+import dev.airon.bankfinance.util.showBottomSheet
 
 
 @AndroidEntryPoint
 class RecoverFragment : Fragment() {
     private var _binding: FragmentRecoverBinding? = null
     private val binding get() = _binding!!
+    private val recoverViewModel: RecoverViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -43,9 +49,29 @@ class RecoverFragment : Fragment() {
         val email = binding.appCompatEditText.text.toString().trim()
 
         if(email.isNotEmpty()){
-            Toast.makeText(requireContext(), "email enviado com sucesso, verifique sua caixa de entrada ou spam", Toast.LENGTH_SHORT).show()
+            recoverUser(email)
         }else{
-            Toast.makeText(requireContext(), "digite seu email", Toast.LENGTH_SHORT).show()
+            showBottomSheet(message = getString(R.string.email_is_empty_alert))
+        }
+    }
+
+    private fun recoverUser(email: String) {
+        recoverViewModel.recover(email).observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is StateView.Success -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(message = getString(R.string.message_email_send_success))
+                }
+
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
+                }
+            }
         }
     }
 

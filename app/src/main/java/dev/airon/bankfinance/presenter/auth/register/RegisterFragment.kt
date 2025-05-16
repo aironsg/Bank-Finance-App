@@ -7,14 +7,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.databinding.FragmentRegisterBinding
 import dev.airon.bankfinance.util.ColorStatusBar
+import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.applyPhoneMask
 import dev.airon.bankfinance.util.initToolbar
+import dev.airon.bankfinance.util.showBottomSheet
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
@@ -61,18 +64,17 @@ class RegisterFragment : Fragment() {
                         registerUser(user)
 
                     } else {
-                        Toast.makeText(requireContext(), "digite sua senha", Toast.LENGTH_SHORT)
-                            .show()
+                        showBottomSheet(message = getString(R.string.password_is_empty_alert))
                     }
                 } else {
-                    Toast.makeText(requireContext(), "digite seu email", Toast.LENGTH_SHORT).show()
+                    showBottomSheet(message = getString(R.string.email_is_empty_alert))
                 }
 
             } else {
-                Toast.makeText(requireContext(), "digite seu telefone", Toast.LENGTH_SHORT).show()
+                showBottomSheet(message = getString(R.string.phone_is_empty_alert))
             }
         } else {
-            Toast.makeText(requireContext(), "digite seu nome", Toast.LENGTH_SHORT).show()
+            showBottomSheet(message = getString(R.string.name_is_empty_alert))
 
         }
 
@@ -86,11 +88,11 @@ class RegisterFragment : Fragment() {
                 }
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    Toast.makeText(requireContext(), "Usuário cadastrado com sucesso", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_global_homeFragment)
                 }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    Toast.makeText(requireContext(), stateView.message, Toast.LENGTH_SHORT).show()
+                    showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
                 }
             }
         }

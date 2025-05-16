@@ -2,4 +2,28 @@
     <string name="app_name">Bank Finance</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--    //Bottom Sheet-->
+    <string name="title_default_bottom_sheet">Atenção!</string>
+    <string name="title_default_button_bottom_sheet">Entendi</string>
+
+    <!--    //Alert messages-->
+    <string name="name_is_empty_alert">Preencha o campo de nome</string>
+    <string name="email_is_empty_alert">Preencha o campo de e-mail</string>
+    <string name="phone_is_empty_alert">Preencha o campo de telefone</string>
+    <string name="password_is_empty_alert">Preencha o campo de senha</string>
+    <string name="message_email_send_success">E-mail enviado com sucesso! Verifique sua caixa de entrada ou spam</string>
+
+    <!--    Firebase Alerts messages-->
+    <string name="ERROR_USER_NOT_FOUND">Nenhuma conta encontrada com este e-mail.</string>
+    <string name="ERROR_EMAIL_ALREADY_IN_USE">E-mail já esta em uso.</string>
+    <string name="ERROR_INVALID_EMAIL">Insira um e-mail válido.</string>
+    <string name="ERROR_WRONG_PASSWORD">Senha inválida, tente novamente.</string>
+    <string name="ERROR_WEAK_PASSWORD">Escolha uma senha com minimo de 6 caracteres.</string>
+    <string name="ERROR_TOO_MANY_REQUESTS">Muitas tentativas de login ou criação de conta foram feitas a partir do mesmo dispositivo ou endereço IP em um curto período.</string>
+    <string name="ERROR_NETWORK_REQUEST_FAILED">Ocorreu um problema de conexão com a internet</string>
+    <string name="ERROR_INVALID_CREDENTIAL">A credencial fornecida é malformada ou expirou</string>
+    <string name="default_error_alert">Erro desconhecido.</string>
+
+
 </resources>

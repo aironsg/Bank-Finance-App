@@ -1,5 +1,6 @@
 package dev.airon.bankfinance.util
 
+import android.os.Message
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -7,6 +8,8 @@ import androidx.fragment.app.Fragment
 import dev.airon.bankfinance.R
 import android.text.Editable
 import android.text.TextWatcher
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import dev.airon.bankfinance.databinding.LayoutBottomSheetBinding
 
 //responsavel por inicializar a toolbar
 fun Fragment.initToolbar(toolbar: Toolbar, homeAsUpEnabled: Boolean = true) {
@@ -21,13 +24,30 @@ fun Fragment.ColorStatusBar(color: Int) {
     requireActivity().window.statusBarColor = resources.getColor(color)
 }
 
+fun Fragment.showBottomSheet(
+    titleDialog: Int? = null,
+    titleButton: Int? = null,
+    message: String,
+    onClick: () -> Unit = {}
+){
+    val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
+    val bottomSheetBinding = LayoutBottomSheetBinding.inflate(layoutInflater, null, false)
+
+    bottomSheetBinding.textTitle.text = getString(titleDialog ?: R.string.title_default_bottom_sheet)
+    bottomSheetBinding.textMessage.text = message
+    bottomSheetBinding.btnOk.text = getString(titleButton ?: R.string.title_default_button_bottom_sheet)
+    bottomSheetBinding.btnOk.setOnClickListener {
+        onClick.invoke()
+        bottomSheetDialog.dismiss()
+    }
+
+    bottomSheetDialog.setContentView(bottomSheetBinding.root)
+    bottomSheetDialog.show()
+
+}
 
 
 
-// Certifique-se de que a classe PhoneMaskWatcher está definida em algum lugar no seu projeto,
-// por exemplo, em um arquivo separado chamado PhoneMaskWatcher.kt dentro do mesmo pacote util.
-
-// Exemplo de como seria a classe PhoneMaskWatcher.kt
 
 
 class PhoneMaskWatcher(private val editText: EditText) : TextWatcher {
