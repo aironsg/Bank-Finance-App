@@ -1,5 +1,6 @@
 package dev.airon.bankfinance.presenter.auth.recover
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.airon.bankfinance.domain.auth.RecoverUsecase
@@ -8,9 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 @HiltViewModel
-sealed class RecoverViewModel @Inject constructor(
+class RecoverViewModel @Inject constructor(
     private val recoverUsecase: RecoverUsecase
-) {
+) : ViewModel() {
 
     fun login(email: String) = liveData(Dispatchers.IO){
 

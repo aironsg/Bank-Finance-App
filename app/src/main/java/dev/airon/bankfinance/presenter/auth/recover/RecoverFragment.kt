@@ -12,11 +12,11 @@ import dev.airon.bankfinance.databinding.FragmentRecoverBinding
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.initToolbar
 
-private var _binding : FragmentRecoverBinding? = null
-private val binding get() = _binding!!
 
 @AndroidEntryPoint
 class RecoverFragment : Fragment() {
+    private var _binding: FragmentRecoverBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

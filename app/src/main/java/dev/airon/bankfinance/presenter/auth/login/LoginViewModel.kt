@@ -1,5 +1,6 @@
 package dev.airon.bankfinance.presenter.auth.login
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.airon.bankfinance.domain.auth.LoginUsecase
@@ -8,9 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
 
 @HiltViewModel
-sealed class LoginViewModel @Inject constructor(
+class LoginViewModel @Inject constructor(
     private val loginUsecase: LoginUsecase
-) {
+): ViewModel() {
 
     fun login(email: String, password: String) = liveData(Dispatchers.IO){
 
