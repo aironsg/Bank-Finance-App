@@ -88,7 +88,6 @@ class LoginFragment : Fragment() {
 
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    Log.i("INFOTESTE", "loginUser: ${stateView.message}")
                     showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
                 }
             }

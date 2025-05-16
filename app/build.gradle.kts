@@ -77,5 +77,9 @@ dependencies {
 
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version")
+
+    //maskara de telelefone
+    //https://github.com/VicMikhailau/MaskedEditText
+    implementation("io.github.vicmikhailau:MaskedEditText:5.0.3")
 }
 

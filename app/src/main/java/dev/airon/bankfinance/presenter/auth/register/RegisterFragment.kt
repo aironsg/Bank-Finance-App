@@ -38,7 +38,6 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         ColorStatusBar(R.color.white)
         initToolbar(binding.toolbar)
-        binding.editPhone.applyPhoneMask()
         initListener()
     }
 
@@ -50,15 +49,16 @@ class RegisterFragment : Fragment() {
 
     private fun validateData() {
         val name = binding.editName.text.toString().trim()
-        val phone = binding.editPhone.text.toString().trim()
+        val phone = binding.editPhone.unMaskedText
         val email = binding.editEmail.text.toString().trim()
         val password = binding.editPassword.text.toString().trim()
 
         if (name.isNotEmpty()) {
-            if (phone.isNotEmpty()) {
+            if (phone?.isNotEmpty() == true) {
+                if( phone.length == 11){
+
                 if (email.isNotEmpty()) {
                     if (password.isNotEmpty()) {
-
                         //sucesso
                         val user = User(name, phone, email, password)
                         registerUser(user)
@@ -68,6 +68,10 @@ class RegisterFragment : Fragment() {
                     }
                 } else {
                     showBottomSheet(message = getString(R.string.email_is_empty_alert))
+                }
+                }else{
+                    showBottomSheet(message = getString(R.string.phone_invalid_alert))
+
                 }
 
             } else {

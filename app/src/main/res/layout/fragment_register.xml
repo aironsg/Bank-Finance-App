@@ -118,13 +118,14 @@
                 android:textStyle="bold" />
 
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <com.vicmikhailau.maskededittext.MaskedEditText
                 android:id="@+id/edit_phone"
                 style="@style/Theme.EditText"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="10dp"
                 android:drawableStart="@drawable/ic_phone"
                 android:hint="(99)99999-9999"
+                app:mask="(##) #-####-####"
                 android:inputType="phone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
