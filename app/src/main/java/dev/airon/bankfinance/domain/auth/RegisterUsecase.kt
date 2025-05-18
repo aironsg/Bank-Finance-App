@@ -8,7 +8,7 @@ class RegisterUsecase @Inject constructor(
     private val auth: AuthFirebaseDataSourceImpl
 ) {
 
-    suspend operator fun invoke(user: User): User {
-        return auth.register(user)
+    suspend operator fun invoke(name: String, phone: String, email: String, password: String): User {
+        return auth.register(name, phone, email, password)
     }
 }

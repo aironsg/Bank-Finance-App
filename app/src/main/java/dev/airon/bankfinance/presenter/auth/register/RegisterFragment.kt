@@ -12,6 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.databinding.FragmentRegisterBinding
+import dev.airon.bankfinance.presenter.profile.SaveProfileViewModel
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
@@ -25,6 +26,7 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
     private val registerViewModel : RegisterViewModel by viewModels()
+    private val profileViewModel : SaveProfileViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +63,7 @@ class RegisterFragment : Fragment() {
                     if (password.isNotEmpty()) {
                         //sucesso
                         val user = User(name, phone, email, password)
-                        registerUser(user)
+                        registerUser(name, phone, email, password)
 
                     } else {
                         showBottomSheet(message = getString(R.string.password_is_empty_alert))
@@ -84,15 +86,33 @@ class RegisterFragment : Fragment() {
 
     }
 
-    private fun registerUser(user: User) {
-        registerViewModel.register(user).observe(viewLifecycleOwner) { stateView ->
+    private fun saveProfile(user: User){
+        profileViewModel.saveProfile(user).observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> {
+
+                }
+                is StateView.Success -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    findNavController().navigate(R.id.action_global_homeFragment)
+                }
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
+                }
+            }
+        }
+    }
+
+    private fun registerUser(name: String, phone: String, email: String, password: String) {
+        registerViewModel.register(name, phone, email, password).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
                 is StateView.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    findNavController().navigate(R.id.action_global_homeFragment)
+                    stateView.data?.let { saveProfile(it)}
+
                 }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
