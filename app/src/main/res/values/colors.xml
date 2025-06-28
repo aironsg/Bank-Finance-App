@@ -4,4 +4,13 @@
     <color name="color_hint_default">#7DC5F6</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+<!--    Color gradiente-->
+    <color name="color_transfer_start">#C30D12</color>
+    <color name="color_transfer_middle">#E83B3E</color>
+    <color name="color_transfer_last">#E47177</color>
+
+    <color name="color_deposit_start">#0D9C30</color>
+    <color name="color_deposit_middle">#3BE83B</color>
+    <color name="color_deposit_last">#77E471</color>
 </resources>

@@ -5,10 +5,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.data.model.Wallet
 import dev.airon.bankfinance.databinding.FragmentHomeBinding
+import dev.airon.bankfinance.util.GetMask
+import dev.airon.bankfinance.util.StateView
+import dev.airon.bankfinance.util.showBottomSheet
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -16,6 +21,7 @@ class HomeFragment : Fragment() {
     private var _binding : FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var bottomNavigationView: BottomNavigationView
+    private val homeViewModel : HomeViewModel by viewModels()
 
 
 
@@ -27,40 +33,38 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initBottomNavigation()
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        getWallet()
+
     }
 
-    private fun  initBottomNavigation(){
-        binding.bottomNavigation.setOnItemSelectedListener { item ->
-            when(item.itemId){
-                R.id.navigation_home ->{
-                    true
-                }
-
-                R.id.navigation_charge_phone -> {
+    private fun getWallet(){
+        homeViewModel.getWallet().observe(viewLifecycleOwner){ stateView ->
+             when(stateView){
+                is StateView.Loading -> {
 
                 }
+                is StateView.Success -> {
+                    stateView.data?.let{
+                    showBalance(it)
 
-                R.id.navigation_extract -> {
-
+                    }
                 }
-
-                R.id.navigation_transfer -> {
-
+                is StateView.Error -> {
+                    showBottomSheet(message = stateView.message)
                 }
-
-                R.id.navigation_profile -> {
-
-                }
-
-                else -> false
-            } as Boolean
-
+            }
         }
     }
 
+    private fun showBalance(wallet: Wallet){
+        binding.textBalance.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(wallet.balance))
+
+    }
+
+
+   
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

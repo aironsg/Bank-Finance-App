@@ -27,14 +27,14 @@ fun Fragment.ColorStatusBar(color: Int) {
 fun Fragment.showBottomSheet(
     titleDialog: Int? = null,
     titleButton: Int? = null,
-    message: String,
+    message: String?,
     onClick: () -> Unit = {}
 ){
     val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
     val bottomSheetBinding = LayoutBottomSheetBinding.inflate(layoutInflater, null, false)
 
     bottomSheetBinding.textTitle.text = getString(titleDialog ?: R.string.title_default_bottom_sheet)
-    bottomSheetBinding.textMessage.text = message
+    bottomSheetBinding.textMessage.text = message ?: getString(R.string.default_error_alert)
     bottomSheetBinding.btnOk.text = getString(titleButton ?: R.string.title_default_button_bottom_sheet)
     bottomSheetBinding.btnOk.setOnClickListener {
         onClick.invoke()

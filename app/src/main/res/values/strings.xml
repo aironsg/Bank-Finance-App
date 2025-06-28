@@ -3,8 +3,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-<!--    //Generic messages-->
+    <!--    //Generic messages-->
 
+<!--    HomeFragment-->
+    <string name="text_formated_value">R$ %1$s</string>
 
     <!--    //Bottom Sheet-->
     <string name="title_default_bottom_sheet">Atenção!</string>

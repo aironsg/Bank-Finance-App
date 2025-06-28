@@ -56,4 +56,29 @@
             app:popUpToInclusive="true"
             app:popUpTo="@id/loginFragment"/>
     </navigation>
+    <fragment
+        android:id="@+id/chargePhoneFragment"
+        android:name="dev.airon.bankfinance.presenter.charge.ChargePhoneFragment"
+        android:label="fragment_charge_phone"
+        tools:layout="@layout/fragment_charge_phone" />
+    <fragment
+        android:id="@+id/deposityFragment"
+        android:name="dev.airon.bankfinance.presenter.deposity.DeposityFragment"
+        android:label="fragment_deposity"
+        tools:layout="@layout/fragment_deposity" />
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="dev.airon.bankfinance.presenter.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/transferFragment"
+        android:name="dev.airon.bankfinance.presenter.transfer.TransferFragment"
+        android:label="fragment_transfer"
+        tools:layout="@layout/fragment_transfer" />
+    <fragment
+        android:id="@+id/walletFragment"
+        android:name="dev.airon.bankfinance.presenter.wallet.WalletFragment"
+        android:label="fragment_wallet"
+        tools:layout="@layout/fragment_wallet" />
 </navigation>
