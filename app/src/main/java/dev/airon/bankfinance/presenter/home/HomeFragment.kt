@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
@@ -36,7 +37,15 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getWallet()
+        initNavigationDeposit()
 
+    }
+
+    private fun initNavigationDeposit(){
+
+        binding.newDeposit.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_depositFragment)
+        }
     }
 
     private fun getWallet(){

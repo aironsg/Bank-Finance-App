@@ -12,7 +12,15 @@
         <!-- Defina a cor da barra de status para corresponder à sua AppBar -->
         <item name="android:statusBarColor">@color/white</item>
         <item name="colorPrimary">@color/white</item>
-        <!-- Opcional: Se a AppBar for translúcida ou flutuante, você pode precisar ajustar outros itens -->
+
+    </style>
+
+    <style name="Theme.BankFinance.TelaComAppBarDeposit" parent="Theme.BankFinance">
+        <!-- Defina a cor da barra de status para corresponder à sua AppBar -->
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="colorPrimary">@color/color_default</item>
+        <item name="drawableTint">@color/white</item>
+
     </style>
 
     <style name="Theme.EditText" parent="Theme.MaterialComponents.DayNight.NoActionBar">

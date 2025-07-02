@@ -8,15 +8,29 @@ import androidx.fragment.app.Fragment
 import dev.airon.bankfinance.R
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.airon.bankfinance.databinding.LayoutBottomSheetBinding
 
 //responsavel por inicializar a toolbar
-fun Fragment.initToolbar(toolbar: Toolbar, homeAsUpEnabled: Boolean = true) {
+fun Fragment.initToolbar(toolbar: Toolbar, homeAsUpEnabled: Boolean = true, isToolbarDefaultColor: Boolean = false) {
     (activity as AppCompatActivity).setSupportActionBar(toolbar)
     (activity as AppCompatActivity).title = ""
     (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(homeAsUpEnabled)
-    (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_arrow_back)
+
+    // Obtenha o drawable da seta de volta
+    val arrowDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_back)
+
+    // Verifique se a toolbar está usando a cor padrão (color_default)
+    if (isToolbarDefaultColor){
+        // Se for, defina a cor do drawable para a cor padrão
+        arrowDrawable?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
+    } else {
+        // Caso contrário, defina a cor do drawable para a cor branca
+        arrowDrawable?.setTint(ContextCompat.getColor(requireContext(), R.color.color_default))
+    }
+
+    (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(arrowDrawable)
     toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
 }
 

@@ -10,7 +10,7 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="@+id/add_deposity"
+        app:layout_constraintBottom_toBottomOf="@+id/new_deposit"
         android:fillViewport="true"
         android:layout_marginTop="32dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -111,12 +111,13 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_deposity"
+        android:id="@+id/new_deposit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/white"
-
-        android:src="@drawable/ic_add_deposity"
+        android:contentDescription="botão de novo deposito"
+        android:src="@drawable/ic_add_deposit"
+        app:tint="@color/color_default"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
