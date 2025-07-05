@@ -1,34 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:fillViewport="true"
-    android:fitsSystemWindows="true"
+    android:paddingTop="32dp"
     tools:context=".presenter.auth.login.LoginFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        >
+        android:background="@color/white">
 
         <LinearLayout
             android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_login"
+            android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="25dp"
+                android:gravity="center"
+                android:text="Bem Vindo de Volta"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="36sp" />
+
             <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="300dp"
-                android:src="@drawable/logo_app_bf" />
+                android:layout_height="250dp"
+                android:src="@drawable/login_image" />
         </LinearLayout>
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -37,9 +47,9 @@
             android:layout_marginHorizontal="24dp"
             android:layout_marginTop="32dp"
             android:background="@drawable/bg_edit"
-            android:drawableStart="@drawable/ic_mail"
-            android:inputType="textEmailAddress"
+            android:drawableStart="@drawable/ic_mail_line"
             android:hint="Email"
+            android:inputType="textEmailAddress"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,7 +62,7 @@
             style="@style/Theme.EditText"
             android:layout_marginHorizontal="24dp"
             android:layout_marginVertical="24dp"
-            android:drawableStart="@drawable/ic_password"
+            android:drawableStart="@drawable/ic_lock_password_line"
             android:hint="Senha"
             android:inputType="textPassword"
             app:layout_constraintEnd_toEndOf="parent"
@@ -67,37 +77,55 @@
 
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
-            android:layout_marginTop="14dp"
-            android:background="@drawable/bg_button_login"
-            android:text="Login"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button"
+            android:text="Entrar"
             android:textColor="@color/white"
-
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/edit_password" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_recover" />
 
-        <TextView
-            android:id="@+id/btn_create_account"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="24dp"
-            android:text="Criar Conta"
-            android:textColor="@color/color_default"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_login" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_login">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="Não tem uma Conta?"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/btn_create_account"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Criar Conta"
+                android:textColor="@color/color_default" />
+
+        </LinearLayout>
+
 
         <TextView
             android:id="@+id/btn_recover"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="24dp"
+            android:layout_marginVertical="16dp"
             android:text="Recuperar Conta"
             android:textColor="@color/color_default"
-            app:layout_constraintBottom_toBottomOf="@+id/btn_create_account"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/btn_create_account" />
+            app:layout_constraintTop_toBottomOf="@+id/edit_password" />
 
 
         <ProgressBar
@@ -105,13 +133,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:indeterminateTint="@color/color_default"
+            android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/btn_login"
-            android:visibility="invisible"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
