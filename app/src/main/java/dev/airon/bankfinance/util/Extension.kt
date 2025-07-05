@@ -38,6 +38,16 @@ fun Fragment.ColorStatusBar(color: Int) {
     requireActivity().window.statusBarColor = resources.getColor(color)
 }
 
+fun isEmailValid(email: String): Boolean {
+    val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
+    return email.matches(emailPattern.toRegex())
+}
+
+fun isPasswordValid(password: String): Boolean {
+    val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$"
+    return password.matches(passwordPattern.toRegex())
+}
+
 fun Fragment.showBottomSheet(
     titleDialog: Int? = null,
     titleButton: Int? = null,

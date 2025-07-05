@@ -4,41 +4,58 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:fillViewport="true"
-    android:theme="@style/Theme.BankFinance.TelaComAppBarDiferente"
+    android:fitsSystemWindows="true"
     tools:context=".presenter.auth.register.RegisterFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/color_default"
+        >
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
 
-            android:background="@drawable/bg_app_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <androidx.appcompat.widget.Toolbar
+            android:background="@drawable/bg_app_bar"
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingHorizontal="20dp"
                 android:textAlignment="center">
 
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"
+                   android:layout_gravity="center"
+                   android:gravity="center"
+                   android:orientation="vertical"
+                   >
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:text="Criar conta"
-                    android:layout_marginEnd="32dp"
-                    android:textColor="@color/color_default"
-                    android:textSize="24sp" />
+                   <TextView
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="Criar Conta"
+                       android:textColor="@color/color_default"
+                       android:textStyle="bold"
+                       android:textSize="32sp"/>
+
+
+                   <ImageView
+                       android:id="@+id/imageView"
+                       android:layout_width="415dp"
+                       android:layout_height="100dp"
+                       android:src="@drawable/create_account_image" />
+               </LinearLayout>
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -78,7 +95,7 @@
         <LinearLayout
             android:id="@+id/linear_edit"
             android:layout_width="match_parent"
-            android:layout_height="580dp"
+            android:layout_height="480dp"
             android:background="@drawable/bg_register_view"
             android:orientation="vertical"
             android:paddingHorizontal="24dp"
@@ -145,7 +162,7 @@
                 style="@style/Theme.EditText"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="10dp"
-                android:drawableStart="@drawable/ic_mail"
+                android:drawableStart="@drawable/ic_mail_line"
                 android:hint="digite seu email"
                 android:inputType="textEmailAddress"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -166,7 +183,7 @@
                 style="@style/Theme.EditText"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="10dp"
-                android:drawableStart="@drawable/ic_password"
+                android:drawableStart="@drawable/ic_lock_password_line"
                 android:hint="digite sua senha"
                 android:inputType="textPassword"
                 />

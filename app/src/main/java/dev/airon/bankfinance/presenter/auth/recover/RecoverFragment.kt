@@ -1,9 +1,12 @@
 package dev.airon.bankfinance.presenter.auth.recover
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -15,6 +18,7 @@ import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.initToolbar
+import dev.airon.bankfinance.util.isEmailValid
 import dev.airon.bankfinance.util.showBottomSheet
 
 
@@ -40,19 +44,53 @@ class RecoverFragment : Fragment() {
     }
 
     private fun initListener() {
+        binding.btnCreateAccount.setOnClickListener {
+            findNavController().navigate(R.id.action_recoverFragment_to_registerFragment)
+        }
+
         binding.btnRecover.setOnClickListener {
             validateData()
         }
     }
 
     private fun validateData() {
-        val email = binding.appCompatEditText.text.toString().trim()
+        val email = binding.edtSendEmail.text.toString().trim()
+
+
 
         if(email.isNotEmpty()){
-            recoverUser(email)
+            if(isEmailValid(email)){
+                recoverUser(email)
+            }else{
+                Toast.makeText(requireContext(), "O e-mail digitado é inválido", Toast.LENGTH_SHORT)
+                    .show()
+            }
         }else{
             showBottomSheet(message = getString(R.string.email_is_empty_alert))
         }
+    }
+
+
+    private fun sendMail(email: String) {
+        binding.flyingMailIcon.visibility = View.VISIBLE
+        val translationY = -binding.btnRecover.y - binding.btnRecover.height * 2
+
+        binding.flyingMailIcon
+            .animate()
+            .translationY(translationY)
+            .scaleX(0.5f)  // Reduz a escala no eixo X
+            .scaleY(0.5f)  // Reduz a escala no eixo Y
+            .alpha(0f)     // Desaparece gradualmente
+            .setInterpolator(AccelerateInterpolator()) // Efeito de aceleração
+            .setDuration(2500) // Duração mais longa para suavidade
+            .withEndAction {
+                binding.flyingMailIcon.visibility = View.INVISIBLE
+                binding.flyingMailIcon.alpha = 1f // Restaura opacidade
+                binding.flyingMailIcon.scaleX = 1f // Restaura escala
+                binding.flyingMailIcon.scaleY = 1f
+                binding.flyingMailIcon.translationY = 0f // Restaura posição
+            }
+            .start()
     }
 
     private fun recoverUser(email: String) {
@@ -64,7 +102,14 @@ class RecoverFragment : Fragment() {
 
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(message = getString(R.string.message_email_send_success))
+                    showBottomSheet(message =  "Você está prestes a enviar um E-mail para : $email ",
+                        titleButton = R.string.txt_button_bottomSheet_confirm,
+                        onClick ={
+                            sendMail(email)
+                            Handler(Looper.getMainLooper()).postDelayed({
+                                findNavController().navigate(R.id.action_recoverFragment_to_loginFragment)
+                            }, 3000)
+                        } )
                 }
 
                 is StateView.Error -> {

@@ -53,7 +53,14 @@
             android:id="@+id/recoverFragment"
             android:name="dev.airon.bankfinance.presenter.auth.recover.RecoverFragment"
             android:label="fragment_recover"
-            tools:layout="@layout/fragment_recover" />
+            tools:layout="@layout/fragment_recover" >
+            <action
+                android:id="@+id/action_recoverFragment_to_registerFragment"
+                app:destination="@id/registerFragment" />
+            <action
+                android:id="@+id/action_recoverFragment_to_loginFragment"
+                app:destination="@id/loginFragment" />
+        </fragment>
         <action
             android:id="@+id/action_global_homeFragment"
             app:destination="@id/homeFragment"
