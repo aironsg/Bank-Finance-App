@@ -30,7 +30,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="25dp"
                 android:gravity="center"
-                android:text="Bem Vindo de Volta"
+                android:text="Bem Vindo"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="36sp" />
