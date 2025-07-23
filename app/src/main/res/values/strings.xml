@@ -6,7 +6,7 @@
     <!--    //Generic messages-->
     <string name="txt_button_bottomSheet_confirm">Confirmar</string>
 
-<!--    HomeFragment-->
+    <!--    HomeFragment-->
     <string name="text_formated_value">R$ %1$s</string>
 
     <!--    //Bottom Sheet-->
@@ -32,6 +32,7 @@
     <string name="ERROR_NETWORK_REQUEST_FAILED">Ocorreu um problema de conexão com a internet</string>
     <string name="ERROR_INVALID_CREDENTIAL">A credencial fornecida é malformada ou expirou</string>
     <string name="default_error_alert">Erro desconhecido.</string>
+    <string name="txt_deposit_confirm_success">Depósito realizado\n com sucesso!</string>
 
 
 </resources>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:theme="@style/Theme.BankFinance.TelaComAppBarDeposit"
-    tools:context=".presenter.deposit.DepositFragment">
+    tools:context=".presenter.features.deposit.DepositFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -74,7 +74,7 @@
         tools:layout="@layout/fragment_charge_phone" />
     <fragment
         android:id="@+id/depositFragment"
-        android:name="dev.airon.bankfinance.presenter.deposit.DepositFragment"
+        android:name="dev.airon.bankfinance.presenter.features.deposit.DepositFragment"
         android:label="fragment_deposit"
         tools:layout="@layout/fragment_deposit">
         <action

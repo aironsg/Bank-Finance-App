@@ -6,6 +6,40 @@
     android:layout_height="match_parent"
     tools:context=".presenter.home.HomeFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/topLayoutLeft"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_top_left_home"
+            android:orientation="vertical"
+            android:paddingVertical="0dp"
+            >
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/topLayoutRight"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_top_right_home"
+            android:orientation="vertical"
+            android:paddingVertical="0dp"
+            >
+
+        </LinearLayout>
+
+    </LinearLayout>
+
 <!--    Main da HOME-->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -18,16 +52,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="16dp">
 
+
+
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 app:cardCornerRadius="40dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -55,39 +92,28 @@
                 app:layout_constraintStart_toEndOf="@+id/materialCardView"
                 app:layout_constraintTop_toTopOf="@+id/materialCardView" />
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+
+            <include
+                android:id="@+id/card_balance"
+                layout="@layout/card_balance"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_marginHorizontal="20dp"
                 android:layout_marginTop="16dp"
-                android:text="Meu Saldo"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/materialCardView" />
-
-            <TextView
-                android:id="@+id/text_balance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="250,00"
-                android:textColor="@color/white"
-                android:textSize="32sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView" />
-
+                app:layout_constraintTop_toBottomOf="@id/materialCardView"
+           />
 
 
             <TextView
                 android:id="@+id/text_last_transactions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="16dp"
                 android:text="Ultimas 6 transações"
                 android:textColor="@color/white"
                 android:textStyle="normal"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_balance" />
+                app:layout_constraintTop_toBottomOf="@+id/card_balance" />
 
             <TextView
                 android:id="@+id/btn_all_transactions"
@@ -109,16 +135,32 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/btn_all_transactions"
-                >
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_view_transactions"
+                app:layout_constraintTop_toBottomOf="@+id/btn_all_transactions">
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    tools:listitem="@layout/last_transaction_item"
-                    tools:itemCount="6"
-                     />
+                    android:layout_height="match_parent">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_transactions"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        tools:listitem="@layout/last_transaction_item"
+                        tools:itemCount="6" />
+
+                    <TextView
+                        android:id="@+id/tv_empty_transactions"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="Você ainda não realizou nenhuma transação."
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:visibility="gone"
+                        android:textAlignment="center" />
+                </FrameLayout>
             </com.google.android.material.card.MaterialCardView>
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

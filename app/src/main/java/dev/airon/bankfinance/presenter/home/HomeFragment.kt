@@ -46,7 +46,10 @@ class HomeFragment : Fragment() {
         getUsername()
         initNavigationDeposit()
 
+
     }
+
+
 
     private fun getUsername(){
 
@@ -94,15 +97,55 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+
+
     }
+
+    private fun toggleEmptyView(isEmpty: Boolean) {
+        val emptyView = binding.tvEmptyTransactions
+        val recycler = binding.recyclerViewTransactions
+
+        if (isEmpty) {
+            recycler.visibility = View.GONE
+            emptyView.apply {
+                alpha = 0f
+                visibility = View.VISIBLE
+                animate().alpha(1f).setDuration(300).start()
+            }
+        } else {
+            emptyView.visibility = View.GONE
+            recycler.visibility = View.VISIBLE
+        }
+    }
+
 
     private fun showBalance(wallet: Wallet){
-        binding.textBalance.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(wallet.balance))
+        binding.cardBalance.txtTotalBalanceValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(wallet.balance))
+        val hasNoTransactions = wallet.balance == 0.0f
+        binding.tvEmptyTransactions.visibility = if (hasNoTransactions) View.VISIBLE else View.GONE
+        binding.recyclerViewTransactions.visibility = if (hasNoTransactions) View.GONE else View.VISIBLE
+
+        //dados apenas para teste de UI
+        binding.cardBalance.txtSentValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(0.0f))
+        binding.cardBalance.txtReceivedValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(0.0f))
+        binding.cardBalance.btnToggleBalance.setOnClickListener {
+            if (binding.cardBalance.txtTotalBalanceValue.visibility == View.VISIBLE) {
+                binding.cardBalance.txtTotalBalanceValue.visibility = View.GONE
+                binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_down)
+
+
+            } else {
+                binding.cardBalance.txtTotalBalanceValue.visibility = View.VISIBLE
+                binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_up)
+
+            }
+        }
+
 
     }
 
 
-   
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

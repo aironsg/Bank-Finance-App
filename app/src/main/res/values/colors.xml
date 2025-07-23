@@ -5,8 +5,15 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <color name="blue_primary">#B3E0F4 </color>
+    <color name="blue_secondary">#27A7E7</color>
+    <color name="blue_final">#1A5A90</color>
+
+
+
     <color name="boxStrokeColor_error">#F2061E</color>
     <color name="txt_message_bottom_sheet">#438883</color>
+    <color name="color_deposit_confirm">#438883</color>
     <color name="color_status_bar_home">#358882</color>
     <color name="color_transaction_payment">#25A969</color>
     <color name="color_transaction_pending">#F95B51</color>
@@ -25,4 +32,20 @@
     <color name="color_button_start">#27A7E7</color>
     <color name="color_button_middle">#2196F3</color>
     <color name="color_button_last">#2272EB</color>
+
+    <!--    color card-->
+    <color name="color_card">#2F7E79</color>
+    <color name="txt_color_card">#D0E5E4</color>
+
+    <color name="green">#4CAF50</color>
+    <color name="red">#F44336</color>
+
+
+
+    <color name="gradient_top_home_start">#429690</color>
+    <color name="gradient_top_home_last">#2A7C76</color>
+
+
+
+
 </resources>

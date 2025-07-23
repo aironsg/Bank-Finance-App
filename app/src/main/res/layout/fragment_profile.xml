@@ -9,16 +9,36 @@
 
     <!-- Parte de cima -->
     <LinearLayout
-        android:id="@+id/topLayout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_weight="1"
-        android:background="@drawable/bg_profile_top"
-        android:orientation="vertical"
-        android:paddingVertical="0dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/topLayoutLeft"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_top_left"
+            android:orientation="vertical"
+            android:paddingVertical="0dp"
+           >
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/topLayoutRight"
+            android:layout_width="100dp"
+            android:layout_height="200dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_top_right"
+            android:orientation="vertical"
+            android:paddingVertical="0dp"
+            >
+
+        </LinearLayout>
 
     </LinearLayout>
 

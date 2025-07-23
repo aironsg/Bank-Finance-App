@@ -1,4 +1,4 @@
-package dev.airon.bankfinance.presenter.deposit
+package dev.airon.bankfinance.presenter.features.deposit
 
 import android.os.Bundle
 import android.view.LayoutInflater
