@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <gradient android:startColor="@color/gradient_top_home_start"
-        android:endColor="@color/gradient_top_home_last"
-        android:angle="90"
-        />
+    <gradient
+        android:startColor="@color/blue_primary"
+        android:centerColor="@color/blue_secondary"
+        android:endColor="@color/blue_final"
+        android:angle="270"/>
     <corners android:bottomLeftRadius="90dp"/>
 
 </shape>

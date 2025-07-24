@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".presenter.home.HomeFragment">
 
     <LinearLayout
@@ -110,7 +111,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Ultimas 6 transações"
-                android:textColor="@color/white"
+                android:textColor="@color/blue_final"
+                android:fontFamily="@font/inter_semibold"
                 android:textStyle="normal"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/card_balance" />
@@ -120,7 +122,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Ver todas"
-                android:textColor="@color/white"
+                android:textColor="@color/blue_final"
+                android:fontFamily="@font/inter_semibold"
                 android:textStyle="normal"
                 app:layout_constraintBottom_toBottomOf="@+id/text_last_transactions"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -139,7 +142,9 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    android:layout_height="match_parent"
+                    android:background="@color/blue_final"
+                    android:padding="10dp">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recycler_view_transactions"
@@ -174,7 +179,7 @@
         android:backgroundTint="@color/white"
         android:contentDescription="botão de novo deposito"
         android:src="@drawable/ic_add_deposit"
-        app:tint="@color/color_default"
+        app:tint="@color/blue_final"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
