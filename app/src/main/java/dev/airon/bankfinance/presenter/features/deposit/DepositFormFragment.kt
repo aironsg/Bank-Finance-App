@@ -15,6 +15,7 @@ import dev.airon.bankfinance.databinding.FragmentDepositBinding
 import dev.airon.bankfinance.presenter.auth.login.LoginViewModel
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
+import dev.airon.bankfinance.util.addMoneyMask
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
 import java.time.LocalDate
@@ -37,6 +38,11 @@ class DepositFormFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initToolbar(binding.toolbar, isToolbarDefaultColor = true)
         initListener()
+        showMaskMoney()
+    }
+
+    private fun showMaskMoney() {
+       binding.editAmount.addMoneyMask()
     }
 
 
@@ -49,7 +55,7 @@ class DepositFormFragment : Fragment() {
 
     private fun validateDeposit(){
 
-        var amount = binding.editAmount.text.toString().trim()
+        var amount = binding.editAmount.text.toString().replace("[R$\\s.]".toRegex(), "").replace(",", ".")
         if (amount.isNotEmpty()){
             var deposit = Deposit(amount = amount.toFloat())
 

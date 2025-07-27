@@ -11,6 +11,8 @@ import android.text.TextWatcher
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.airon.bankfinance.databinding.LayoutBottomSheetBinding
+import java.text.NumberFormat
+import java.util.Locale
 
 //responsavel por inicializar a toolbar
 fun Fragment.initToolbar(toolbar: Toolbar, homeAsUpEnabled: Boolean = true, isToolbarDefaultColor: Boolean = false) {
@@ -128,4 +130,35 @@ class PhoneMaskWatcher(private val editText: EditText) : TextWatcher {
 
 fun EditText.applyPhoneMask() {
     this.addTextChangedListener(PhoneMaskWatcher(this))
+}
+
+fun EditText.addMoneyMask() {
+    val locale = Locale("pt", "BR")
+    val currencyFormat = NumberFormat.getCurrencyInstance(locale)
+
+    this.addTextChangedListener(object : TextWatcher {
+        private var current = ""
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+        override fun afterTextChanged(s: Editable?) {
+            if (s.toString() != current) {
+                this@addMoneyMask.removeTextChangedListener(this)
+
+                val cleanString = s.toString()
+                    .replace("[R$,.\\s]".toRegex(), "")
+
+                val parsed = cleanString.toDoubleOrNull() ?: 0.0
+                val formatted = currencyFormat.format(parsed / 100)
+
+                current = formatted
+                this@addMoneyMask.setText(formatted)
+                this@addMoneyMask.setSelection(formatted.length)
+
+                this@addMoneyMask.addTextChangedListener(this)
+            }
+        }
+    })
 }
