@@ -1,6 +1,7 @@
 package dev.airon.bankfinance.util
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import dev.airon.bankfinance.R
 
 class FirebaseHelper {
@@ -8,6 +9,8 @@ class FirebaseHelper {
         fun isAuthenticated() = FirebaseAuth.getInstance().currentUser != null
 
         fun getUserId() = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        fun getGeneratedId() = FirebaseDatabase.getInstance().reference.push().key ?: ""
 
         fun validError(error: String): Int {
             return when {

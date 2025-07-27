@@ -1,10 +1,10 @@
 package dev.airon.bankfinance.domain.auth
 
-import dev.airon.bankfinance.data.repository.auth.AuthFirebaseDataSourceImpl
+import dev.airon.bankfinance.data.repository.auth.AuthFirebaseRepositoryImpl
 import jakarta.inject.Inject
 
 class RecoverUsecase @Inject constructor(
-    private val auth: AuthFirebaseDataSourceImpl
+    private val auth: AuthFirebaseRepositoryImpl
 ) {
     suspend operator fun invoke(
         email: String

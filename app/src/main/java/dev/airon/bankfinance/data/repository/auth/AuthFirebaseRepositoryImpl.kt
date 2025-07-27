@@ -1,15 +1,13 @@
 package dev.airon.bankfinance.data.repository.auth
 
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.database.FirebaseDatabase
 import dev.airon.bankfinance.data.model.User
 import jakarta.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 
-class AuthFirebaseDataSourceImpl @Inject constructor(
+class AuthFirebaseRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
-) : AuthFirebaseDataSource {
+) : AuthFirebaseRepository {
 
     override suspend fun login(email: String, password: String) {
         return suspendCoroutine { continuation ->

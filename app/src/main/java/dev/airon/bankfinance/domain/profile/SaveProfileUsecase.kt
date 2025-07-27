@@ -1,11 +1,11 @@
 package dev.airon.bankfinance.domain.profile
 
 import dev.airon.bankfinance.data.model.User
-import dev.airon.bankfinance.data.repository.profile.ProfileDataSourceImpl
+import dev.airon.bankfinance.data.repository.profile.ProfileRepositoryImpl
 import javax.inject.Inject
 
 class SaveProfileUsecase @Inject constructor(
-    private val profileRepositoryImpl: ProfileDataSourceImpl
+    private val profileRepositoryImpl: ProfileRepositoryImpl
 )  {
 
     suspend fun invoke(user: User) {

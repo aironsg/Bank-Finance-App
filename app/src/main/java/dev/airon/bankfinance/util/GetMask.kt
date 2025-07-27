@@ -58,6 +58,31 @@ class GetMask {
             return time
         }
 
+        fun getFormatedHour(date: Long, type: Int): String {
+            val locale = Locale("pt", "BR")
+            val fuso = "America/Sao_Paulo"
+
+            val hourSdf = SimpleDateFormat("HH", locale)
+            hourSdf.timeZone = TimeZone.getTimeZone(fuso)
+
+            val minuteSdf = SimpleDateFormat("mm", locale)
+            minuteSdf.timeZone = TimeZone.getTimeZone(fuso)
+
+            val dateFormat: DateFormat = getDateTimeInstance()
+            val netDate = Date(date)
+            dateFormat.format(netDate)
+
+            val hour: String = hourSdf.format(netDate)
+            val minute: String = minuteSdf.format(netDate)
+
+
+            val time: String = when (type) {
+                HOUR_MINUTE -> "$hour:$minute"
+                else -> "Erro"
+            }
+            return time
+        }
+
         fun getFormatedValue(value: Float): String? {
             val nf: NumberFormat = DecimalFormat(
                 "#,##0.00", DecimalFormatSymbols(

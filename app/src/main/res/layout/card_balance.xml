@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="160dp"
-    android:backgroundTint="@color/color_card"
     app:cardCornerRadius="8dp"
     android:layout_marginHorizontal="20dp"
     app:cardElevation="16dp">
@@ -12,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+    android:background="@drawable/bg_card_home"
         android:padding="16dp">
 
         <!-- Total Balance Label -->
@@ -115,7 +115,7 @@
                 android:layout_width="46dp"
                 android:layout_height="46dp"
                 android:src="@drawable/ic_arrow_up_circle_fill"
-                android:backgroundTint="@color/red"
+                android:backgroundTint="@color/blue_final"
                 tools:layout_editor_absoluteX="187dp"
                 tools:layout_editor_absoluteY="97dp" />
 

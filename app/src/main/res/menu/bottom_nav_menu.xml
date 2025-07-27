@@ -5,6 +5,8 @@
         android:id="@+id/homeFragment"
         android:icon="@drawable/home"
         android:title="Inicio"
+        android:iconTint="@color/color_nav_item"
+        android:titleTextColor="@color/color_nav_item"
         />
 
 
@@ -13,24 +15,33 @@
         android:id="@+id/chargePhoneFragment"
         android:icon="@drawable/ic_phone_line"
         android:title="Recarga Celular"
+        android:iconTint="@color/color_nav_item"
+        android:titleTextColor="@color/color_nav_item"
+
         />
 
     <item
         android:id="@+id/walletFragment"
         android:icon="@drawable/ic_transaction"
         android:title="Extrato"
+        android:iconTint="@color/color_nav_item"
+        android:titleTextColor="@color/color_nav_item"
         />
 
     <item
         android:id="@+id/transferFragment"
         android:icon="@drawable/ic_exchange_fill"
         android:title="Transferencia"
+        android:iconTint="@color/color_nav_item"
+        android:titleTextColor="@color/color_nav_item"
         />
 
     <item
         android:id="@+id/profileFragment"
         android:icon="@drawable/ic_person"
         android:title="Perfil"
+        android:iconTint="@color/color_nav_item"
+        android:titleTextColor="@color/color_nav_item"
         />
 
 </menu>

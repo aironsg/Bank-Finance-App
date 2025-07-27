@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:theme="@style/Theme.BankFinance.TelaComAppBarDeposit"
-    tools:context=".presenter.features.deposit.DepositFragment">
+    tools:context=".presenter.features.deposit.DepositFormFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -94,14 +94,15 @@
 
 
             <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edit_deposit_value"
+                android:id="@+id/edit_amount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/color_default"
                 android:inputType="number"
-                android:text="R$ 0,00"
+                android:hint="R$0,00"
+                android:textColorHint="@color/color_hint_default"
                 android:textAlignment="center"
                 android:textColor="@color/color_default"
                 android:textSize="24sp"

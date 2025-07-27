@@ -33,6 +33,10 @@
     <color name="color_button_middle">#2196F3</color>
     <color name="color_button_last">#2272EB</color>
 
+<!--    Color gradient card-->
+    <color name="color_card_primary">#FF7F50 </color>
+    <color name="color_card_secondary">#D64500  </color>
+
     <!--    color card-->
     <color name="color_card">#2F7E79</color>
     <color name="txt_color_card">#D0E5E4</color>

@@ -9,9 +9,9 @@ import dev.airon.bankfinance.util.FirebaseHelper
 import javax.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 
-class WalletDataSourceImpl @Inject constructor(
+class WalletRepositoryImpl @Inject constructor(
     database: FirebaseDatabase
-) : WalletDataSource {
+) : WalletRepository {
 
 
     private val walletReference = database.reference

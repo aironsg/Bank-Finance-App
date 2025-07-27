@@ -25,6 +25,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         // Linka o menu com os destinos
         bottomNavigation.setupWithNavController(navController)
 
+
+
         // Esconde a bottom bar em telas de autenticação
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val shouldShowBottomBar = when (destination.id) {
