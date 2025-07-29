@@ -15,6 +15,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.data.enum.TransactionType
+import dev.airon.bankfinance.data.model.Transaction
 import dev.airon.bankfinance.data.model.Wallet
 import dev.airon.bankfinance.databinding.FragmentHomeBinding
 import dev.airon.bankfinance.util.FirebaseHelper
@@ -42,7 +44,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        getWallet()
+        getTransactions()
         getUsername()
         initNavigationDeposit()
 
@@ -80,17 +82,15 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun getWallet(){
-        homeViewModel.getWallet().observe(viewLifecycleOwner){ stateView ->
+    private fun getTransactions(){
+        homeViewModel.getTransactions().observe(viewLifecycleOwner){ stateView ->
              when(stateView){
                 is StateView.Loading -> {
 
                 }
                 is StateView.Success -> {
-                    stateView.data?.let{
-                    showBalance(it)
+                    showBalance(stateView.data ?: emptyList())
 
-                    }
                 }
                 is StateView.Error -> {
                     showBottomSheet(message = stateView.message)
@@ -119,15 +119,33 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun showBalance(wallet: Wallet){
-        binding.cardBalance.txtTotalBalanceValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(wallet.balance))
-        val hasNoTransactions = wallet.balance == 0.0f
-        binding.tvEmptyTransactions.visibility = if (hasNoTransactions) View.VISIBLE else View.GONE
-        binding.recyclerViewTransactions.visibility = if (hasNoTransactions) View.GONE else View.VISIBLE
+    private fun showBalance(transactions: List<Transaction>){
+        var cashIn = 0f
+        var cashOut = 0f
+        transactions.forEach {transaction ->
+            if (transaction.type == TransactionType.CASH_IN) {
+                cashIn += transaction.amount
+            } else {
+                cashOut += transaction.amount
+            }
+        }
+
+
+        binding.cardBalance.txtTotalBalanceValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn - cashOut))
+        if( transactions.isEmpty()) {
+            binding.tvEmptyTransactions.visibility = View.VISIBLE
+            binding.recyclerViewTransactions.visibility = View.GONE
+        }else{
+            binding.tvEmptyTransactions.visibility = View.GONE
+            binding.recyclerViewTransactions.visibility = View.VISIBLE
+//            binding.recyclerViewTransactions.adapter = TransactionsAdapter(transactions)
+        }
+            binding.cardBalance.txtTotalBalanceValue.setTextColor(resources.getColor(R.color.white, null))
+
 
         //dados apenas para teste de UI
-        binding.cardBalance.txtSentValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(0.0f))
-        binding.cardBalance.txtReceivedValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(0.0f))
+        binding.cardBalance.txtSentValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(cashOut))
+        binding.cardBalance.txtReceivedValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn))
         binding.cardBalance.btnToggleBalance.setOnClickListener {
             if (binding.cardBalance.txtTotalBalanceValue.visibility == View.VISIBLE) {
                 binding.cardBalance.txtTotalBalanceValue.visibility = View.GONE
