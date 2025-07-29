@@ -8,6 +8,8 @@ import dev.airon.bankfinance.data.repository.auth.AuthFirebaseRepository
 import dev.airon.bankfinance.data.repository.auth.AuthFirebaseRepositoryImpl
 import dev.airon.bankfinance.data.repository.deposit.DepositRepository
 import dev.airon.bankfinance.data.repository.deposit.DepositRepositoryImpl
+import dev.airon.bankfinance.data.repository.transaction.TransactionRepository
+import dev.airon.bankfinance.data.repository.transaction.TransactionRepositoryImpl
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -30,4 +32,10 @@ import dev.airon.bankfinance.data.repository.deposit.DepositRepositoryImpl
      abstract fun bindsDepositRepository(
          depositRepositoryImpl: DepositRepositoryImpl
      ): DepositRepository
+
+
+    @Binds
+    abstract fun bindsTransactionRepository(
+        transactionRepositoryImpl: TransactionRepositoryImpl
+    ): TransactionRepository
 }

@@ -21,7 +21,7 @@ class GetMask {
 
         fun getFormatedDate(date: Long, type: Int): String {
             val locale = Locale("pt", "BR")
-            val fuso = "America/Sao_Paulo"
+            val fuso = "America/Brasilia"
 
             val daySdf = SimpleDateFormat("dd", locale)
             daySdf.timeZone = TimeZone.getTimeZone(fuso)
@@ -60,7 +60,7 @@ class GetMask {
 
         fun getFormatedHour(date: Long, type: Int): String {
             val locale = Locale("pt", "BR")
-            val fuso = "America/Sao_Paulo"
+            val fuso = "America/Brasilia"
 
             val hourSdf = SimpleDateFormat("HH", locale)
             hourSdf.timeZone = TimeZone.getTimeZone(fuso)

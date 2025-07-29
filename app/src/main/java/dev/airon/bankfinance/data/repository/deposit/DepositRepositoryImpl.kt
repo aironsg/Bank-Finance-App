@@ -1,6 +1,7 @@
 package dev.airon.bankfinance.data.repository.deposit
 
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ServerValue
 import dev.airon.bankfinance.data.model.Deposit
 import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.util.FirebaseHelper
@@ -9,7 +10,7 @@ import kotlin.coroutines.suspendCoroutine
 
 
 class DepositRepositoryImpl @Inject constructor(
-    database : FirebaseDatabase
+    database: FirebaseDatabase
 ) : DepositRepository {
 
 
@@ -18,19 +19,33 @@ class DepositRepositoryImpl @Inject constructor(
         .child(FirebaseHelper.getUserId())
 
 
-
-
-    override suspend fun saveDeposit(deposit: Deposit): String {
+    override suspend fun saveDeposit(deposit: Deposit): Deposit {
         return suspendCoroutine { continuation ->
             depositReference
                 .child(deposit.id)
                 .setValue(deposit)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Profile saved successfully
-                        continuation.resumeWith(Result.success(deposit.id))
+                        // Deposit saved successfully
+                        val dateReference = depositReference
+                            .child(deposit.id)
+                            .child("date")
+                        dateReference.setValue(
+                            ServerValue.TIMESTAMP
+                        ).addOnCompleteListener { taskUpdate ->
+
+                            if (taskUpdate.isSuccessful) {
+                                continuation.resumeWith(Result.success(deposit))
+
+                            } else {
+                                // Failed to update date
+                                taskUpdate.exception?.let {
+                                    continuation.resumeWith(Result.failure(it))
+                                }
+                            }
+                        }
                     } else {
-                        // Failed to save profile
+                        // Failed to save Deposit
                         task.exception?.let {
                             continuation.resumeWith(Result.failure(it))
                         }

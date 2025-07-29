@@ -1,15 +1,15 @@
 package dev.airon.bankfinance.data.model
 
 import com.google.firebase.database.FirebaseDatabase
+import dev.airon.bankfinance.data.enum.TransactionOperation
+import dev.airon.bankfinance.data.enum.TransactionType
+import dev.airon.bankfinance.util.FirebaseHelper
 import java.time.LocalDate
 
 data class Transaction(
-     var id: String = "",
-     val description: String = "",
-     val value: Float = 0f,
-     val date: Long
-){
-    init {
-        this.id = FirebaseDatabase.getInstance().reference.push().key ?: ""
-    }
-}
+    var id: String = "",
+    val operation: TransactionOperation? = null,
+    val date: Long = 0,
+    val amount: Float = 0f,
+    val type: TransactionType? = null
+)

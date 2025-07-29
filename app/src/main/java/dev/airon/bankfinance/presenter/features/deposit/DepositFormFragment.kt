@@ -10,7 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.data.enum.TransactionOperation
+import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.data.model.Deposit
+import dev.airon.bankfinance.data.model.Transaction
 import dev.airon.bankfinance.databinding.FragmentDepositBinding
 import dev.airon.bankfinance.presenter.auth.login.LoginViewModel
 import dev.airon.bankfinance.util.FirebaseHelper
@@ -75,7 +78,34 @@ class DepositFormFragment : Fragment() {
 
                 is StateView.Success -> {
 
-                    Toast.makeText(requireContext(), "deposito realizado com sucesso", Toast.LENGTH_SHORT).show()
+                    val transaction = Transaction(
+                        id = stateView.data?.id ?: "",
+                        operation = TransactionOperation.DEPOSIT,
+                        date = stateView.data?.date ?: 0,
+                        amount = stateView.data?.amount ?: 0f,
+                        type = TransactionType.CASH_IN
+                        )
+                    saveTransaction(transaction)
+                }
+
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
+                }
+            }
+        }
+    }
+
+    private fun saveTransaction(transaction: Transaction){
+        depositViewModel.saveTransaction(transaction).observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is StateView.Success -> {
+
+
                 }
 
                 is StateView.Error -> {
