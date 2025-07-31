@@ -1,14 +1,13 @@
 package dev.airon.bankfinance.presenter.home
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -17,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.data.model.Transaction
-import dev.airon.bankfinance.data.model.Wallet
 import dev.airon.bankfinance.databinding.FragmentHomeBinding
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.GetMask
@@ -27,11 +25,11 @@ import dev.airon.bankfinance.util.showBottomSheet
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
-    private var _binding : FragmentHomeBinding? = null
+    private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var bottomNavigationView: BottomNavigationView
-    private val homeViewModel : HomeViewModel by viewModels()
-
+    private val homeViewModel: HomeViewModel by viewModels()
+    private lateinit var transactionAdapter: TransactionsAdapter
 
 
     override fun onCreateView(
@@ -44,16 +42,16 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        configRecyclerView()
         getTransactions()
-        getUsername()
+        getUserName()
         initNavigationDeposit()
 
 
     }
 
 
-
-    private fun getUsername(){
+    private fun getUserName() {
 
         val userId = FirebaseHelper.getUserId()
         val nameRef = FirebaseDatabase.getInstance()
@@ -75,30 +73,48 @@ class HomeFragment : Fragment() {
 
     }
 
-    private fun initNavigationDeposit(){
+    private fun initNavigationDeposit() {
 
         binding.newDeposit.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_depositFragment)
         }
     }
 
-    private fun getTransactions(){
-        homeViewModel.getTransactions().observe(viewLifecycleOwner){ stateView ->
-             when(stateView){
+    private fun getTransactions() {
+        homeViewModel.getTransactions().observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
                 is StateView.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
 
                 }
+
                 is StateView.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    transactionAdapter.submitList(stateView.data)
                     showBalance(stateView.data ?: emptyList())
 
                 }
+
                 is StateView.Error -> {
+                    binding.progressBar.visibility = View.GONE
                     showBottomSheet(message = stateView.message)
                 }
             }
         }
 
 
+    }
+
+    private fun configRecyclerView() {
+        transactionAdapter = TransactionsAdapter { transaction ->
+
+
+        }
+
+        with(binding.recyclerViewTransactions) {
+            setHasFixedSize(true)
+            adapter = transactionAdapter
+        }
     }
 
     private fun toggleEmptyView(isEmpty: Boolean) {
@@ -119,10 +135,10 @@ class HomeFragment : Fragment() {
     }
 
 
-    private fun showBalance(transactions: List<Transaction>){
+    private fun showBalance(transactions: List<Transaction>) {
         var cashIn = 0f
         var cashOut = 0f
-        transactions.forEach {transaction ->
+        transactions.forEach { transaction ->
             if (transaction.type == TransactionType.CASH_IN) {
                 cashIn += transaction.amount
             } else {
@@ -131,21 +147,29 @@ class HomeFragment : Fragment() {
         }
 
 
-        binding.cardBalance.txtTotalBalanceValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn - cashOut))
-        if( transactions.isEmpty()) {
+        binding.cardBalance.txtTotalBalanceValue.text =
+            getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn - cashOut))
+        if (transactions.isEmpty()) {
             binding.tvEmptyTransactions.visibility = View.VISIBLE
             binding.recyclerViewTransactions.visibility = View.GONE
-        }else{
+        } else {
             binding.tvEmptyTransactions.visibility = View.GONE
             binding.recyclerViewTransactions.visibility = View.VISIBLE
 //            binding.recyclerViewTransactions.adapter = TransactionsAdapter(transactions)
         }
-            binding.cardBalance.txtTotalBalanceValue.setTextColor(resources.getColor(R.color.white, null))
+        binding.cardBalance.txtTotalBalanceValue.setTextColor(
+            resources.getColor(
+                R.color.white,
+                null
+            )
+        )
 
 
         //dados apenas para teste de UI
-        binding.cardBalance.txtSentValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(cashOut))
-        binding.cardBalance.txtReceivedValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn))
+        binding.cardBalance.txtSentValue.text =
+            getString(R.string.text_formated_value, GetMask.getFormatedValue(cashOut))
+        binding.cardBalance.txtReceivedValue.text =
+            getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn))
         binding.cardBalance.btnToggleBalance.setOnClickListener {
             if (binding.cardBalance.txtTotalBalanceValue.visibility == View.VISIBLE) {
                 binding.cardBalance.txtTotalBalanceValue.visibility = View.GONE
@@ -161,7 +185,6 @@ class HomeFragment : Fragment() {
 
 
     }
-
 
 
     override fun onDestroy() {

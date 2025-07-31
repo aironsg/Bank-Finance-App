@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_deposit_receipt_top"
     android:fillViewport="true"
+    android:fitsSystemWindows="true"
     android:theme="@style/Theme.BankFinance.TelaComAppBarDeposit"
     tools:context=".presenter.features.deposit.DepositFormFragment">
 
@@ -14,7 +16,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="220dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
@@ -34,14 +36,15 @@
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="match_parent">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="32dp"
-                        android:gravity="center_horizontal"
+                        android:layout_marginEnd="66dp"
+                        android:layout_marginBottom="32dp"
                         android:fontFamily="@font/inter_semibold"
+                        android:gravity="center_horizontal"
                         android:text="Depositar"
                         android:textColor="@color/white"
                         android:textSize="22sp"
@@ -54,8 +57,8 @@
             android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
             android:layout_height="600dp"
-            android:paddingTop="16dp"
             android:background="@drawable/bg_deposit_receipt_bottom"
+            android:paddingTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
@@ -82,8 +85,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="32dp"
-                android:text="Valor do depósito"
                 android:fontFamily="@font/inter_semibold"
+                android:text="Valor do depósito"
                 android:textAlignment="center"
                 android:textColor="@color/color_default"
                 android:textSize="16sp"
@@ -100,11 +103,11 @@
                 android:layout_marginHorizontal="32dp"
                 android:layout_marginTop="16dp"
                 android:backgroundTint="@color/color_default"
-                android:inputType="number"
                 android:hint="R$0,00"
-                android:textColorHint="@color/color_hint_default"
+                android:inputType="number"
                 android:textAlignment="center"
                 android:textColor="@color/color_default"
+                android:textColorHint="@color/color_hint_default"
                 android:textSize="24sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

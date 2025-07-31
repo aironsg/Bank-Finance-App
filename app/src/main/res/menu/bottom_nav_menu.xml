@@ -9,7 +9,7 @@
         android:titleTextColor="@color/color_nav_item"
         />
 
-
+    
 
     <item
         android:id="@+id/chargePhoneFragment"

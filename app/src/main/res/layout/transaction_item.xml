@@ -3,19 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
+    android:layout_height="wrap_content">
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginVertical="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            >
 
             <TextView
                 android:id="@+id/text_transaction_type"
@@ -24,6 +28,7 @@
                 android:layout_marginVertical="16dp"
                 android:layout_marginStart="16dp"
                 android:gravity="center"
+                android:fontFamily="@font/inter_semibold"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -31,13 +36,14 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:background="@drawable/bg_round"
+                tools:background="@drawable/bg_round_cash_out"
                 tools:text="T" />
 
             <TextView
                 android:id="@+id/text_transaction_information"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_semibold"
                 android:layout_marginStart="16dp"
                 android:textColor="@color/black"
                 android:textSize="18sp"
@@ -52,6 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:textColor="@color/black"
+                android:fontFamily="@font/inter"
                 app:layout_constraintStart_toEndOf="@+id/text_transaction_type"
                 app:layout_constraintTop_toBottomOf="@+id/text_transaction_information"
                 tools:text="01/01/2023" />
@@ -60,7 +67,9 @@
             <TextView
                 android:id="@+id/text_transaction_value"
                 android:layout_width="wrap_content"
+                android:fontFamily="@font/inter"
                 android:layout_height="wrap_content"
+                android:textColor="@color/blue_final"
                 app:layout_constraintBottom_toBottomOf="@+id/text_transaction_date"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_transaction_information"
