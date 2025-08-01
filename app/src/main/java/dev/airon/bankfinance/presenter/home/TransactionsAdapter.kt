@@ -1,6 +1,6 @@
 package dev.airon.bankfinance.presenter.home
 
-import android.graphics.drawable.ColorStateListDrawable
+import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
@@ -61,7 +61,13 @@ class TransactionsAdapter(
 
 
         }
-        holder.binding.textTransactionValue.text = GetMask.getFormatedValue(transaction.amount)
+        val context = holder.itemView.context
+        holder.binding.textTransactionValue.text =
+            context.getString(
+                R.string.text_formated_value, GetMask.getFormatedValue(transaction.amount)
+            )
+
+
 
         holder.binding.textTransactionDate.text =
             GetMask.getFormatedDate(transaction.date, GetMask.DAY_MONTH_YEAR_HOUR_MINUTE)

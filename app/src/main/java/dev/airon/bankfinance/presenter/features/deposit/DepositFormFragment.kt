@@ -9,19 +9,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.enum.TransactionOperation
 import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.data.model.Deposit
 import dev.airon.bankfinance.data.model.Transaction
 import dev.airon.bankfinance.databinding.FragmentDepositBinding
-import dev.airon.bankfinance.presenter.auth.login.LoginViewModel
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.addMoneyMask
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
-import java.time.LocalDate
 
 @AndroidEntryPoint
 class DepositFormFragment : Fragment() {
@@ -45,7 +42,7 @@ class DepositFormFragment : Fragment() {
     }
 
     private fun showMaskMoney() {
-       binding.editAmount.addMoneyMask()
+        binding.editAmount.addMoneyMask()
     }
 
 
@@ -56,20 +53,21 @@ class DepositFormFragment : Fragment() {
         }
     }
 
-    private fun validateDeposit(){
+    private fun validateDeposit() {
 
-        var amount = binding.editAmount.text.toString().replace("[R$\\s.]".toRegex(), "").replace(",", ".")
-        if (amount.isNotEmpty()){
+        var amount =
+            binding.editAmount.text.toString().replace("[R$\\s.]".toRegex(), "").replace(",", ".")
+        if (amount.isNotEmpty()) {
             var deposit = Deposit(amount = amount.toFloat())
 
             saveDeposit(deposit)
-        }else{
+        } else {
             Toast.makeText(requireContext(), "Digite um valor", Toast.LENGTH_SHORT).show()
         }
 
     }
 
-    private fun saveDeposit(deposit: Deposit){
+    private fun saveDeposit(deposit: Deposit) {
         depositViewModel.saveDeposit(deposit).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> {
@@ -78,25 +76,36 @@ class DepositFormFragment : Fragment() {
 
                 is StateView.Success -> {
 
-                    val transaction = Transaction(
-                        id = stateView.data?.id ?: "",
-                        operation = TransactionOperation.DEPOSIT,
-                        date = stateView.data?.date ?: 0,
-                        amount = stateView.data?.amount ?: 0f,
-                        type = TransactionType.CASH_IN
-                        )
-                    saveTransaction(transaction)
+
+                    stateView.data?.let {
+                        saveTransaction(it)
+
+                    }
                 }
 
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
+                    showBottomSheet(
+                        message = getString(
+                            FirebaseHelper.validError(
+                                stateView.message ?: ""
+                            )
+                        )
+                    )
                 }
             }
         }
     }
 
-    private fun saveTransaction(transaction: Transaction){
+    private fun saveTransaction(deposit: Deposit) {
+        val transaction = Transaction(
+            id = deposit.id,
+            operation = TransactionOperation.DEPOSIT,
+            date = deposit.date,
+            amount = deposit.amount,
+            type = TransactionType.CASH_IN
+        )
+
         depositViewModel.saveTransaction(transaction).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> {
@@ -105,12 +114,21 @@ class DepositFormFragment : Fragment() {
 
                 is StateView.Success -> {
 
-
+                    val action =
+                        DepositFormFragmentDirections
+                            .actionDepositFragmentToDepositReceiptFragment(deposit.id)
+                    findNavController().navigate(action)
                 }
 
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(message = getString( FirebaseHelper.validError(stateView.message ?: "")))
+                    showBottomSheet(
+                        message = getString(
+                            FirebaseHelper.validError(
+                                stateView.message ?: ""
+                            )
+                        )
+                    )
                 }
             }
         }

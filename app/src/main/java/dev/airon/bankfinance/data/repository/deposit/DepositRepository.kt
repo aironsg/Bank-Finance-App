@@ -5,4 +5,5 @@ import dev.airon.bankfinance.data.model.Deposit
 interface DepositRepository {
 
     suspend fun saveDeposit(deposit: Deposit) : Deposit
+    suspend fun getDeposit(id:String) : Deposit
 }

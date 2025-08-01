@@ -90,7 +90,7 @@ class HomeFragment : Fragment() {
 
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    transactionAdapter.submitList(stateView.data)
+                    transactionAdapter.submitList(stateView.data?.reversed()?.take(6))
                     showBalance(stateView.data ?: emptyList())
 
                 }

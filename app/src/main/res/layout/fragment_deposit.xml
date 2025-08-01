@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_deposit_receipt_top"
     android:fillViewport="true"
-    android:fitsSystemWindows="true"
-    android:theme="@style/Theme.BankFinance.TelaComAppBarDeposit"
+
     tools:context=".presenter.features.deposit.DepositFormFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,6 +25,7 @@
                 android:id="@+id/appBarLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+
                 android:background="@drawable/bg_deposit_receipt_top"
                 android:paddingTop="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -56,7 +56,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="690dp"
             android:background="@drawable/bg_deposit_receipt_bottom"
             android:paddingTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"

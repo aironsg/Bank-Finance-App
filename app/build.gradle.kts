@@ -4,7 +4,9 @@ plugins {
     id("com.google.gms.google-services")
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
     kotlin("plugin.serialization") version "2.0.21"
+    id("androidx.navigation.safeargs.kotlin")
 }
 
 android {
@@ -81,5 +83,7 @@ dependencies {
     //maskara de telelefone
     //https://github.com/VicMikhailau/MaskedEditText
     implementation("io.github.vicmikhailau:MaskedEditText:5.0.3")
+
+
 }
 
