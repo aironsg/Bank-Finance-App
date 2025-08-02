@@ -21,77 +21,29 @@ class GetMask {
 
         fun getFormatedDate(date: Long, type: Int): String {
             val locale = Locale("pt", "BR")
-            val fuso = "America/Brasilia"
+            val timeZone = TimeZone.getDefault() // Usa o fuso horário do dispositivo
 
-            val daySdf = SimpleDateFormat("dd", locale)
-            daySdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val monthSdf = SimpleDateFormat("MM", locale)
-            monthSdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val yearSdf = SimpleDateFormat("yyyy", locale)
-            yearSdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val hourSdf = SimpleDateFormat("HH", locale)
-            hourSdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val minuteSdf = SimpleDateFormat("mm", locale)
-            minuteSdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val dateFormat: DateFormat = getDateTimeInstance()
-            val netDate = Date(date)
-            dateFormat.format(netDate)
-
-            val hour: String = hourSdf.format(netDate)
-            val minute: String = minuteSdf.format(netDate)
-            val day: String = daySdf.format(netDate)
-            val month: String = monthSdf.format(netDate)
-            val year: String = yearSdf.format(netDate)
-
-            val time: String = when (type) {
-                DAY_MONTH_YEAR -> "$day/$month/$year"
-                HOUR_MINUTE -> "$hour:$minute"
-                DAY_MONTH_YEAR_HOUR_MINUTE -> "$day/$month/$year $hour:$minute"
-                DAY_MONTH -> "$day/$month"
-                else -> "Erro"
+            val pattern = when (type) {
+                DAY_MONTH_YEAR -> "dd/MM/yyyy"
+                HOUR_MINUTE -> "HH:mm"
+                DAY_MONTH_YEAR_HOUR_MINUTE -> "dd/MM/yyyy HH:mm"
+                DAY_MONTH -> "dd/MM"
+                else -> return "Erro"
             }
-            return time
+
+            val sdf = SimpleDateFormat(pattern, locale)
+            sdf.timeZone = timeZone
+
+            return sdf.format(Date(date))
         }
 
-        fun getFormatedHour(date: Long, type: Int): String {
-            val locale = Locale("pt", "BR")
-            val fuso = "America/Brasilia"
-
-            val hourSdf = SimpleDateFormat("HH", locale)
-            hourSdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val minuteSdf = SimpleDateFormat("mm", locale)
-            minuteSdf.timeZone = TimeZone.getTimeZone(fuso)
-
-            val dateFormat: DateFormat = getDateTimeInstance()
-            val netDate = Date(date)
-            dateFormat.format(netDate)
-
-            val hour: String = hourSdf.format(netDate)
-            val minute: String = minuteSdf.format(netDate)
-
-
-            val time: String = when (type) {
-                HOUR_MINUTE -> "$hour:$minute"
-                else -> "Erro"
-            }
-            return time
-        }
-
-        fun getFormatedValue(value: Float): String? {
+        fun getFormatedValue(value: Float): String {
             val nf: NumberFormat = DecimalFormat(
-                "#,##0.00", DecimalFormatSymbols(
-                    Locale("pt", "BR")
-                )
+                "#,##0.00", DecimalFormatSymbols(Locale("pt", "BR"))
             )
             return nf.format(value)
         }
-
     }
+
 
 }

@@ -14,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.data.enum.TransactionOperation
 import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.data.model.Transaction
 import dev.airon.bankfinance.databinding.FragmentHomeBinding
@@ -107,6 +108,15 @@ class HomeFragment : Fragment() {
 
     private fun configRecyclerView() {
         transactionAdapter = TransactionsAdapter { transaction ->
+
+            when(transaction.operation){
+                TransactionOperation.DEPOSIT -> {
+                    val action = HomeFragmentDirections.actionHomeFragmentToDepositReceiptFragment(transaction.id)
+                    findNavController().navigate(action)
+                }else ->{
+
+                }
+            }
 
 
         }

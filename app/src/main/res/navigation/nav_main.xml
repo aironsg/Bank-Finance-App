@@ -29,6 +29,9 @@
         <action
             android:id="@+id/action_homeFragment_to_depositFragment"
             app:destination="@id/depositFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_depositReceiptFragment"
+            app:destination="@id/depositReceiptFragment" />
     </fragment>
     <navigation android:id="@+id/authentication"
         app:startDestination="@id/loginFragment">
