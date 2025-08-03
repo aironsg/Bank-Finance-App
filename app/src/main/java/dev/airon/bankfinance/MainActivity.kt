@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val shouldShowBottomBar = when (destination.id) {
                 R.id.homeFragment,
                 R.id.chargePhoneFragment,
-                R.id.walletFragment,
+                R.id.extractFragment,
                 R.id.transferFragment,
                 R.id.profileFragment -> true
 

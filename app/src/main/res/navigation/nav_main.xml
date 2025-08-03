@@ -32,6 +32,14 @@
         <action
             android:id="@+id/action_homeFragment_to_depositReceiptFragment"
             app:destination="@id/depositReceiptFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_extractFragment"
+            app:destination="@id/extractFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_authentication"
+            app:destination="@id/authentication"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/homeFragment"/>
     </fragment>
     <navigation android:id="@+id/authentication"
         app:startDestination="@id/loginFragment">
@@ -104,11 +112,6 @@
             app:argType="dev.airon.bankfinance.data.model.Deposit" />
     </fragment>
     <fragment
-        android:id="@+id/walletFragment"
-        android:name="dev.airon.bankfinance.presenter.wallet.WalletFragment"
-        android:label="fragment_wallet"
-        tools:layout="@layout/fragment_wallet" />
-    <fragment
         android:id="@+id/depositReceiptFragment"
         android:name="dev.airon.bankfinance.presenter.features.deposit.DepositReceiptFragment"
         android:label="fragment_deposit_receipt"
@@ -116,5 +119,14 @@
         <argument
             android:name="idDeposit"
             app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/extractFragment"
+        android:name="dev.airon.bankfinance.presenter.features.extract.ExtractFragment"
+        android:label="fragment_extract"
+        tools:layout="@layout/fragment_extract" >
+        <action
+            android:id="@+id/action_extractFragment_to_depositReceiptFragment"
+            app:destination="@id/depositReceiptFragment" />
     </fragment>
 </navigation>

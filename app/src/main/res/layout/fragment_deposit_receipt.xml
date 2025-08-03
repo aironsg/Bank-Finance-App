@@ -58,11 +58,11 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/ic_checked"
-                app:tint="@color/color_deposit_confirm"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/color_deposit_confirm" />
 
             <TextView
                 android:id="@+id/textView4"
@@ -131,8 +131,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/blue_final"
                 android:text="Horário"
+                android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView7" />
 
@@ -205,9 +205,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="24dp"
+                android:layout_marginBottom="32dp"
                 android:background="@drawable/bg_button_deposit_receipt"
-android:layout_marginBottom="32dp"
-                android:text="Retornar ao início"
+                android:text="Retornar"
                 android:textColor="@color/blue_final"
 
                 app:layout_constraintBottom_toBottomOf="parent"

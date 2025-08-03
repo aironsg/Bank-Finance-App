@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topLayoutLeft"
             android:layout_width="100dp"
             android:layout_height="200dp"
@@ -25,19 +25,22 @@
             android:paddingVertical="0dp"
             >
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/topLayoutRight"
             android:layout_width="100dp"
             android:layout_height="200dp"
             android:layout_weight="1"
+
             android:background="@drawable/bg_top_right_home"
             android:orientation="vertical"
             android:paddingVertical="0dp"
             >
 
-        </LinearLayout>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
@@ -59,13 +62,37 @@
             android:layout_height="match_parent"
             android:padding="16dp">
 
+            <ImageView
+                android:id="@+id/btn_logout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:layout_marginEnd="12dp"
+                android:contentDescription="botão de logout"
+
+                android:src="@drawable/ic_logout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/text_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="BF Soluções"
+                android:textColor="@color/blue_final"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/btn_logout"
+                app:layout_constraintStart_toEndOf="@+id/materialCardView"
+                app:layout_constraintTop_toTopOf="@+id/materialCardView" />
 
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/materialCardView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="10dp"
                 app:cardCornerRadius="40dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -80,18 +107,19 @@
 
             </com.google.android.material.card.MaterialCardView>
 
+
+
             <TextView
                 android:id="@+id/text_user"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="nome do usuario"
                 android:layout_marginStart="16dp"
-                android:textStyle="bold"
-                android:textSize="16sp"
                 android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/materialCardView"
                 app:layout_constraintStart_toEndOf="@+id/materialCardView"
-                app:layout_constraintTop_toTopOf="@+id/materialCardView" />
+                tools:text="nome do usuario" />
 
 
             <include
@@ -110,7 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Ultimas 6 transações"
+                android:text="Últimas 6 transações"
                 android:textColor="@color/blue_final"
                 android:fontFamily="@font/inter_semibold"
                 android:textStyle="normal"

@@ -21,7 +21,7 @@
         />
 
     <item
-        android:id="@+id/walletFragment"
+        android:id="@+id/extractFragment"
         android:icon="@drawable/ic_transaction"
         android:title="Extrato"
         android:iconTint="@color/color_nav_item"
