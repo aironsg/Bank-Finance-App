@@ -101,7 +101,11 @@
         android:id="@+id/profileFragment"
         android:name="dev.airon.bankfinance.presenter.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <action
+            android:id="@+id/action_profileFragment_to_authentication"
+            app:destination="@id/authentication" />
+    </fragment>
     <fragment
         android:id="@+id/transferFragment"
         android:name="dev.airon.bankfinance.presenter.transfer.TransferFragment"
