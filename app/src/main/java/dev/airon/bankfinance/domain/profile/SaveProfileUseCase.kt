@@ -4,7 +4,7 @@ import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.data.repository.profile.ProfileRepositoryImpl
 import javax.inject.Inject
 
-class SaveProfileUsecase @Inject constructor(
+class SaveProfileUseCase @Inject constructor(
     private val profileRepositoryImpl: ProfileRepositoryImpl
 )  {
 

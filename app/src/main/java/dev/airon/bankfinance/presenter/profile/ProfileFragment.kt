@@ -11,17 +11,22 @@ import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.firebase.auth.FirebaseAuth
+import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.databinding.FragmentChargePhoneBinding
 import dev.airon.bankfinance.databinding.FragmentProfileBinding
 import dev.airon.bankfinance.presenter.auth.login.LoginViewModel
+import dev.airon.bankfinance.util.StateView
 import kotlin.getValue
 
-
+@AndroidEntryPoint
 class ProfileFragment : Fragment() {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private val loginViewModel: LoginViewModel by viewModels()
+    private val profileViewModel: ProfileViewModel by viewModels()
+
+    private var user: User? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,8 +38,8 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         initListener()
+        getProfile()
     }
 
     private fun initListener() {
@@ -93,8 +98,10 @@ class ProfileFragment : Fragment() {
     }
 
     private fun updateSaveButtonVisibility() {
-        val nameVisibleAndFilled = binding.editName.visibility == View.VISIBLE && binding.editName.text?.isNotEmpty() == true
-        val passVisibleAndFilled = binding.editPassword.visibility == View.VISIBLE && binding.editPassword.text?.isNotEmpty() == true
+        val nameVisibleAndFilled =
+            binding.editName.visibility == View.VISIBLE && binding.editName.text?.isNotEmpty() == true
+        val passVisibleAndFilled =
+            binding.editPassword.visibility == View.VISIBLE && binding.editPassword.text?.isNotEmpty() == true
 
         binding.btnSaveProfile.visibility = if (nameVisibleAndFilled || passVisibleAndFilled) {
             View.VISIBLE
@@ -103,7 +110,34 @@ class ProfileFragment : Fragment() {
         }
     }
 
+    private fun getProfile() {
+        profileViewModel.getProfile().observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> {
 
+                }
+
+                is StateView.Success -> {
+                    stateView?.data.let {
+                        user = it
+                    }
+                    showData()
+
+                }
+
+                is StateView.Error -> {
+
+                    Toast.makeText(requireContext(), "Erro ao carregar perfil", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun showData() {
+        binding.textUserName.text = user?.name
+        binding.textUserMail.text = user?.email
+    }
 
 
     override fun onDestroy() {

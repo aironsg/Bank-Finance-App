@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -13,12 +12,11 @@ import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.data.model.Wallet
 import dev.airon.bankfinance.databinding.FragmentRegisterBinding
-import dev.airon.bankfinance.presenter.profile.SaveProfileViewModel
+import dev.airon.bankfinance.presenter.profile.ProfileViewModel
 import dev.airon.bankfinance.presenter.wallet.WalletViewModel
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
-import dev.airon.bankfinance.util.applyPhoneMask
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
 
@@ -28,7 +26,7 @@ class RegisterFragment : Fragment() {
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
     private val registerViewModel : RegisterViewModel by viewModels()
-    private val profileViewModel : SaveProfileViewModel by viewModels()
+    private val profileViewModel : ProfileViewModel by viewModels()
     private val walletViewModel : WalletViewModel by viewModels()
 
     override fun onCreateView(
