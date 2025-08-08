@@ -17,6 +17,7 @@ import dev.airon.bankfinance.databinding.FragmentDepositBinding
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.addMoneyMask
+import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
 
@@ -58,6 +59,7 @@ class DepositFormFragment : Fragment() {
         var amount =
             binding.editAmount.text.toString().replace("[R$\\s.]".toRegex(), "").replace(",", ".")
         if (amount.isNotEmpty()) {
+            hideKeyboard()
             var deposit = Deposit(amount = amount.toFloat())
 
             saveDeposit(deposit)

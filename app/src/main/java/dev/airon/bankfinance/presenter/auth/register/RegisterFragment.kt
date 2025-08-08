@@ -17,6 +17,7 @@ import dev.airon.bankfinance.presenter.wallet.WalletViewModel
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
+import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
 
@@ -63,6 +64,7 @@ class RegisterFragment : Fragment() {
                 if (email.isNotEmpty()) {
                     if (password.isNotEmpty()) {
                         //sucesso
+                        hideKeyboard()
                         val user = User(name, phone, email, password)
                         registerUser(name, phone, email, password)
 

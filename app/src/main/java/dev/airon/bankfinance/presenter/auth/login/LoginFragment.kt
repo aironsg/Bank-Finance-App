@@ -17,6 +17,7 @@ import dev.airon.bankfinance.databinding.FragmentLoginBinding
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
+import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.showBottomSheet
 
 
@@ -64,6 +65,7 @@ class LoginFragment : Fragment() {
         if (email.isNotEmpty()) {
 
             if (password.isNotEmpty()) {
+                hideKeyboard()
                 loginUser(email, password)
             } else {
                 showBottomSheet(message = getString(R.string.password_is_empty_alert))

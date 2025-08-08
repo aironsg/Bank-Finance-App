@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import dev.airon.bankfinance.R
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import dev.airon.bankfinance.databinding.LayoutBottomSheetBinding
@@ -161,4 +162,11 @@ fun EditText.addMoneyMask() {
             }
         }
     })
+}
+
+fun Fragment.hideKeyboard() {
+    val activity = requireActivity()
+    val inputMethodManager = activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+    val view = activity.currentFocus ?: View(activity)
+    inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }

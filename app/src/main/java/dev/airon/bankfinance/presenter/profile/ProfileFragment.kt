@@ -19,6 +19,7 @@ import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.databinding.FragmentProfileBinding
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
+import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.showBottomSheet
 
 @AndroidEntryPoint
@@ -90,6 +91,7 @@ class ProfileFragment : Fragment() {
             user?.name = name
             saveProfile()
             updated = true
+
         }
 
         if (binding.editLastPassword.isVisible && binding.editNewPassword.isVisible &&

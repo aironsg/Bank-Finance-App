@@ -17,6 +17,7 @@ import dev.airon.bankfinance.databinding.FragmentRecoverBinding
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
+import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.isEmailValid
 import dev.airon.bankfinance.util.showBottomSheet
@@ -60,6 +61,7 @@ class RecoverFragment : Fragment() {
 
         if(email.isNotEmpty()){
             if(isEmailValid(email)){
+                hideKeyboard()
                 recoverUser(email)
             }else{
                 Toast.makeText(requireContext(), "O e-mail digitado é inválido", Toast.LENGTH_SHORT)
