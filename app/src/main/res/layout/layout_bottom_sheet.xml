@@ -28,6 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="message"
+        android:textColor="@color/black"
         android:gravity="center"/>
 
     <androidx.appcompat.widget.AppCompatButton

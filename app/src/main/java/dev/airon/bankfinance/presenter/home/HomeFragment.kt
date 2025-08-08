@@ -92,8 +92,6 @@ class HomeFragment : Fragment() {
         binding.btnLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_homeFragment_to_authentication)
-            Toast.makeText(requireContext(), "consegui clicar", Toast.LENGTH_SHORT).show()
-
         }
 
         binding.imgProfile.setOnClickListener {

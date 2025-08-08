@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
+    android:fillViewport="true"
     tools:context=".presenter.auth.login.LoginFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
 
     <!-- Parte de cima -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -157,7 +163,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="10dp"
-        android:text="Senha"
+        android:text="Senha Atual"
         android:textColor="@color/color_default"
         android:textStyle="bold"
         android:visibility="invisible"
@@ -166,7 +172,7 @@
         tools:visibility="visible" />
 
     <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edit_password"
+        android:id="@+id/edit_last_password"
         style="@style/Theme.EditText"
         android:layout_marginHorizontal="32dp"
         android:drawableStart="@drawable/ic_lock_password_line"
@@ -179,6 +185,34 @@
         app:layout_constraintTop_toBottomOf="@+id/text_edit_password"
         tools:visibility="visible" />
 
+        <TextView
+            android:id="@+id/text_edit_new_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="10dp"
+            android:text="Nova Senha"
+            android:textColor="@color/color_default"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_last_password"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+        android:id="@+id/edit_new_password"
+        style="@style/Theme.EditText"
+        android:layout_marginHorizontal="32dp"
+        android:drawableStart="@drawable/ic_lock_password_line"
+        android:hint="digite sua senha"
+        android:inputType="textPassword"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_edit_new_password"
+        tools:visibility="visible" />
+
     <ImageView
         android:id="@+id/logout"
         android:layout_width="wrap_content"
@@ -188,7 +222,7 @@
 
         android:src="@drawable/ic_logout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_password"
+        app:layout_constraintTop_toBottomOf="@+id/edit_new_password"
         app:tint="@color/blue_final" />
 
     <TextView
@@ -219,5 +253,6 @@
         tools:layout_editor_absoluteX="24dp"
         tools:visibility="visible" />
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

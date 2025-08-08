@@ -33,6 +33,9 @@
     <string name="ERROR_INVALID_CREDENTIAL">A credencial fornecida é malformada ou expirou</string>
     <string name="default_error_alert">Erro desconhecido.</string>
     <string name="txt_deposit_confirm_success">Depósito realizado\n com sucesso!</string>
+    <string name="password_length_warning">Sua senha deve ser maior que 6 caracteres</string>
+
+    <string name="nothing_to_update">Nenhuma atualização foi realizada nesse momento</string>
 
 
 </resources>
