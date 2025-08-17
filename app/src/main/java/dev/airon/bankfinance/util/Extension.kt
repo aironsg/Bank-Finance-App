@@ -196,7 +196,92 @@ fun Fragment.hideKeyboard() {
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
 
+fun String.onlyDigits(): String {
+    return this.replace(Regex("[^\\d]"), "")
+}
 
+fun String.toCpfMask(): String {
+    val digits = this.onlyDigits()
+    return if (digits.length == 11) {
+        "${digits.substring(0,3)}.${digits.substring(3,6)}.${digits.substring(6,9)}-${digits.substring(9,11)}"
+    } else this
+}
+
+fun String.toRgMask(): String {
+    val digits = this.onlyDigits()
+    return if (digits.length == 8) {
+        "${digits.substring(0,1)}.${digits.substring(1,4)}.${digits.substring(4,7)}"
+    } else this
+}
+
+
+fun EditText.addCpfMask() {
+    this.addTextChangedListener(object : TextWatcher {
+        private var isUpdating = false
+        private val mask = "###.###.###-##"
+        private val regex = Regex("[^\\d]")
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (isUpdating) return
+            isUpdating = true
+
+            val digits = s.toString().replace(regex, "")
+            var formatted = ""
+            var i = 0
+            for (m in mask.toCharArray()) {
+                if (m != '#') {
+                    formatted += m
+                    continue
+                }
+                if (i >= digits.length) break
+                formatted += digits[i]
+                i++
+            }
+
+            this@addCpfMask.setText(formatted)
+            this@addCpfMask.setSelection(formatted.length)
+            isUpdating = false
+        }
+
+        override fun afterTextChanged(s: Editable?) {}
+    })
+}
+
+fun EditText.addRgMask() {
+    this.addTextChangedListener(object : TextWatcher {
+        private var isUpdating = false
+        private val mask = "#.###.###"
+        private val regex = Regex("[^\\d]")
+
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            if (isUpdating) return
+            isUpdating = true
+
+            val digits = s.toString().replace(regex, "")
+            var formatted = ""
+            var i = 0
+            for (m in mask.toCharArray()) {
+                if (m != '#') {
+                    formatted += m
+                    continue
+                }
+                if (i >= digits.length) break
+                formatted += digits[i]
+                i++
+            }
+
+            this@addRgMask.setText(formatted)
+            this@addRgMask.setSelection(formatted.length)
+            isUpdating = false
+        }
+
+        override fun afterTextChanged(s: Editable?) {}
+    })
+}
 
 fun EditText.addPhoneMask() {
     this.addTextChangedListener(object : TextWatcher {

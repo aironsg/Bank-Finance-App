@@ -29,17 +29,31 @@ class AuthFirebaseRepositoryImpl @Inject constructor(
 
     override suspend fun register(
         name: String,
+        accountNumber: String,
+        cpf: String,
+        rg: String,
         phone: String,
         email: String,
-        password: String
+        password: String,
+        passwordTransaction: String
     ): User {
         return suspendCoroutine { continuation ->
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         // Registration successful
-                        val id = task.result.user?.uid?: ""
-                        val user = User(id, name, phone, email, password)
+                        val id = task.result.user?.uid ?: ""
+                        val user = User(
+                            id,
+                            name,
+                            accountNumber,
+                            cpf,
+                            rg,
+                            phone,
+                            email,
+                            password,
+                            passwordTransaction
+                        )
                         continuation.resumeWith(Result.success(user))
 
                     } else {

@@ -50,22 +50,23 @@ class HomeFragment : Fragment() {
         initListener()
         configRecyclerView()
         getTransactions()
-        getUserName()
+        getUserProfile()
         initNavigationDeposit()
 
 
     }
 
-    private fun getUserProfile(){}
-
-
-    private fun getUserName() {
-
+    private fun getUserProfile(){
         val userId = FirebaseHelper.getUserId()
         val nameRef = FirebaseDatabase.getInstance()
             .getReference("profile")
             .child(userId)
             .child("name")
+
+        val accountNumber = FirebaseDatabase.getInstance()
+            .getReference("profile")
+            .child(userId)
+            .child("accountNumber")
 
         nameRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -78,12 +79,24 @@ class HomeFragment : Fragment() {
             }
         })
 
+        accountNumber.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val accountNumber = snapshot.getValue(String::class.java)
+                binding.accountNumber.text = accountNumber ?: "conta não encontrada"
+            }
 
+            override fun onCancelled(error: DatabaseError) {
+                binding.textUser.text = "Erro ao carregar número da conta"
+            }
+        })
     }
+
+
+
 
     private fun initNavigationDeposit() {
 
-        binding.newDeposit.setOnClickListener {
+        binding.cardNewDeposit.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_depositFragment)
         }
 

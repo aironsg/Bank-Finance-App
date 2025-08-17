@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="160dp"
     android:layout_marginHorizontal="20dp"
     app:cardCornerRadius="8dp"
     app:cardElevation="16dp">
@@ -46,7 +46,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_bold"
             android:textColor="@android:color/white"
-            android:textSize="30sp"
+            android:textSize="20sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_total_balance_label"
             tools:text="1,558.00" />
@@ -61,8 +61,8 @@
             app:layout_constraintTop_toBottomOf="@+id/txt_total_balance_value">
 
             <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:src="@drawable/ic_arrow_down_circle_fill"
 
                 />
@@ -92,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_semibold"
                         android:textColor="@android:color/white"
-                        android:textSize="20sp"
+                        android:textSize="16sp"
                         tools:text="1,840.00" />
                 </LinearLayout>
             </LinearLayout>
@@ -109,8 +109,8 @@
             app:layout_constraintTop_toBottomOf="@+id/linear_received">
 
             <ImageView
-                android:layout_width="46dp"
-                android:layout_height="46dp"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:backgroundTint="@color/blue_final"
                 android:src="@drawable/ic_arrow_up_circle_fill"
                 tools:layout_editor_absoluteX="187dp"
@@ -122,7 +122,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Enviado"
                     android:textColor="@color/txt_color_card"
@@ -140,7 +140,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_semibold"
                         android:textColor="@android:color/white"
-                        android:textSize="20sp"
+                        android:textSize="16sp"
                         tools:text="284.00" />
                 </LinearLayout>
             </LinearLayout>

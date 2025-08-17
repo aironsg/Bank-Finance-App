@@ -4,6 +4,16 @@ import dev.airon.bankfinance.data.model.User
 
 interface AuthFirebaseRepository {
     suspend fun login(email: String, password: String)
-    suspend fun register(name: String, phone: String, email: String, password: String) : User
+    suspend fun register(
+        name: String,
+        accountNumber: String,
+        cpf: String,
+        rg: String,
+        phone: String,
+        email: String,
+        password: String,
+        passwordTransaction: String
+    ): User
+
     suspend fun recover(email: String)
 }
