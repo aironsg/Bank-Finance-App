@@ -24,6 +24,7 @@ import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.GetMask
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.showBottomSheet
+import loadProfileImage
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -45,6 +46,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.imgProfile.loadProfileImage(requireContext())
         initListener()
         configRecyclerView()
         getTransactions()
@@ -53,6 +55,8 @@ class HomeFragment : Fragment() {
 
 
     }
+
+    private fun getUserProfile(){}
 
 
     private fun getUserName() {

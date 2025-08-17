@@ -1,12 +1,16 @@
 package dev.airon.bankfinance.presenter.profile
 
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +25,8 @@ import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.showBottomSheet
+import loadProfileImage
+import saveProfileImage
 
 @AndroidEntryPoint
 class ProfileFragment : Fragment() {
@@ -30,6 +36,19 @@ class ProfileFragment : Fragment() {
     private val profileViewModel: ProfileViewModel by viewModels()
 
     private var user: User? = null
+
+    // Contrato para pegar imagem da galeria
+    private val pickImage = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let {
+            val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
+            binding.imgProfile.setImageBitmap(bitmap)
+
+            // Agora usa a extension para salvar globalmente
+            requireContext().saveProfileImage(bitmap)
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -41,11 +60,20 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Exibir a imagem de perfil já salva
+        binding.imgProfile.loadProfileImage(requireContext())
+
         getProfile()
         setupListeners()
     }
 
     private fun setupListeners() {
+        // Selecionar nova imagem ao clicar
+        binding.imgProfile.setOnClickListener {
+            pickImage.launch("image/*")
+        }
+
         binding.btnLogout.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_profileFragment_to_authentication)
@@ -91,7 +119,6 @@ class ProfileFragment : Fragment() {
             user?.name = name
             saveProfile()
             updated = true
-
         }
 
         if (binding.editLastPassword.isVisible && binding.editNewPassword.isVisible &&
@@ -99,6 +126,10 @@ class ProfileFragment : Fragment() {
         ) {
             if (newPassword.length < 6) {
                 showBottomSheet(message = "A nova senha deve ter pelo menos 6 caracteres.")
+                return
+            }
+            if (lastPassword == newPassword) {
+                showBottomSheet(message = "A nova senha não pode ser igual à senha atual.")
                 return
             }
             updatePasswordUser(lastPassword, newPassword)
@@ -171,7 +202,11 @@ class ProfileFragment : Fragment() {
                     currentUser.updatePassword(newPassword)
                         .addOnCompleteListener { updateTask ->
                             if (updateTask.isSuccessful) {
-                                Toast.makeText(requireContext(), "Senha atualizada com sucesso!\n saia do aplicativo para uma nova autenticação!!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Senha atualizada com sucesso!\nSaia do aplicativo para uma nova autenticação!",
+                                    Toast.LENGTH_LONG
+                                ).show()
                             } else {
                                 showBottomSheet(
                                     message = getString(FirebaseHelper.validError(updateTask.exception?.message ?: ""))
@@ -189,9 +224,9 @@ class ProfileFragment : Fragment() {
     private fun showUserData() {
         binding.textUserName.text = user?.name
         binding.textUserMail.text = user?.email
+        // Carregar a imagem de perfil sempre que atualizar os dados do usuário
+        binding.imgProfile.loadProfileImage(requireContext())
     }
-
-
 
     override fun onDestroyView() {
         super.onDestroyView()

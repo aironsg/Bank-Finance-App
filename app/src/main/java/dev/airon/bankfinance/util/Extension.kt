@@ -75,6 +75,31 @@ fun Fragment.showBottomSheet(
 
 
 
+fun formatPhoneNumber(phone: String): String {
+    // Remove tudo que não for número
+    val digits = phone.filter { it.isDigit() }
+
+    // Define a máscara de acordo com a quantidade de dígitos
+    val mask = if (digits.length <= 10) "(##) ####-####" else "(##) #####-####"
+
+    var formatted = ""
+    var i = 0
+
+    for (m in mask) {
+        if (m == '#') {
+            if (i < digits.length) {
+                formatted += digits[i]
+                i++
+            } else {
+                break
+            }
+        } else {
+            formatted += m
+        }
+    }
+
+    return formatted
+}
 
 
 class PhoneMaskWatcher(private val editText: EditText) : TextWatcher {

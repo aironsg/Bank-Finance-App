@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val shouldShowBottomBar = when (destination.id) {
                 R.id.homeFragment,
-                R.id.chargePhoneFragment,
+                R.id.rechargeFragment,
                 R.id.extractFragment,
                 R.id.transferFragment,
                 R.id.profileFragment -> true

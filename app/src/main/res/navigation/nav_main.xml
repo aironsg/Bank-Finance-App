@@ -40,6 +40,9 @@
             app:destination="@id/authentication"
             app:popUpToInclusive="true"
             app:popUpTo="@id/homeFragment"/>
+        <action
+            android:id="@+id/action_homeFragment_to_rechargeReceiptFragment"
+            app:destination="@id/rechargeReceiptFragment" />
     </fragment>
     <navigation android:id="@+id/authentication"
         app:startDestination="@id/loginFragment">
@@ -79,10 +82,19 @@
             app:popUpTo="@id/loginFragment"/>
     </navigation>
     <fragment
-        android:id="@+id/chargePhoneFragment"
-        android:name="dev.airon.bankfinance.presenter.charge.ChargePhoneFragment"
+        android:id="@+id/rechargeFragment"
+        android:name="dev.airon.bankfinance.presenter.features.recharge.RechargeFragment"
         android:label="fragment_charge_phone"
-        tools:layout="@layout/fragment_charge_phone" />
+        tools:layout="@layout/fragment_recharge" >
+        <action
+            android:id="@+id/action_rechargeFragment_to_rechargeReceiptFragment"
+            app:destination="@id/rechargeReceiptFragment"
+            app:popUpTo="@id/rechargeFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_rechargeFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/depositFragment"
         android:name="dev.airon.bankfinance.presenter.features.deposit.DepositFormFragment"
@@ -132,5 +144,16 @@
         <action
             android:id="@+id/action_extractFragment_to_depositReceiptFragment"
             app:destination="@id/depositReceiptFragment" />
+        <action
+            android:id="@+id/action_extractFragment_to_rechargeReceiptFragment"
+            app:destination="@id/rechargeReceiptFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/rechargeReceiptFragment"
+        android:name="dev.airon.bankfinance.presenter.features.recharge.RechargeReceiptFragment"
+        android:label="RechargeReceiptFragment" >
+        <argument
+            android:name="IdRecharge"
+            app:argType="string" />
     </fragment>
 </navigation>
