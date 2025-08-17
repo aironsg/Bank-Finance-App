@@ -69,10 +69,10 @@ class DepositReceiptFragment : Fragment() {
     }
 
     private fun configData(deposit: Deposit) {
-        binding.textCodeTransaction.text = deposit.id
-        binding.textAmountTransaction.text = GetMask.getFormatedValue(deposit.amount)
-        binding.textDateTransaction.text = GetMask.getFormatedDate(deposit.date, GetMask.DAY_MONTH_YEAR)
-        binding.textHourTransaction.text = GetMask.getFormatedDate(deposit.date, GetMask.HOUR_MINUTE)
+        binding.textCodeDeposit.text = deposit.id
+        binding.textAmountDeposit.text = GetMask.getFormatedValue(deposit.amount)
+        binding.textDateDeposit.text = GetMask.getFormatedDate(deposit.date, GetMask.DAY_MONTH_YEAR)
+        binding.textHourDeposit.text = GetMask.getFormatedDate(deposit.date, GetMask.HOUR_MINUTE)
 
 
     }

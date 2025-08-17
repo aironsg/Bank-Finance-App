@@ -12,7 +12,7 @@
     
 
     <item
-        android:id="@+id/chargePhoneFragment"
+        android:id="@+id/rechargeFragment"
         android:icon="@drawable/ic_phone_line"
         android:title="Recarga Celular"
         android:iconTint="@color/color_nav_item"

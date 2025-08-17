@@ -13,177 +13,191 @@
         android:layout_height="match_parent">
 
 
-    <!-- Parte de cima -->
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout3"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:background="@drawable/bg_top_profile"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/inter_semibold"
-            android:text="Perfil"
-            android:textColor="@color/white"
-            android:textSize="32dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <!-- Parte de cima -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:background="@drawable/bg_top_profile"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.5" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <!-- Conteúdo do perfil -->
+            app:layout_constraintTop_toTopOf="parent">
 
 
-    <ImageView
-        android:id="@+id/img_profile"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:src="@drawable/profile_img"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout3" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_semibold"
+                android:text="Perfil"
+                android:textColor="@color/white"
+                android:textSize="32dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/text_user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_semibold"
-        android:text="nome do usuario"
-        android:textColor="@color/black"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/img_profile" />
+        <!-- Conteúdo do perfil -->
 
-    <TextView
-        android:id="@+id/text_user_mail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_semibold"
-        android:text="fula_de_tal@teste.com"
-        android:textColor="@color/blue_secondary"
-        android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_user_name" />
 
-    <ImageView
-        android:id="@+id/profile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="30dp"
-        android:src="@drawable/ic_user_profile"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_user_mail"
-        app:tint="@color/blue_final" />
+        <FrameLayout
+            android:id="@+id/frame_profile"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/bg_image_around"
+            android:clipToOutline="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
-    <TextView
-        android:id="@+id/btn_edit_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:fontFamily="@font/inter_semibold"
-        android:text="Editar Nome"
-        android:textColor="@color/blue_final"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/profile"
-        app:layout_constraintStart_toEndOf="@+id/profile"
-        app:layout_constraintTop_toTopOf="@+id/profile" />
+            <ImageView
+                android:id="@+id/img_profile"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:adjustViewBounds="true"
+                android:background="@drawable/bg_image_around"
+                android:clipToOutline="true"
+                android:src="@drawable/profile_img"/>
+        </FrameLayout>
+FrameLayout>
 
-    <TextView
-        android:id="@+id/text_edit_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="10dp"
-        android:text="Nome"
-        android:textColor="@color/color_default"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_edit_name"
-        tools:visibility="visible" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edit_name"
-        style="@style/Theme.EditText"
-        android:layout_marginHorizontal="32dp"
-        android:drawableStart="@drawable/ic_person"
-        android:drawableTint="@color/color_default"
-        android:hint="nome completo"
-        android:inputType="text"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_edit_name"
-        tools:visibility="visible" />
-    " />
+        <TextView
+            android:id="@+id/text_user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_semibold"
+            android:text="nome do usuario"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frame_profile" />
 
-    <ImageView
-        android:id="@+id/password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:src="@drawable/ic_change_password"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_name"
-        app:tint="@color/blue_final" />
+        <TextView
+            android:id="@+id/text_user_mail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/inter_semibold"
+            android:text="fula_de_tal@teste.com"
+            android:textColor="@color/blue_secondary"
+            android:textSize="14sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_user_name" />
 
-    <TextView
-        android:id="@+id/btn_edit_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:fontFamily="@font/inter_semibold"
-        android:text="Editar Senha"
-        android:textColor="@color/blue_final"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/password"
-        app:layout_constraintStart_toEndOf="@+id/profile"
-        app:layout_constraintTop_toTopOf="@+id/password" />
+        <ImageView
+            android:id="@+id/profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_user_profile"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_user_mail"
+            app:tint="@color/blue_final" />
 
-    <TextView
-        android:id="@+id/text_edit_password"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="10dp"
-        android:text="Senha Atual"
-        android:textColor="@color/color_default"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_edit_password"
-        tools:visibility="visible" />
+        <TextView
+            android:id="@+id/btn_edit_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Editar Nome"
+            android:textColor="@color/blue_final"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/profile"
+            app:layout_constraintStart_toEndOf="@+id/profile"
+            app:layout_constraintTop_toTopOf="@+id/profile" />
 
-    <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edit_last_password"
-        style="@style/Theme.EditText"
-        android:layout_marginHorizontal="32dp"
-        android:drawableStart="@drawable/ic_lock_password_line"
-        android:hint="digite sua senha"
-        android:inputType="textPassword"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_edit_password"
-        tools:visibility="visible" />
+        <TextView
+            android:id="@+id/text_edit_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="10dp"
+            android:text="Nome"
+            android:textColor="@color/color_default"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_edit_name"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_name"
+            style="@style/Theme.EditText"
+            android:layout_marginHorizontal="32dp"
+            android:drawableStart="@drawable/ic_person"
+            android:drawableTint="@color/color_default"
+            android:hint="nome completo"
+            android:inputType="text"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_edit_name"
+            tools:visibility="visible" />
+        " />
+
+        <ImageView
+            android:id="@+id/password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:src="@drawable/ic_change_password"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_name"
+            app:tint="@color/blue_final" />
+
+        <TextView
+            android:id="@+id/btn_edit_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Editar Senha"
+            android:textColor="@color/blue_final"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/password"
+            app:layout_constraintStart_toEndOf="@+id/profile"
+            app:layout_constraintTop_toTopOf="@+id/password" />
+
+        <TextView
+            android:id="@+id/text_edit_password"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="10dp"
+            android:text="Senha Atual"
+            android:textColor="@color/color_default"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_edit_password"
+            tools:visibility="visible" />
+
+        <androidx.appcompat.widget.AppCompatEditText
+            android:id="@+id/edit_last_password"
+            style="@style/Theme.EditText"
+            android:layout_marginHorizontal="32dp"
+            android:drawableStart="@drawable/ic_lock_password_line"
+            android:hint="digite sua senha"
+            android:inputType="textPassword"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_edit_password"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/text_edit_new_password"
@@ -200,58 +214,58 @@
             tools:visibility="visible" />
 
         <androidx.appcompat.widget.AppCompatEditText
-        android:id="@+id/edit_new_password"
-        style="@style/Theme.EditText"
-        android:layout_marginHorizontal="32dp"
-        android:drawableStart="@drawable/ic_lock_password_line"
-        android:hint="digite sua senha"
-        android:inputType="textPassword"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_edit_new_password"
-        tools:visibility="visible" />
+            android:id="@+id/edit_new_password"
+            style="@style/Theme.EditText"
+            android:layout_marginHorizontal="32dp"
+            android:drawableStart="@drawable/ic_lock_password_line"
+            android:hint="digite sua senha"
+            android:inputType="textPassword"
+            android:visibility="invisible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_edit_new_password"
+            tools:visibility="visible" />
 
-    <ImageView
-        android:id="@+id/logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
+        <ImageView
+            android:id="@+id/logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
 
-        android:src="@drawable/ic_logout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edit_new_password"
-        app:tint="@color/blue_final" />
+            android:src="@drawable/ic_logout"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/edit_new_password"
+            app:tint="@color/blue_final" />
 
-    <TextView
-        android:id="@+id/btn_logout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
-        android:fontFamily="@font/inter_semibold"
-        android:text="Sair do App"
-        android:textColor="@color/blue_final"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/logout"
-        app:layout_constraintStart_toEndOf="@+id/profile"
-        app:layout_constraintTop_toTopOf="@+id/logout" />
+        <TextView
+            android:id="@+id/btn_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:fontFamily="@font/inter_semibold"
+            android:text="Sair do App"
+            android:textColor="@color/blue_final"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/logout"
+            app:layout_constraintStart_toEndOf="@+id/profile"
+            app:layout_constraintTop_toTopOf="@+id/logout" />
 
-    <androidx.appcompat.widget.AppCompatButton
-        android:id="@+id/btn_save_profile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="16dp"
-        android:background="@drawable/bg_button_login"
-        android:text="Salvar Perfil"
-        android:textColor="@color/white"
-        android:textStyle="bold"
-        android:visibility="invisible"
-        app:layout_constraintTop_toBottomOf="@+id/btn_logout"
-        tools:layout_editor_absoluteX="24dp"
-        tools:visibility="visible" />
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_save_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="24dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_button_login"
+            android:text="Salvar Perfil"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:visibility="invisible"
+            app:layout_constraintTop_toBottomOf="@+id/btn_logout"
+            tools:layout_editor_absoluteX="24dp"
+            tools:visibility="visible" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

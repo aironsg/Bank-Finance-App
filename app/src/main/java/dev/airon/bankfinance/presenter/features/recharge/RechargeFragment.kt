@@ -9,20 +9,15 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.enum.TransactionOperation
 import dev.airon.bankfinance.data.enum.TransactionType
-import dev.airon.bankfinance.data.model.Deposit
 import dev.airon.bankfinance.data.model.Recharge
 import dev.airon.bankfinance.data.model.Transaction
 import dev.airon.bankfinance.databinding.FragmentRechargeBinding
-import dev.airon.bankfinance.databinding.FragmentRechargeReceiptBinding
-import dev.airon.bankfinance.presenter.features.deposit.DepositViewModel
 import dev.airon.bankfinance.util.FirebaseHelper
-import dev.airon.bankfinance.util.GetMask
-import dev.airon.bankfinance.util.PhoneMaskWatcher
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.addMoneyMask
+import dev.airon.bankfinance.util.addPhoneMask
 import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
@@ -48,21 +43,25 @@ class RechargeFragment : Fragment() {
         getTransactions()
         initListener()
         showMaskMoney()
+        showMaskPhone()
     }
 
     private fun showMaskMoney() {
         binding.editAmount.addMoneyMask()
     }
 
+    private fun showMaskPhone() {
+        binding.editPhone.addPhoneMask()
+    }
 
     private fun initListener() {
         binding.btnRecharge.setOnClickListener {
-            validateDeposit()
+            validateRecharge()
 
         }
     }
 
-    private fun validateDeposit() {
+    private fun validateRecharge() {
 
         var amount =
             binding.editAmount.text.toString().replace("[R$\\s.]".toRegex(), "").replace(",", ".")
@@ -74,6 +73,10 @@ class RechargeFragment : Fragment() {
             if (phone.isNotEmpty()) {
                 hideKeyboard()
                 var recharge = Recharge(amount = amount.toFloat(), phoneNumber = phone)
+                if (recharge.amount > balance) {
+                    showBottomSheet(message = "Saldo insuficiente para recarga")
+                    return
+                }
                 saveRecharge(recharge)
             } else {
                 Toast.makeText(requireContext(), "Digite um telefone", Toast.LENGTH_SHORT).show()
@@ -94,7 +97,7 @@ class RechargeFragment : Fragment() {
                 }
 
                 is StateView.Success -> {
-
+                    binding.progressBar.visibility = View.INVISIBLE
 
                     stateView.data?.let {
                         saveTransaction(it)
@@ -132,20 +135,15 @@ class RechargeFragment : Fragment() {
                 }
 
                 is StateView.Success -> {
-                    val amount = binding.editAmount.text.toString()
-                        .replace("[R$\\s.]".toRegex(), "").replace(",", ".").toFloat()
-                    if (balance >= amount) {
-                        val action =
-                            RechargeFragmentDirections.actionRechargeFragmentToRechargeReceiptFragment(
-                                recharge.id
-                            )
+                    binding.progressBar.visibility = View.INVISIBLE
 
-                        findNavController().navigate(action)
-                    } else {
-                        showBottomSheet(
-                            message = "Saldo insuficiente para recarga"
+                    val action =
+                        RechargeFragmentDirections.actionRechargeFragmentToRechargeReceiptFragment(
+                            recharge.id
                         )
-                    }
+
+                    findNavController().navigate(action)
+
                 }
 
                 is StateView.Error -> {
