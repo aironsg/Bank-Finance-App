@@ -106,6 +106,7 @@ class RegisterFragment : Fragment() {
                                             password = password,
                                             passwordTransaction = passwordTransaction
                                         )
+
                                         registerUser(
                                            user
                                         )
