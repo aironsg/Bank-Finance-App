@@ -29,9 +29,9 @@
         />
 
     <item
-        android:id="@+id/transferFragment"
-        android:icon="@drawable/ic_exchange_fill"
-        android:title="Transferencia"
+        android:id="@+id/creditCardFragment"
+        android:icon="@drawable/ic_credit_card"
+        android:title="Cartão"
         android:iconTint="@color/color_nav_item"
         android:titleTextColor="@color/color_nav_item"
         />

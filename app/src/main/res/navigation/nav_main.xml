@@ -156,4 +156,14 @@
             android:name="IdRecharge"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/creditCardFragment"
+        android:name="dev.airon.bankfinance.presenter.features.creditCard.CreditCardFragment"
+        android:label="fragment_credit_card"
+        tools:layout="@layout/fragment_credit_card" />
+    <fragment
+        android:id="@+id/walletFragment"
+        android:name="dev.airon.bankfinance.presenter.wallet.WalletFragment"
+        android:label="fragment_wallet"
+        tools:layout="@layout/fragment_wallet" />
 </navigation>

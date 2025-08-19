@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
                 R.id.homeFragment,
                 R.id.rechargeFragment,
                 R.id.extractFragment,
-                R.id.transferFragment,
+                R.id.creditCardFragment,
                 R.id.profileFragment -> true
 
                 else -> false

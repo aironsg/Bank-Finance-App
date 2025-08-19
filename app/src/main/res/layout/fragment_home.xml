@@ -273,7 +273,7 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/card_credit_card"
+                android:id="@+id/transfer"
                 android:layout_width="90dp"
                 android:layout_height="100dp"
                 app:cardCornerRadius="16dp"
@@ -290,10 +290,10 @@
                     android:padding="10dp">
 
                     <ImageView
-                        android:id="@+id/ic_credit_card"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:src="@drawable/ic_credit_card"
+                        android:id="@+id/ic_transfer"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_transfer"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:tint="@color/white" />
@@ -302,8 +302,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/inter_bold"
-                        android:text="Cartão de crédito"
+                        android:text="Transferir"
                         android:textColor="@color/white"
+                        android:gravity="center"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.5"
@@ -319,7 +320,7 @@
                 app:cardCornerRadius="16dp"
                 android:layout_marginStart="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/card_credit_card"
+                app:layout_constraintStart_toEndOf="@+id/transfer"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.5">
 
