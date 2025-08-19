@@ -7,6 +7,7 @@ import dev.airon.bankfinance.util.FirebaseHelper
 import java.time.LocalDate
 
 data class Transaction(
+    // TODO: adicionar campos de origem e destino 
     var id: String = "",
     val operation: TransactionOperation? = null,
     val date: Long = 0,

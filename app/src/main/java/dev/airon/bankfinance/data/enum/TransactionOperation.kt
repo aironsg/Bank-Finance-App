@@ -2,6 +2,8 @@ package dev.airon.bankfinance.data.enum
 
 enum class TransactionOperation {
     DEPOSIT,
+    CREDIT_CARD_PURCHASE,
+    PIX,
     RECHARGE;
 
   companion object {
@@ -9,6 +11,8 @@ enum class TransactionOperation {
       return when (operation) {
         DEPOSIT -> "Depósito"
         RECHARGE -> "Recarga"
+        CREDIT_CARD_PURCHASE -> "Compra no Cartão de Crédito"
+        PIX -> "Pagamento via PIX"
       }
     }
   }
