@@ -4,7 +4,7 @@ import dev.airon.bankfinance.data.repository.auth.AuthFirebaseRepositoryImpl
 import javax.inject.Inject
 
 
-class LoginUsecase @Inject constructor(
+class LoginUseCase @Inject constructor(
     private val auth: AuthFirebaseRepositoryImpl
 ) {
 

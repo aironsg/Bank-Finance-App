@@ -46,7 +46,6 @@ class AuthFirebaseRepositoryImpl @Inject constructor(
                         val user = User(
                             id,
                             name,
-                            accountNumber,
                             cpf,
                             rg,
                             phone,

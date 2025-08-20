@@ -12,7 +12,7 @@ data class CreditCard(
     val securityCode: String = "",
     val officialUser: String = "",
     val limit: Float = 0f,
-    val validDate: Long = 0,
+    val validDate: String = "",
     val balance: Float = 0f
 
 ) : Parcelable {

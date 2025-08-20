@@ -10,7 +10,6 @@ class RegisterUseCase @Inject constructor(
 
     suspend operator fun invoke(
         name: String,
-        accountNumber: String,
         cpf: String,
         rg: String,
         phone: String,
@@ -20,7 +19,6 @@ class RegisterUseCase @Inject constructor(
     ): User {
         return auth.register(
             name,
-            accountNumber,
             cpf,
             rg,
             phone,

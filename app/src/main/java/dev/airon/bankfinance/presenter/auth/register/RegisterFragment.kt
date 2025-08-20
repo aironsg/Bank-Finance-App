@@ -10,12 +10,16 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.data.model.Account
+import dev.airon.bankfinance.data.model.CreditCard
 import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.data.model.Wallet
 import dev.airon.bankfinance.databinding.FragmentRegisterBinding
+import dev.airon.bankfinance.presenter.features.creditCard.CreditCardViewModel
 import dev.airon.bankfinance.presenter.profile.ProfileViewModel
 import dev.airon.bankfinance.presenter.wallet.WalletViewModel
 import dev.airon.bankfinance.util.ColorStatusBar
+import dev.airon.bankfinance.util.CreditCardGenerator
 import dev.airon.bankfinance.util.FirebaseHelper
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.addCpfMask
@@ -27,23 +31,26 @@ import dev.airon.bankfinance.util.showBottomSheet
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
-
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
 
     private var _binding: FragmentRegisterBinding? = null
     private val binding get() = _binding!!
+
     private val registerViewModel: RegisterViewModel by viewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
     private val walletViewModel: WalletViewModel by viewModels()
+    private val creditCardViewModel: CreditCardViewModel by viewModels()
+
     private lateinit var secretKey: SecretKey
     private var accountNumber: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -68,8 +75,6 @@ class RegisterFragment : Fragment() {
         }
     }
 
-
-
     private fun validateData() {
         val name = binding.editName.text.toString().trim()
         val phone = binding.editPhone.unMaskedText
@@ -80,159 +85,128 @@ class RegisterFragment : Fragment() {
         val passwordTransaction = binding.editPasswordTransaction.text.toString().trim()
 
         if (name.isNotEmpty()) {
-            hideKeyboard()
-            if (phone?.isNotEmpty() == true) {
-                if (phone.length == 11) {
+            if (phone?.isNotEmpty() == true && phone.length == 11) {
+                if (cpf.isNotEmpty() && rg.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && passwordTransaction.isNotEmpty()) {
                     hideKeyboard()
-
-                    if (cpf.isNotEmpty()) {
-                        hideKeyboard()
-                        if (rg.isNotEmpty()) {
-                            hideKeyboard()
-                            if (email.isNotEmpty()) {
-                                hideKeyboard()
-                                if (password.isNotEmpty()) {
-                                    hideKeyboard()
-                                    if (passwordTransaction.isNotEmpty()) {
-                                        //sucesso
-                                        hideKeyboard()
-                                        val user = User(
-                                            name = name,
-                                            accountNumber = generateAccountNumber(),
-                                            cpf = encryptData(cpf,secretKey),
-                                            rg = encryptData(rg, secretKey),
-                                            phone = encryptData(phone,secretKey),
-                                            email = email,
-                                            password = password,
-                                            passwordTransaction = passwordTransaction
-                                        )
-
-                                        registerUser(
-                                           user
-                                        )
-                                    } else {
-                                        showBottomSheet(message = getString(R.string.password_is_empty_alert))
-
-                                    }
-
-
-                                } else {
-
-                                    showBottomSheet(message = getString(R.string.password_is_empty_alert))
-                                }
-                            } else {
-                                showBottomSheet(message = getString(R.string.email_is_empty_alert))
-                            }
-                        } else {
-                            showBottomSheet(message = "Digite um RG válido com 7 dígitos.")
-
-                        }
-                    } else {
-                        showBottomSheet(message = "Digite um CPF válido com 11 dígitos.")
-
-                    }
+                    val user = User(
+                        name = name,
+                        cpf = encryptData(cpf, secretKey),
+                        rg = encryptData(rg, secretKey),
+                        phone = encryptData(phone, secretKey),
+                        email = email,
+                        password = password,
+                        passwordTransaction = passwordTransaction
+                    )
+                    registerUser(user)
                 } else {
-                    showBottomSheet(message = "Digite um telefone válido com 11 dígitos.")
+                    showBottomSheet(message = "Preencha todos os campos corretamente.")
                 }
             } else {
-                showBottomSheet(message = "Preencha o campo telefone.")
-
+                showBottomSheet(message = "Digite um telefone válido com 11 dígitos.")
             }
-
         } else {
             showBottomSheet(message = getString(R.string.name_is_empty_alert))
-
         }
-
     }
 
-
-
-    private fun initWallet() {
-        walletViewModel.initWallet(
-            Wallet(
-                userId = FirebaseHelper.getUserId()
-            )
+    private fun registerUser(user: User) {
+        registerViewModel.register(
+            user.name,
+            user.cpf,
+            user.rg,
+            user.phone,
+            user.email,
+            user.password,
+            user.passwordTransaction
         ).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
-                is StateView.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-
+                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    findNavController().navigate(R.id.action_global_homeFragment)
+                    stateView.data?.let { saveProfile(it) }
                 }
-
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(
-                        message = getString(
-                            FirebaseHelper.validError(
-                                stateView.message ?: ""
-                            )
-                        )
+                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
                     )
                 }
             }
-
         }
     }
 
     private fun saveProfile(user: User) {
         profileViewModel.saveProfile(user).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
-                is StateView.Loading -> {
-
-                }
-
+                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
-
-                    initWallet()
+                    binding.progressBar.visibility = View.INVISIBLE
+                    // cria conta, carteira e cartão
+                    initAccount(user)
+                    // leva para home
+                    findNavController().navigate(R.id.action_global_homeFragment)
                 }
-
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(
-                        message = getString(
-                            FirebaseHelper.validError(
-                                stateView.message ?: ""
-                            )
-                        )
+                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
                     )
                 }
             }
         }
     }
 
-    private fun registerUser(
-       user: User
-    ) {
-        registerViewModel.register(user.name,user.accountNumber,user.cpf,user.rg, user.phone, user.email, user.password, user.passwordTransaction)
-            .observe(viewLifecycleOwner) { stateView ->
-                when (stateView) {
-                    is StateView.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                    }
+    private fun initAccount(user: User) {
+        val account = Account(
+            id = FirebaseHelper.getUserId(),
+            name = user.name,
+            accountNumber = generateAccountNumber(),
+            balance = 0f
+        )
+        // ⚠️ Aqui você pode futuramente mover para AccountRepository + UseCase
+        initWallet()
+        initCreditCard(account)
+    }
 
-                    is StateView.Success -> {
-                        stateView.data?.let { saveProfile(it) }
-
-                    }
-
-                    is StateView.Error -> {
-                        binding.progressBar.visibility = View.INVISIBLE
-                        showBottomSheet(
-                            message = getString(
-                                FirebaseHelper.validError(
-                                    stateView.message ?: ""
-                                )
-                            )
-                        )
-                    }
+    private fun initWallet() {
+        walletViewModel.initWallet(
+            Wallet(userId = FirebaseHelper.getUserId())
+        ).observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
+                is StateView.Success -> binding.progressBar.visibility = View.INVISIBLE
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(
+                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
+                    )
                 }
             }
+        }
     }
+
+    private fun initCreditCard(account: Account) {
+        val card = CreditCard(
+            id = FirebaseHelper.getUserId(),
+            number = CreditCardGenerator.generateNumber(),
+            account = account,
+            securityCode = CreditCardGenerator.generateSecurityCode(),
+            officialUser = account.name,
+            limit = CreditCardGenerator.generateLimit(),
+            validDate = CreditCardGenerator.generateValidDate(),
+            balance = 0f
+        )
+        creditCardViewModel.initCreditCard(card).observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
+                is StateView.Success -> binding.progressBar.visibility = View.INVISIBLE
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(message = "Erro ao criar cartão")
+                }
+            }
+        }
+    }
+
     private fun generateAccountNumber(): String = (100000..999999).random().toString()
 
     private fun generateKey(): SecretKey {
@@ -249,14 +223,6 @@ class RegisterFragment : Fragment() {
             Base64.DEFAULT
         )
     }
-
-//    Função para descriptografar os dados
-//    private fun decryptData(encryptedData: String, secretKey: SecretKey): String {
-//        val cipher = Cipher.getInstance("AES")
-//        cipher.init(Cipher.DECRYPT_MODE, secretKey)
-//        val decoded = Base64.decode(encryptedData, Base64.DEFAULT)
-//        return String(cipher.doFinal(decoded))
-//    }
 
     override fun onDestroy() {
         super.onDestroy()

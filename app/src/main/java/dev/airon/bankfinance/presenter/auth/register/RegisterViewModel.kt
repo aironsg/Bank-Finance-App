@@ -15,7 +15,6 @@ class RegisterViewModel @Inject constructor(
 
     fun register(
         name: String,
-        accountNumber: String,
         cpf: String,
         rg: String,
         phone: String,
@@ -27,7 +26,7 @@ class RegisterViewModel @Inject constructor(
         try {
 
             emit(StateView.Loading())
-            val user = registerUseCase.invoke(name,accountNumber,cpf,rg, phone, email, password, passwordTransaction)
+            val user = registerUseCase.invoke(name,cpf,rg, phone, email, password, passwordTransaction)
             emit(StateView.Success(user))
 
         } catch (ex: Exception) {

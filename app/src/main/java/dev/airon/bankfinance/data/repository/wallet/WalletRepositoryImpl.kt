@@ -25,10 +25,10 @@ class WalletRepositoryImpl @Inject constructor(
                 .setValue(wallet)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Profile saved successfully
+
                         continuation.resumeWith(Result.success(Unit))
                     } else {
-                        // Failed to save profile
+
                         task.exception?.let {
                             continuation.resumeWith(Result.failure(it))
                         }
