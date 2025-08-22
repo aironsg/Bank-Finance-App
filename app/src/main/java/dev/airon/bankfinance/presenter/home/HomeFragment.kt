@@ -4,11 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -25,14 +23,17 @@ import dev.airon.bankfinance.util.GetMask
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.showBottomSheet
 import loadProfileImage
+import androidx.core.view.isVisible
+import dev.airon.bankfinance.presenter.features.account.AccountViewModel
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private lateinit var bottomNavigationView: BottomNavigationView
+
     private val homeViewModel: HomeViewModel by viewModels()
+    private val accountViewModel: AccountViewModel by viewModels()
     private lateinit var transactionAdapter: TransactionsAdapter
 
 
@@ -64,7 +65,7 @@ class HomeFragment : Fragment() {
             .child("name")
 
         val accountNumber = FirebaseDatabase.getInstance()
-            .getReference("profile")
+            .getReference("account")
             .child(userId)
             .child("accountNumber")
 
@@ -216,7 +217,7 @@ class HomeFragment : Fragment() {
         binding.cardBalance.txtReceivedValue.text =
             getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn))
         binding.cardBalance.btnToggleBalance.setOnClickListener {
-            if (binding.cardBalance.txtTotalBalanceValue.visibility == View.VISIBLE) {
+            if (binding.cardBalance.txtTotalBalanceValue.isVisible) {
                 binding.cardBalance.txtTotalBalanceValue.visibility = View.GONE
                 binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_down)
 

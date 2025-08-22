@@ -27,9 +27,10 @@ class AuthFirebaseRepositoryImpl @Inject constructor(
         }
     }
 
+
+
     override suspend fun register(
         name: String,
-        accountNumber: String,
         cpf: String,
         rg: String,
         phone: String,

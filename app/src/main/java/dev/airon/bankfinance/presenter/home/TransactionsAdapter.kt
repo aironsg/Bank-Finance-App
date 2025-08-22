@@ -1,6 +1,5 @@
 package dev.airon.bankfinance.presenter.home
 
-import android.provider.Settings.Global.getString
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat

@@ -246,7 +246,7 @@
                     android:layout_marginBottom="10dp"
                     android:drawableStart="@drawable/ic_lock_password_line"
                     android:hint="digite sua senha"
-                    android:inputType="number" />
+                    android:inputType="numberPassword" />
 
                 <!--            <TextView-->
                 <!--                android:layout_width="wrap_content"-->

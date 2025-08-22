@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 data class Account(
     var id: String = "",
     val name: String = "",
+    val branch:String = "",
     val accountNumber: String = "",
     val balance : Float = 0f,
 

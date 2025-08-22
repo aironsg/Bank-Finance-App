@@ -6,7 +6,7 @@ interface CreditCardRepository {
 
     suspend fun getAllCreditCards(): List<String>
 
-    suspend fun getCreditCardById(id: String): CreditCard?
+    suspend fun getCreditCard(): CreditCard
     suspend fun addCreditCardToUser(creditCard: CreditCard)
 
 

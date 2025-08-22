@@ -5,7 +5,7 @@ import dev.airon.bankfinance.data.model.Account
 interface AccountRepository {
 
     suspend fun initAccount(account: Account)
-    suspend fun getAccountById(id: String): Account?
+    suspend fun getAccount(): Account
     suspend fun updateAccount(account: Account): Boolean
     suspend fun deleteAccount(id: String): Boolean
 }

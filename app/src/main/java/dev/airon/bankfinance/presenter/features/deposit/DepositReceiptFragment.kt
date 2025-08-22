@@ -10,9 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
-import dev.airon.bankfinance.R
 import dev.airon.bankfinance.data.model.Deposit
-import dev.airon.bankfinance.databinding.FragmentDepositBinding
 import dev.airon.bankfinance.databinding.FragmentDepositReceiptBinding
 import dev.airon.bankfinance.util.GetMask
 import dev.airon.bankfinance.util.StateView

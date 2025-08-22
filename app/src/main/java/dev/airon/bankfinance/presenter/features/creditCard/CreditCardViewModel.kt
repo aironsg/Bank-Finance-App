@@ -5,6 +5,7 @@ import androidx.lifecycle.liveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.airon.bankfinance.data.model.CreditCard
 import dev.airon.bankfinance.domain.creditCard.AddCreditCardToUserUserCase
+import dev.airon.bankfinance.domain.creditCard.GetCreditCardUseCase
 import dev.airon.bankfinance.domain.creditCard.InitCreditCardUseCase
 import dev.airon.bankfinance.util.StateView
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreditCardViewModel @Inject constructor(
     private val initCreditCard: InitCreditCardUseCase,
-    private val addCreditCardToUserUserCase: AddCreditCardToUserUserCase
+    private val addCreditCardToUserUserCase: AddCreditCardToUserUserCase,
+    private val getCreditCardUseCase: GetCreditCardUseCase
 ) : ViewModel() {
 
     fun initCreditCard(creditCard: CreditCard) = liveData(Dispatchers.IO){
@@ -38,6 +40,17 @@ class CreditCardViewModel @Inject constructor(
             emit(StateView.Success(null))
 
         }catch (ex: Exception){
+            emit(StateView.Error(ex.message))
+        }
+    }
+
+    fun getCreditCard() = liveData(Dispatchers.IO) {
+
+        try {
+            emit(StateView.Loading())
+            val creditCard = getCreditCardUseCase.getCreditCard()
+            emit(StateView.Success(creditCard))
+        } catch (ex: Exception) {
             emit(StateView.Error(ex.message))
         }
     }

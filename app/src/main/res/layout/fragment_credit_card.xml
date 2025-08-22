@@ -11,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <include
             android:id="@+id/card_balance_front"
             layout="@layout/credit_card_front_item"
@@ -88,12 +89,12 @@
                 android:id="@+id/text_available_limit_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="16dp"
                 android:fontFamily="@font/inter_bold"
                 android:text="0,00"
                 android:textColor="@color/black"
                 android:textSize="16sp"
-                android:layout_marginStart="10dp"
                 app:layout_constraintStart_toEndOf="@+id/text_available_limit"
                 app:layout_constraintTop_toBottomOf="@+id/button_payment_credit_card" />
 
@@ -102,9 +103,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/inter"
                 android:text="Saldo Cartão:"
-                android:layout_marginTop="16dp"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
@@ -123,10 +124,25 @@
                 app:layout_constraintStart_toStartOf="@+id/text_available_limit_value"
                 app:layout_constraintTop_toTopOf="@+id/text_available_balance" />
 
+            <TextView
+                android:id="@+id/text_error_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:gravity="center"
+                android:visibility="invisible"
+                tools:visibility="visible"
+                android:layout_marginTop="16dp"
+                android:text="Error ao encontrar o cartão de crédito"
+                android:textColor="@color/red"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_available_balance_value" />
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
 
 </ScrollView>

@@ -1,7 +1,5 @@
 package dev.airon.bankfinance.util
 
-import java.text.DateFormat
-import java.text.DateFormat.getDateTimeInstance
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
@@ -37,7 +35,7 @@ class GetMask {
             return sdf.format(Date(date))
         }
 
-        fun getFormatedValue(value: Float): String {
+        fun getFormatedValue(value: Any): String {
             val nf: NumberFormat = DecimalFormat(
                 "#,##0.00", DecimalFormatSymbols(Locale("pt", "BR"))
             )

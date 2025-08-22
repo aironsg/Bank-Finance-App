@@ -15,6 +15,7 @@ import dev.airon.bankfinance.data.model.CreditCard
 import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.data.model.Wallet
 import dev.airon.bankfinance.databinding.FragmentRegisterBinding
+import dev.airon.bankfinance.presenter.features.account.AccountViewModel
 import dev.airon.bankfinance.presenter.features.creditCard.CreditCardViewModel
 import dev.airon.bankfinance.presenter.profile.ProfileViewModel
 import dev.airon.bankfinance.presenter.wallet.WalletViewModel
@@ -43,9 +44,8 @@ class RegisterFragment : Fragment() {
     private val profileViewModel: ProfileViewModel by viewModels()
     private val walletViewModel: WalletViewModel by viewModels()
     private val creditCardViewModel: CreditCardViewModel by viewModels()
-
+    private val accountViewModel: AccountViewModel by viewModels()
     private lateinit var secretKey: SecretKey
-    private var accountNumber: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -124,6 +124,7 @@ class RegisterFragment : Fragment() {
                 is StateView.Success -> {
                     stateView.data?.let { saveProfile(it) }
                 }
+
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(
@@ -145,6 +146,7 @@ class RegisterFragment : Fragment() {
                     // leva para home
                     findNavController().navigate(R.id.action_global_homeFragment)
                 }
+
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(
@@ -159,12 +161,27 @@ class RegisterFragment : Fragment() {
         val account = Account(
             id = FirebaseHelper.getUserId(),
             name = user.name,
+            branch = "0101",
             accountNumber = generateAccountNumber(),
             balance = 0f
         )
-        // ⚠️ Aqui você pode futuramente mover para AccountRepository + UseCase
         initWallet()
         initCreditCard(account)
+        accountViewModel.initAccount(account).observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
+                is StateView.Success -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                }
+
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    showBottomSheet(
+                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
+                    )
+                }
+            }
+        }
     }
 
     private fun initWallet() {

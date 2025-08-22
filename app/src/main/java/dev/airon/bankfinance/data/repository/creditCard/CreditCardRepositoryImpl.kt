@@ -1,7 +1,11 @@
 package dev.airon.bankfinance.data.repository.creditCard
 
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
+import com.google.firebase.database.ValueEventListener
+import dev.airon.bankfinance.data.model.Account
 import dev.airon.bankfinance.data.model.CreditCard
 import dev.airon.bankfinance.util.FirebaseHelper
 import javax.inject.Inject
@@ -21,8 +25,24 @@ class CreditCardRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getCreditCardById(id: String): CreditCard? {
-        TODO("Not yet implemented")
+    override suspend fun getCreditCard(): CreditCard {
+        return suspendCoroutine { continuation ->
+            creditCardReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val creditCard = snapshot.getValue(CreditCard::class.java)
+                    creditCard?.let {
+                        continuation.resumeWith(Result.success(it))
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    continuation.resumeWith(Result.failure(error.toException()))
+                }
+
+            })
+
+        }
     }
 
     override suspend fun addCreditCardToUser(creditCard: CreditCard) {
