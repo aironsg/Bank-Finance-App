@@ -2,16 +2,19 @@ package dev.airon.bankfinance.data.model
 
 import android.os.Parcelable
 import com.google.firebase.database.FirebaseDatabase
+import dev.airon.bankfinance.data.enum.PaymentMethod
 import dev.airon.bankfinance.util.FirebaseHelper
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Recharge(
     var id: String = "",
-    val date: Long  = 0,
+    var date: Long  = 0,
+    var hour: Long = 0,
     val amount: Float = 0f,
     val phoneNumber: String = "",
-)  : Parcelable{
+    val typeRecharge: PaymentMethod  = PaymentMethod.BALANCE
+)  : Parcelable {
     init {
         this.id = FirebaseHelper.getGeneratedId()
     }

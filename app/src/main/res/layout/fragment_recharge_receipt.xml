@@ -225,6 +225,29 @@
                 app:layout_constraintTop_toTopOf="@+id/text_number"
                 tools:text="(88) 9-9999-8888" />
 
+ <!--            Method Payment-->
+            <TextView
+                android:id="@+id/text_type_method"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Tipo de pagamento"
+                android:textColor="@color/blue_final"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/text_number" />
+
+            <TextView
+                android:id="@+id/text_method_payment_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_semibold"
+
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="@+id/text_type_method"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_type_method"
+                tools:text="Cartão de credito" />
+
 
             <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btn_confirmation_recharge"

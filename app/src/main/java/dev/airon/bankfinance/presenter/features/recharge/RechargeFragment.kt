@@ -47,6 +47,8 @@ class RechargeFragment : Fragment() {
 
     private lateinit var transactionAdapter: TransactionsAdapter
     private var balance: Float = 0f
+    private lateinit var typeOperation: TransactionOperation
+    private lateinit var transactionType: TransactionType
     private var isBalanceVisible = false // controle de visibilidade
 
     override fun onCreateView(
@@ -106,7 +108,14 @@ class RechargeFragment : Fragment() {
         }
 
         hideKeyboard()
-        val recharge = Recharge(amount = amountText.toFloat(), phoneNumber = phone)
+
+        // 🔹 Cria recarga com data/hora preenchidos
+        val recharge = Recharge(
+            amount = amountText.toFloat(),
+            phoneNumber = phone,
+            typeRecharge = selectedPaymentMethod!!,
+
+        )
 
         when (selectedPaymentMethod) {
             PaymentMethod.BALANCE -> {
@@ -115,6 +124,8 @@ class RechargeFragment : Fragment() {
                 } else {
                     saveRecharge(recharge)
                 }
+                typeOperation = TransactionOperation.RECHARGE
+                transactionType = TransactionType.CASH_OUT
             }
 
             PaymentMethod.CREDIT_CARD -> {
@@ -122,8 +133,12 @@ class RechargeFragment : Fragment() {
                     if (recharge.amount > limit) {
                         showBottomSheet(message = "Limite do cartão insuficiente para recarga")
                     } else {
+                        // Atualiza limite e saldo devedor do cartão
+                        updateBalanceCreditCard(recharge.amount)
                         saveRecharge(recharge)
                     }
+                    typeOperation = TransactionOperation.RECHARGE
+                    transactionType = TransactionType.CREDIT_CARD
                 }
             }
 
@@ -147,7 +162,6 @@ class RechargeFragment : Fragment() {
             when (stateView) {
                 is StateView.Loading -> Unit
                 is StateView.Success -> {
-                    transactionAdapter.submitList(stateView.data?.reversed()?.take(6))
                     balance = calculateBalance(stateView.data ?: emptyList())
                     updateBalanceUI()
                 }
@@ -177,6 +191,49 @@ class RechargeFragment : Fragment() {
             }
 
             override fun onCancelled(error: DatabaseError) {}
+        })
+    }
+
+    private fun updateBalanceCreditCard(valueRecharge: Float) {
+        val userId = FirebaseHelper.getUserId()
+        val creditCardRef = FirebaseDatabase.getInstance()
+            .getReference("creditCard")
+            .child(userId)
+
+        creditCardRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (child in snapshot.children) {
+                        val creditCard = child.getValue(CreditCard::class.java)
+                        val cardKey = child.key
+
+                        if (creditCard != null && cardKey != null) {
+                            val currentLimit = creditCard.limit
+                            val currentBalanceDue = creditCard.balance
+
+                            val newLimit = currentLimit - valueRecharge
+                            val newBalanceDue = currentBalanceDue + valueRecharge
+
+                            creditCardRef.child(cardKey).updateChildren(
+                                mapOf(
+                                    "limit" to newLimit,
+                                    "balance" to newBalanceDue
+                                )
+                            ).addOnSuccessListener {
+                                // OK
+                            }.addOnFailureListener { e ->
+                                showBottomSheet(message = "Erro ao atualizar cartão: ${e.message}")
+                            }
+                        }
+                    }
+                } else {
+                    showBottomSheet(message = "Nenhum cartão cadastrado encontrado")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                showBottomSheet(message = "Erro ao acessar dados do cartão: ${error.message}")
+            }
         })
     }
 
@@ -224,7 +281,8 @@ class RechargeFragment : Fragment() {
 
     private fun updateBalanceUI() {
         if (isBalanceVisible) {
-            binding.balanceValue.text = getString(R.string.text_formated_value, GetMask.getFormatedValue(balance))
+            binding.balanceValue.text =
+                getString(R.string.text_formated_value, GetMask.getFormatedValue(balance))
             binding.balanceValue.visibility = View.VISIBLE
             binding.toggleVisibility.setImageResource(R.drawable.ic_no_visibility)
         } else {
@@ -260,7 +318,11 @@ class RechargeFragment : Fragment() {
                 }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
+                    showBottomSheet(
+                        message = getString(
+                            FirebaseHelper.validError(stateView.message ?: "")
+                        )
+                    )
                 }
             }
         }
@@ -269,10 +331,10 @@ class RechargeFragment : Fragment() {
     private fun saveTransaction(recharge: Recharge) {
         val transaction = Transaction(
             id = recharge.id,
-            operation = TransactionOperation.RECHARGE,
+            operation = typeOperation,
             date = recharge.date,
             amount = recharge.amount,
-            type = TransactionType.CASH_OUT
+            type = transactionType
         )
 
         rechargeViewModel.saveTransaction(transaction).observe(viewLifecycleOwner) { stateView ->
@@ -280,12 +342,17 @@ class RechargeFragment : Fragment() {
                 is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    val action = RechargeFragmentDirections.actionRechargeFragmentToRechargeReceiptFragment(recharge.id)
+                    val action = RechargeFragmentDirections
+                        .actionRechargeFragmentToRechargeReceiptFragment(recharge.id)
                     findNavController().navigate(action)
                 }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
+                    showBottomSheet(
+                        message = getString(
+                            FirebaseHelper.validError(stateView.message ?: "")
+                        )
+                    )
                 }
             }
         }
@@ -296,3 +363,4 @@ class RechargeFragment : Fragment() {
         _binding = null
     }
 }
+

@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import dev.airon.bankfinance.data.enum.PaymentMethod
 import dev.airon.bankfinance.data.model.Recharge
 import dev.airon.bankfinance.databinding.FragmentRechargeReceiptBinding
 import dev.airon.bankfinance.util.GetMask
@@ -70,11 +71,12 @@ class RechargeReceiptFragment : Fragment() {
     private fun configData(recharge: Recharge) {
         binding.textCodeRecharge.text = recharge.id
         binding.textAmountRecharge.text = GetMask.getFormatedValue(recharge.amount)
-        binding.textHourRecharge.text = GetMask.getFormatedDate(recharge.date, GetMask.DAY_MONTH_YEAR)
-        binding.textHourRecharge.text = GetMask.getFormatedDate(recharge.date, GetMask.HOUR_MINUTE)
+        binding.textDateRecharge.text = GetMask.getFormatedDate(recharge.date, GetMask.DAY_MONTH_YEAR)
+        binding.textHourRecharge.text = GetMask.getFormatedDate(recharge.hour, GetMask.HOUR_MINUTE)
         binding.textPhoneNumber.text = formatPhoneNumber(recharge.phoneNumber)
-
+        binding.textMethodPaymentValue.text = PaymentMethod.getOperation(recharge.typeRecharge)
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

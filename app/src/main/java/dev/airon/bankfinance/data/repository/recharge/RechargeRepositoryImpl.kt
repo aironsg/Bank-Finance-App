@@ -23,32 +23,18 @@ class RechargeRepositoryImpl @Inject constructor(
 
     override suspend fun saveRecharge(recharge: Recharge): Recharge {
         return suspendCoroutine { continuation ->
+            // Garantir que data e hora sejam definidas antes de salvar
+            val currentTime = System.currentTimeMillis()
+            recharge.date = currentTime
+            recharge.hour = currentTime
+
             rechargeReferences
                 .child(recharge.id)
                 .setValue(recharge)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Recharge saved successfully
-                        val dateReference = rechargeReferences
-                            .child(recharge.id)
-                            .child(recharge.phoneNumber)
-                            .child("date")
-                        dateReference.setValue(
-                            ServerValue.TIMESTAMP
-                        ).addOnCompleteListener { taskUpdate ->
-
-                            if (taskUpdate.isSuccessful) {
-                                continuation.resumeWith(Result.success(recharge))
-
-                            } else {
-                                // Failed to update date
-                                taskUpdate.exception?.let {
-                                    continuation.resumeWith(Result.failure(it))
-                                }
-                            }
-                        }
+                        continuation.resumeWith(Result.success(recharge))
                     } else {
-                        // Failed to save Recharge
                         task.exception?.let {
                             continuation.resumeWith(Result.failure(it))
                         }
@@ -56,6 +42,43 @@ class RechargeRepositoryImpl @Inject constructor(
                 }
         }
     }
+
+
+//    override suspend fun saveRecharge(recharge: Recharge): Recharge {
+//        return suspendCoroutine { continuation ->
+//            rechargeReferences
+//                .child(recharge.id)
+//                .setValue(recharge)
+//                .addOnCompleteListener { task ->
+//                    if (task.isSuccessful) {
+//                        // Recharge saved successfully
+//                        val dateReference = rechargeReferences
+//                            .child(recharge.id)
+//                            .child(recharge.phoneNumber)
+//                            .child("date")
+//                        dateReference.setValue(
+//                            ServerValue.TIMESTAMP
+//                        ).addOnCompleteListener { taskUpdate ->
+//
+//                            if (taskUpdate.isSuccessful) {
+//                                continuation.resumeWith(Result.success(recharge))
+//
+//                            } else {
+//                                // Failed to update date
+//                                taskUpdate.exception?.let {
+//                                    continuation.resumeWith(Result.failure(it))
+//                                }
+//                            }
+//                        }
+//                    } else {
+//                        // Failed to save Recharge
+//                        task.exception?.let {
+//                            continuation.resumeWith(Result.failure(it))
+//                        }
+//                    }
+//                }
+//        }
+//    }
 
     override suspend fun getRecharge(id:String): Recharge {
         return suspendCoroutine { continuation ->

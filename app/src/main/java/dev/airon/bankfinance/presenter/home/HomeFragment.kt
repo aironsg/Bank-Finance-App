@@ -187,7 +187,9 @@ class HomeFragment : Fragment() {
         transactions.forEach { transaction ->
             if (transaction.type == TransactionType.CASH_IN) {
                 cashIn += transaction.amount
-            } else {
+            }
+
+            if (transaction.type == TransactionType.CASH_OUT) {
                 cashOut += transaction.amount
             }
         }
