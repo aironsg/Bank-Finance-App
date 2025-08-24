@@ -48,11 +48,9 @@ class CreditCardFragment : Fragment() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     for (child in snapshot.children) {
-                        // Tenta mapear como BankAccount
 
                         val creditCard = child.getValue(CreditCard::class.java)
 
-                        // Se for um cartão de crédito
                         if (creditCard?.number != null) {
                             binding.cardBalanceFront.creditCardNumber.text =
                                creditCard.number

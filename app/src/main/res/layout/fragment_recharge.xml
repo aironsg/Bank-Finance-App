@@ -56,7 +56,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
-            android:layout_height="690dp"
+            android:layout_height="600dp"
             android:background="@drawable/bg_deposit_receipt_bottom"
             android:paddingTop="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -125,7 +125,6 @@
                 android:drawableStart="@drawable/ic_phone"
                 android:drawableTint="@color/color_hint_default"
                 android:hint="(88)88888-8888"
-                app:mask="(##) #-####-####"
                 android:inputType="phone"
                 android:textAlignment="center"
                 android:textColor="@color/color_default"
@@ -134,7 +133,159 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_phone_number" />
+                app:layout_constraintTop_toBottomOf="@+id/text_phone_number"
+                app:mask="(##) #-####-####" />
+
+            <View
+                android:id="@+id/view3"
+                android:layout_width="150dp"
+                android:layout_height="2dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/blue_final"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/edit_phone" />
+
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
+                android:fontFamily="@font/inter_bold"
+                android:text="Pagar Com"
+                android:textColor="@color/color_default"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/view3"
+                app:layout_constraintEnd_toStartOf="@+id/view2"
+                app:layout_constraintStart_toEndOf="@+id/view3"
+                app:layout_constraintTop_toTopOf="@+id/view3" />
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="150dp"
+                android:layout_height="2dp"
+                android:background="@color/blue_final"
+                app:layout_constraintBottom_toBottomOf="@+id/textView5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/textView5" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupOptions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView5">
+
+                <RadioButton
+                    android:id="@+id/radio_credit_card"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:buttonTint="@color/blue_final" />
+
+                <RadioButton
+                    android:id="@+id/radio_balance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:buttonTint="@color/blue_final" />
+
+
+
+            </RadioGroup>
+
+
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_credit_card"
+                app:layout_constraintBottom_toBottomOf="@+id/credit_card_number"
+                app:layout_constraintStart_toEndOf="@+id/radioGroupOptions"
+                app:layout_constraintTop_toTopOf="@+id/credit_card_number"
+                app:tint="@color/blue_final" />
+
+            <TextView
+                android:id="@+id/credit_card_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="1233 **** **** 4321"
+                android:textColor="@color/blue_final"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintBottom_toTopOf="@+id/text_balance"
+                app:layout_constraintStart_toEndOf="@+id/imageView3"
+                app:layout_constraintTop_toTopOf="@+id/text_radio_credit_card" />
+
+            <TextView
+                android:id="@+id/text_radio_credit_card"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:fontFamily="@font/inter_bold"
+                android:text="CARTÃO DE CRÉDITO"
+                android:textColor="@color/color_default"
+                android:textSize="12sp"
+                android:layout_marginBottom="20dp"
+                app:layout_constraintBottom_toTopOf="@+id/text_balance"
+                app:layout_constraintStart_toEndOf="@+id/radioGroupOptions"
+                app:layout_constraintTop_toBottomOf="@+id/view3" />
+
+            <TextView
+                android:id="@+id/text_balance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_bold"
+                android:text="SALDO BANCÁRIO"
+                android:textColor="@color/color_default"
+                android:textSize="12sp"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+                app:layout_constraintStart_toEndOf="@+id/radioGroupOptions" />
+
+            <LinearLayout
+                android:id="@+id/linearLayout5"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_balance_visibility"
+                android:orientation="horizontal"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/radioGroupOptions"
+                app:layout_constraintStart_toEndOf="@+id/radioGroupOptions">
+
+                <ImageView
+                    android:id="@+id/image_balance"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:layout_marginStart="5dp"
+                    android:src="@drawable/ic_payment"
+                    app:tint="@color/white" />
+
+                <TextView
+                    android:id="@+id/balance_value"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:fontFamily="@font/inter_bold"
+                    android:text="R$ 1.000,00"
+                    android:textColor="@color/white"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/toggle_visibility"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginStart="5dp"
+                android:src="@drawable/ic_visibility"
+                app:layout_constraintBottom_toBottomOf="@id/linearLayout5"
+                app:layout_constraintStart_toEndOf="@id/linearLayout5"
+                app:layout_constraintTop_toTopOf="@+id/linearLayout5"
+                app:tint="@color/blue_final" />
 
 
             <androidx.appcompat.widget.AppCompatButton
@@ -144,7 +295,8 @@
                 android:layout_margin="24dp"
                 android:layout_marginHorizontal="24dp"
                 android:background="@drawable/bg_button_login"
-                android:text="Confirmar"
+                android:fontFamily="@font/inter_bold"
+                android:text="recarregar"
                 android:textColor="@color/white"
                 app:layout_constraintBottom_toTopOf="@+id/progress_bar"
                 app:layout_constraintEnd_toEndOf="parent"
