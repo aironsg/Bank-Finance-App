@@ -36,7 +36,8 @@ class AuthFirebaseRepositoryImpl @Inject constructor(
         phone: String,
         email: String,
         password: String,
-        passwordTransaction: String
+        passwordTransaction: String,
+        passwordSalt: String
     ): User {
         return suspendCoroutine { continuation ->
             auth.createUserWithEmailAndPassword(email, password)
@@ -52,7 +53,8 @@ class AuthFirebaseRepositoryImpl @Inject constructor(
                             phone,
                             email,
                             password,
-                            passwordTransaction
+                            passwordTransaction,
+                            passwordSalt
                         )
                         continuation.resumeWith(Result.success(user))
 

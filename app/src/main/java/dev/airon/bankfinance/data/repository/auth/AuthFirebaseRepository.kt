@@ -11,7 +11,8 @@ interface AuthFirebaseRepository {
         phone: String,
         email: String,
         password: String,
-        passwordTransaction: String
+        passwordTransaction: String,
+        passwordSalt: String
     ): User
 
     suspend fun recover(email: String)

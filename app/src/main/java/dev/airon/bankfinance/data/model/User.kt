@@ -11,7 +11,7 @@ data class User(
     val email: String = "",
     @get:Exclude
     var password: String = "",
-    @get:Exclude
     var passwordTransaction: String = "",
+    var passwordSalt: String = ""
 )
 

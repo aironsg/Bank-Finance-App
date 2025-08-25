@@ -1,11 +1,12 @@
 package dev.airon.bankfinance.presenter.features.recharge
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -16,7 +17,6 @@ import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.data.model.Recharge
 import dev.airon.bankfinance.data.model.Transaction
 import dev.airon.bankfinance.databinding.FragmentRechargeBinding
-import dev.airon.bankfinance.presenter.features.creditCard.CreditCardViewModel
 import dev.airon.bankfinance.presenter.home.HomeViewModel
 import dev.airon.bankfinance.presenter.home.TransactionsAdapter
 import dev.airon.bankfinance.util.FirebaseHelper
@@ -27,13 +27,15 @@ import dev.airon.bankfinance.util.addPhoneMask
 import dev.airon.bankfinance.util.hideKeyboard
 import dev.airon.bankfinance.util.initToolbar
 import dev.airon.bankfinance.util.showBottomSheet
-import androidx.core.view.isGone
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dev.airon.bankfinance.data.enum.PaymentMethod
 import dev.airon.bankfinance.data.model.CreditCard
+import dev.airon.bankfinance.data.model.User
+import dev.airon.bankfinance.util.bottomSheetPasswordTransaction
+import dev.airon.bankfinance.util.formatPhoneNumber
 
 @AndroidEntryPoint
 class RechargeFragment : Fragment() {
@@ -59,6 +61,7 @@ class RechargeFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initToolbar(binding.toolbar, isToolbarDefaultColor = true)
@@ -74,6 +77,7 @@ class RechargeFragment : Fragment() {
     private fun showMaskMoney() = binding.editAmount.addMoneyMask()
     private fun showMaskPhone() = binding.editPhone.addPhoneMask()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initListener() {
         binding.btnRecharge.setOnClickListener { validateRecharge() }
 
@@ -84,6 +88,7 @@ class RechargeFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun validateRecharge() {
         val amountText = binding.editAmount.text.toString()
             .replace("[R$\\s.]".toRegex(), "")
@@ -122,7 +127,8 @@ class RechargeFragment : Fragment() {
                 if (recharge.amount > balance) {
                     showBottomSheet(message = "Saldo insuficiente para recarga")
                 } else {
-                    saveRecharge(recharge)
+                   confirmationRecharge(recharge)
+//                    saveRecharge(recharge)
                 }
                 typeOperation = TransactionOperation.RECHARGE
                 transactionType = TransactionType.CASH_OUT
@@ -135,7 +141,7 @@ class RechargeFragment : Fragment() {
                     } else {
                         // Atualiza limite e saldo devedor do cartão
                         updateBalanceCreditCard(recharge.amount)
-                        saveRecharge(recharge)
+                        confirmationRecharge(recharge)
                     }
                     typeOperation = TransactionOperation.RECHARGE
                     transactionType = TransactionType.CREDIT_CARD
@@ -145,6 +151,27 @@ class RechargeFragment : Fragment() {
             else -> Toast.makeText(requireContext(), "Método de pagamento inválido", Toast.LENGTH_SHORT).show()
         }
     }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun confirmationRecharge(recharge: Recharge){
+        showBottomSheet(titleDialog = R.string.txt_information_data_recharge_alert,
+            message = "Valor: R$ ${GetMask.getFormatedValue(recharge.amount)}\n" +
+                    "Telefone: ${formatPhoneNumber(recharge.phoneNumber)}\n" +
+                    "Metodo de Pagamento: ${PaymentMethod.getOperation(recharge.typeRecharge)}\n" +
+                    "Deseja confirmar a recarga?",
+            titleButton = R.string.txt_button_bottomSheet_confirm,
+            onClick = {
+                bottomSheetPasswordTransaction(
+                    message = "Informe sua senha para confirmar a recarga",
+                    titleButton = R.string.txt_button_bottomSheet_confirm
+                ){
+                    saveRecharge(recharge)
+                }
+            }
+        )
+    }
+
 
     private fun initRadioGroup() {
         binding.radioGroupOptions.setOnCheckedChangeListener { _, checkedId ->
@@ -357,6 +384,10 @@ class RechargeFragment : Fragment() {
             }
         }
     }
+
+
+
+
 
     override fun onDestroy() {
         super.onDestroy()

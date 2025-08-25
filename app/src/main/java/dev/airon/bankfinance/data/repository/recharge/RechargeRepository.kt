@@ -7,4 +7,6 @@ interface RechargeRepository {
 
     suspend fun saveRecharge(recharge: Recharge) : Recharge
     suspend fun getRecharge(id:String) : Recharge
+
+    suspend fun getPasswordTransaction() : String
 }

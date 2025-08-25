@@ -1,11 +1,14 @@
 package dev.airon.bankfinance.presenter.auth.register
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
-import androidx.fragment.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +25,7 @@ import dev.airon.bankfinance.presenter.wallet.WalletViewModel
 import dev.airon.bankfinance.util.ColorStatusBar
 import dev.airon.bankfinance.util.CreditCardGenerator
 import dev.airon.bankfinance.util.FirebaseHelper
+import dev.airon.bankfinance.util.SecurityUtils
 import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.addCpfMask
 import dev.airon.bankfinance.util.addRgMask
@@ -32,7 +36,10 @@ import dev.airon.bankfinance.util.showBottomSheet
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.PBEKeySpec
 import kotlin.random.Random
+
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
@@ -55,11 +62,12 @@ class RegisterFragment : Fragment() {
         return binding.root
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ColorStatusBar(R.color.white)
         initToolbar(binding.toolbar)
-        secretKey = generateKey() // Gera uma chave secreta para criptografia
+        secretKey = generateKey()
         initMaskCPFandRG()
         initListener()
     }
@@ -69,12 +77,14 @@ class RegisterFragment : Fragment() {
         binding.editRg.addRgMask()
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun initListener() {
         binding.btnCreateAccount.setOnClickListener {
             validateData()
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun validateData() {
         val name = binding.editName.text.toString().trim()
         val phone = binding.editPhone.unMaskedText
@@ -84,29 +94,37 @@ class RegisterFragment : Fragment() {
         val password = binding.editPassword.text.toString().trim()
         val passwordTransaction = binding.editPasswordTransaction.text.toString().trim()
 
-        if (name.isNotEmpty()) {
-            if (phone?.isNotEmpty() == true && phone.length == 11) {
-                if (cpf.isNotEmpty() && rg.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty() && passwordTransaction.isNotEmpty()) {
-                    hideKeyboard()
-                    val user = User(
-                        name = name,
-                        cpf = encryptData(cpf, secretKey),
-                        rg = encryptData(rg, secretKey),
-                        phone = encryptData(phone, secretKey),
-                        email = email,
-                        password = password,
-                        passwordTransaction = passwordTransaction
-                    )
-                    registerUser(user)
-                } else {
-                    showBottomSheet(message = "Preencha todos os campos corretamente.")
-                }
-            } else {
-                showBottomSheet(message = "Digite um telefone válido com 11 dígitos.")
-            }
-        } else {
+        if (name.isEmpty()) {
             showBottomSheet(message = getString(R.string.name_is_empty_alert))
+            return
         }
+        if (phone.isNullOrEmpty() || phone.length != 11) {
+            showBottomSheet(message = "Digite um telefone válido com 11 dígitos.")
+            return
+        }
+        if (cpf.isEmpty() || rg.isEmpty() || email.isEmpty() || password.isEmpty() || passwordTransaction.isEmpty()) {
+            showBottomSheet(message = "Preencha todos os campos corretamente.")
+            return
+        }
+
+        hideKeyboard()
+
+        // 🔑 Gerar salt único e hash da senha de transação
+        val salt = SecurityUtils.generateSalt()
+        Log.i("INFOTEST", "validateData: ${salt}")
+        val hashedPasswordTransaction = SecurityUtils.hashPassword(passwordTransaction, salt)
+
+        val user = User(
+            name = name,
+            cpf = encryptData(cpf, secretKey),
+            rg = encryptData(rg, secretKey),
+            phone = encryptData(phone, secretKey),
+            email = email,
+            password = password,
+            passwordTransaction = hashedPasswordTransaction,
+            passwordSalt = salt
+        )
+        registerUser(user)
     }
 
     private fun registerUser(user: User) {
@@ -117,19 +135,15 @@ class RegisterFragment : Fragment() {
             user.phone,
             user.email,
             user.password,
-            user.passwordTransaction
+            user.passwordTransaction,
+             user.passwordSalt
         ).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
-                is StateView.Success -> {
-                    stateView.data?.let { saveProfile(it) }
-                }
-
+                is StateView.Success -> stateView.data?.let { saveProfile(it) }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(
-                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
-                    )
+                    showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
                 }
             }
         }
@@ -141,17 +155,12 @@ class RegisterFragment : Fragment() {
                 is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    // cria conta, carteira e cartão
                     initAccount(user)
-                    // leva para home
                     findNavController().navigate(R.id.action_global_homeFragment)
                 }
-
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(
-                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
-                    )
+                    showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
                 }
             }
         }
@@ -168,37 +177,21 @@ class RegisterFragment : Fragment() {
         initWallet()
         initCreditCard(account)
         accountViewModel.initAccount(account).observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
-                is StateView.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                }
-
-                is StateView.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(
-                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
-                    )
-                }
+            binding.progressBar.visibility = if (stateView is StateView.Loading) View.VISIBLE else View.INVISIBLE
+            if (stateView is StateView.Error) {
+                showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
             }
         }
     }
 
     private fun initWallet() {
-        walletViewModel.initWallet(
-            Wallet(userId = FirebaseHelper.getUserId())
-        ).observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
-                is StateView.Success -> binding.progressBar.visibility = View.INVISIBLE
-                is StateView.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(
-                        message = getString(FirebaseHelper.validError(stateView.message ?: ""))
-                    )
+        walletViewModel.initWallet(Wallet(userId = FirebaseHelper.getUserId()))
+            .observe(viewLifecycleOwner) { stateView ->
+                binding.progressBar.visibility = if (stateView is StateView.Loading) View.VISIBLE else View.INVISIBLE
+                if (stateView is StateView.Error) {
+                    showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
                 }
             }
-        }
     }
 
     private fun initCreditCard(account: Account) {
@@ -213,14 +206,8 @@ class RegisterFragment : Fragment() {
             balance = 0f
         )
         creditCardViewModel.initCreditCard(card).observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
-                is StateView.Success -> binding.progressBar.visibility = View.INVISIBLE
-                is StateView.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(message = "Erro ao criar cartão")
-                }
-            }
+            binding.progressBar.visibility = if (stateView is StateView.Loading) View.VISIBLE else View.INVISIBLE
+            if (stateView is StateView.Error) showBottomSheet(message = "Erro ao criar cartão")
         }
     }
 
@@ -235,10 +222,24 @@ class RegisterFragment : Fragment() {
     private fun encryptData(data: String, key: SecretKey): String {
         val cipher = Cipher.getInstance("AES")
         cipher.init(Cipher.ENCRYPT_MODE, key)
-        return Base64.encodeToString(
-            cipher.doFinal(data.toByteArray(Charsets.UTF_8)),
-            Base64.DEFAULT
-        )
+        return Base64.encodeToString(cipher.doFinal(data.toByteArray(Charsets.UTF_8)), Base64.DEFAULT)
+    }
+
+    // 🔐 Hash com salt único
+    private fun hashPassword(password: String, salt: String): String {
+        val iterations = 65536
+        val keyLength = 256
+        val spec = PBEKeySpec(password.toCharArray(), salt.toByteArray(), iterations, keyLength)
+        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val hash = factory.generateSecret(spec).encoded
+        return Base64.encodeToString(hash, Base64.NO_WRAP)
+    }
+
+    // 🔑 Gerar salt aleatório
+    private fun generateSalt(): String {
+        val bytes = ByteArray(16)
+        Random.nextBytes(bytes)
+        return Base64.encodeToString(bytes, Base64.NO_WRAP)
     }
 
     override fun onDestroy() {
@@ -246,3 +247,5 @@ class RegisterFragment : Fragment() {
         _binding = null
     }
 }
+
+

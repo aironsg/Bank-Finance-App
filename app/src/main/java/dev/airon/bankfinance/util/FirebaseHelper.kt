@@ -1,7 +1,10 @@
 package dev.airon.bankfinance.util
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import dev.airon.bankfinance.R
 
 class FirebaseHelper {
@@ -53,5 +56,29 @@ class FirebaseHelper {
                 else -> R.string.default_error_alert
             }
         }
+
+        fun getPasswordTransaction(onResult: (String, String) -> Unit) {
+            val userId = FirebaseHelper.getUserId()
+            val userReference = FirebaseDatabase.getInstance()
+                .getReference("profile")
+                .child(userId)
+
+            userReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        val passwordHash = snapshot.child("passwordTransaction").getValue(String::class.java) ?: ""
+                        val salt = snapshot.child("passwordSalt").getValue(String::class.java) ?: ""
+                        onResult(passwordHash, salt)
+                    } else {
+                        onResult("", "")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    onResult("", "")
+                }
+            })
+        }
+
     }
 }

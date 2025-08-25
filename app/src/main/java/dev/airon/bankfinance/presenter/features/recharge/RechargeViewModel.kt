@@ -10,6 +10,7 @@ import dev.airon.bankfinance.data.model.User
 import dev.airon.bankfinance.domain.Transaction.GetTransactionsUseCase
 import dev.airon.bankfinance.domain.Transaction.SaveTransactionUseCase
 import dev.airon.bankfinance.domain.deposit.SaveDepositUseCase
+import dev.airon.bankfinance.domain.recharge.GetPasswordTransactionUseCase
 import dev.airon.bankfinance.domain.recharge.SaveRechargeUseCase
 import dev.airon.bankfinance.util.StateView
 import kotlinx.coroutines.Dispatchers
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class RechargeViewModel @Inject constructor(
     private val saveRechargeUseCase: SaveRechargeUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase,
-    private val getTransactionsUseCase: GetTransactionsUseCase
+    private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val getPasswordTransactionUseCase: GetPasswordTransactionUseCase
 ) : ViewModel(){
 
 
@@ -56,6 +58,19 @@ class RechargeViewModel @Inject constructor(
             emit(StateView.Loading())
             val transactions = getTransactionsUseCase.invoke()
             emit(StateView.Success(transactions))
+
+        }catch (ex: Exception){
+            emit(StateView.Error(ex.message))
+        }
+    }
+
+    fun getPasswordTransaction() = liveData(Dispatchers.IO){
+
+        try {
+
+            emit(StateView.Loading())
+            val passwordTransaction = getPasswordTransactionUseCase.invoke()
+            emit(StateView.Success(passwordTransaction))
 
         }catch (ex: Exception){
             emit(StateView.Error(ex.message))

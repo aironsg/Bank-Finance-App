@@ -15,7 +15,8 @@ class RegisterUseCase @Inject constructor(
         phone: String,
         email: String,
         password: String,
-        passwordTransaction: String
+        passwordTransaction: String,
+        passwordSalt: String
     ): User {
         return auth.register(
             name,
@@ -24,7 +25,8 @@ class RegisterUseCase @Inject constructor(
             phone,
             email,
             password,
-            passwordTransaction
+            passwordTransaction,
+            passwordSalt
         )
     }
 }

@@ -44,42 +44,6 @@ class RechargeRepositoryImpl @Inject constructor(
     }
 
 
-//    override suspend fun saveRecharge(recharge: Recharge): Recharge {
-//        return suspendCoroutine { continuation ->
-//            rechargeReferences
-//                .child(recharge.id)
-//                .setValue(recharge)
-//                .addOnCompleteListener { task ->
-//                    if (task.isSuccessful) {
-//                        // Recharge saved successfully
-//                        val dateReference = rechargeReferences
-//                            .child(recharge.id)
-//                            .child(recharge.phoneNumber)
-//                            .child("date")
-//                        dateReference.setValue(
-//                            ServerValue.TIMESTAMP
-//                        ).addOnCompleteListener { taskUpdate ->
-//
-//                            if (taskUpdate.isSuccessful) {
-//                                continuation.resumeWith(Result.success(recharge))
-//
-//                            } else {
-//                                // Failed to update date
-//                                taskUpdate.exception?.let {
-//                                    continuation.resumeWith(Result.failure(it))
-//                                }
-//                            }
-//                        }
-//                    } else {
-//                        // Failed to save Recharge
-//                        task.exception?.let {
-//                            continuation.resumeWith(Result.failure(it))
-//                        }
-//                    }
-//                }
-//        }
-//    }
-
     override suspend fun getRecharge(id:String): Recharge {
         return suspendCoroutine { continuation ->
             rechargeReferences.child(id).addListenerForSingleValueEvent(object : ValueEventListener{
@@ -97,6 +61,30 @@ class RechargeRepositoryImpl @Inject constructor(
                 }
             })
         }
+    }
+
+    override suspend fun getPasswordTransaction(): String {
+        return suspendCoroutine { continuation ->
+            val userId = FirebaseHelper.getUserId()
+            val passwordRef = FirebaseDatabase.getInstance()
+                .getReference("profile")
+                .child(userId)
+                .child("passwordTransaction")
+
+            passwordRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val password = snapshot.getValue(String::class.java) ?: ""
+                    continuation.resumeWith(Result.success(password))
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    error.toException().let {
+                        continuation.resumeWith(Result.failure(it))
+                    }
+                }
+            })
+        }
+
     }
 
 

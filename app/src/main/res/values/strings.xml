@@ -36,6 +36,8 @@
     <string name="password_length_warning">Sua senha deve ser maior que 6 caracteres</string>
 
     <string name="nothing_to_update">Nenhuma atualização foi realizada nesse momento</string>
+    <string name="text_confirm_button_bottom_sheet">Confirmar</string>
+    <string name="txt_information_data_recharge_alert">Verifique os dados da recarga</string>
 
 
 </resources>

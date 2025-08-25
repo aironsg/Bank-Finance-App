@@ -1,5 +1,6 @@
 package dev.airon.bankfinance.util
 
+import android.os.Build
 import android.os.Message
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -9,9 +10,12 @@ import dev.airon.bankfinance.R
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import dev.airon.bankfinance.databinding.BottomsheetPasswordTransactionBinding
 import dev.airon.bankfinance.databinding.LayoutBottomSheetBinding
+import dev.airon.bankfinance.util.SecurityUtils.hashPassword
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -72,6 +76,54 @@ fun Fragment.showBottomSheet(
     bottomSheetDialog.show()
 
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun Fragment.bottomSheetPasswordTransaction(
+    titleDialog: Int? = null,
+    titleButton: Int? = null,
+    message: String?,
+    onPasswordConfirmed: () -> Unit = {}
+) {
+    val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
+    val bottomSheetBinding = BottomsheetPasswordTransactionBinding.inflate(layoutInflater, null, false)
+
+    bottomSheetBinding.textTitle.text = getString(titleDialog ?: R.string.title_default_bottom_sheet)
+    bottomSheetBinding.textMessage.text = message ?: getString(R.string.default_error_alert)
+    bottomSheetBinding.btnOk.text = getString(titleButton ?: R.string.title_default_button_bottom_sheet)
+
+    val editPassword = bottomSheetBinding.editPasswordTransaction
+    val btnConfirm = bottomSheetBinding.btnOk
+
+    btnConfirm.setOnClickListener {
+        val typedPassword = editPassword.text.toString().trim()
+
+        if (typedPassword.isEmpty()) {
+            editPassword.error = "Digite a senha"
+            return@setOnClickListener
+        }
+
+        // 🔑 Agora buscamos hash + salt no Firebase
+        FirebaseHelper.getPasswordTransaction { storedHash, salt ->
+            if (storedHash.isNotEmpty() && salt.isNotEmpty()) {
+                // Gera hash da senha digitada com o salt armazenado
+                val typedHash = hashPassword(typedPassword, salt)
+
+                if (typedHash == storedHash) {
+                    onPasswordConfirmed.invoke()
+                    bottomSheetDialog.dismiss()
+                } else {
+                    editPassword.error = "Senha incorreta"
+                }
+            } else {
+                editPassword.error = "Erro ao validar senha"
+            }
+        }
+    }
+
+    bottomSheetDialog.setContentView(bottomSheetBinding.root)
+    bottomSheetDialog.show()
+}
+
 
 
 
