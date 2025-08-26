@@ -24,6 +24,7 @@ import dev.airon.bankfinance.util.StateView
 import dev.airon.bankfinance.util.showBottomSheet
 import loadProfileImage
 import androidx.core.view.isVisible
+import clearProfileImage
 import dev.airon.bankfinance.presenter.features.account.AccountViewModel
 
 @AndroidEntryPoint
@@ -47,7 +48,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.imgProfile.loadProfileImage(requireContext())
+        binding.imgProfile.loadProfileImage(requireContext(), FirebaseHelper.getUserId())
         initListener()
         configRecyclerView()
         getTransactions()
@@ -108,13 +109,12 @@ class HomeFragment : Fragment() {
 
     private fun initListener(){
         binding.btnLogout.setOnClickListener {
+
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_homeFragment_to_authentication)
         }
 
-        binding.imgProfile.setOnClickListener {
 
-        }
     }
 
     private fun getTransactions() {

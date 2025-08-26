@@ -15,6 +15,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import clearProfileImage
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,8 +46,10 @@ class ProfileFragment : Fragment() {
             val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, it)
             binding.imgProfile.setImageBitmap(bitmap)
 
-            // Agora usa a extension para salvar globalmente
-            requireContext().saveProfileImage(bitmap)
+            // Salva a imagem vinculada ao UID do usuário atual
+            FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+                requireContext().saveProfileImage(bitmap, uid)
+            }
         }
     }
 
@@ -61,8 +64,10 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Exibir a imagem de perfil já salva
-        binding.imgProfile.loadProfileImage(requireContext())
+        // Exibir a imagem de perfil já salva, se usuário logado
+        FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+            binding.imgProfile.loadProfileImage(requireContext(), uid)
+        }
 
         getProfile()
         setupListeners()
@@ -74,7 +79,11 @@ class ProfileFragment : Fragment() {
             pickImage.launch("image/*")
         }
 
+        // Logout seguro (limpa imagem também)
         binding.btnLogout.setOnClickListener {
+//            FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+//                requireContext().clearProfileImage(uid)
+//            }
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_profileFragment_to_authentication)
         }
@@ -224,8 +233,11 @@ class ProfileFragment : Fragment() {
     private fun showUserData() {
         binding.textUserName.text = user?.name
         binding.textUserMail.text = user?.email
-        // Carregar a imagem de perfil sempre que atualizar os dados do usuário
-        binding.imgProfile.loadProfileImage(requireContext())
+
+        // Carregar imagem vinculada ao UID do usuário logado
+        FirebaseAuth.getInstance().currentUser?.uid?.let { uid ->
+            binding.imgProfile.loadProfileImage(requireContext(), uid)
+        }
     }
 
     override fun onDestroyView() {
@@ -233,3 +245,4 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
 }
+
