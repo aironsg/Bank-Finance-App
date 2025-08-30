@@ -64,7 +64,7 @@
                 android:clipToOutline="true"
                 android:src="@drawable/profile_img"/>
         </FrameLayout>
-FrameLayout>
+
 
 
         <TextView

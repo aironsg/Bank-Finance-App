@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.invoke
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -60,6 +62,10 @@ dependencies {
 
 
     implementation("at.favre.lib:bcrypt:0.10.2")
+
+
+    //QRCode
+    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     //firebase
     implementation(platform("com.google.firebase:firebase-bom:33.13.0"))

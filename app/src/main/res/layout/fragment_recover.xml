@@ -55,7 +55,7 @@
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/text_information"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="32dp"
@@ -82,7 +82,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/text_information"
                 android:drawableStart="@drawable/ic_mail_line"
                 android:hint="E-mail"
                 android:inputType="textEmailAddress" />

@@ -93,9 +93,6 @@ class HomeFragment : Fragment() {
         })
     }
 
-
-
-
     private fun initNavigationDeposit() {
 
         binding.cardNewDeposit.setOnClickListener {
@@ -112,6 +109,10 @@ class HomeFragment : Fragment() {
 
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_homeFragment_to_authentication)
+        }
+
+        binding.cardTransfer.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_transferFragment)
         }
 
 
