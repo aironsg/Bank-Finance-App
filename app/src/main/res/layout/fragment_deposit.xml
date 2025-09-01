@@ -7,7 +7,7 @@
     android:background="@drawable/bg_deposit_receipt_top"
     android:fillViewport="true"
 
-    tools:context=".presenter.features.deposit.DepositFormFragment">
+    tools:context=".presentation.features.deposit.DepositFormFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

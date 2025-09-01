@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/splashFragment"
-        android:name="dev.airon.bankfinance.presenter.splash.SplashFragment"
+        android:name="dev.airon.bankfinance.presentation.splash.SplashFragment"
         android:label="fragment_splash"
         tools:layout="@layout/fragment_splash" >
         <action
@@ -23,7 +23,7 @@
     </fragment>
     <fragment
         android:id="@+id/homeFragment"
-        android:name="dev.airon.bankfinance.presenter.home.HomeFragment"
+        android:name="dev.airon.bankfinance.presentation.home.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -46,12 +46,15 @@
         <action
             android:id="@+id/action_homeFragment_to_transferFragment"
             app:destination="@id/transferFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_receiveFragment"
+            app:destination="@id/receiveFragment" />
     </fragment>
     <navigation android:id="@+id/authentication"
         app:startDestination="@id/loginFragment">
         <fragment
             android:id="@+id/loginFragment"
-            android:name="dev.airon.bankfinance.presenter.auth.login.LoginFragment"
+            android:name="dev.airon.bankfinance.presentation.auth.login.LoginFragment"
             android:label="fragment_login"
             tools:layout="@layout/fragment_login">
             <action
@@ -63,12 +66,12 @@
         </fragment>
         <fragment
             android:id="@+id/registerFragment"
-            android:name="dev.airon.bankfinance.presenter.auth.register.RegisterFragment"
+            android:name="dev.airon.bankfinance.presentation.auth.register.RegisterFragment"
             android:label="fragment_register"
             tools:layout="@layout/fragment_register" />
         <fragment
             android:id="@+id/recoverFragment"
-            android:name="dev.airon.bankfinance.presenter.auth.recover.RecoverFragment"
+            android:name="dev.airon.bankfinance.presentation.auth.recover.RecoverFragment"
             android:label="fragment_recover"
             tools:layout="@layout/fragment_recover" >
             <action
@@ -86,7 +89,7 @@
     </navigation>
     <fragment
         android:id="@+id/rechargeFragment"
-        android:name="dev.airon.bankfinance.presenter.features.recharge.RechargeFragment"
+        android:name="dev.airon.bankfinance.presentation.features.recharge.RechargeFragment"
         android:label="fragment_charge_phone"
         tools:layout="@layout/fragment_recharge" >
         <action
@@ -100,7 +103,7 @@
     </fragment>
     <fragment
         android:id="@+id/depositFragment"
-        android:name="dev.airon.bankfinance.presenter.features.deposit.DepositFormFragment"
+        android:name="dev.airon.bankfinance.presentation.features.deposit.DepositFormFragment"
         android:label="fragment_deposit"
         tools:layout="@layout/fragment_deposit">
         <action
@@ -114,7 +117,7 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        android:name="dev.airon.bankfinance.presenter.profile.ProfileFragment"
+        android:name="dev.airon.bankfinance.presentation.profile.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile" >
         <action
@@ -123,16 +126,19 @@
     </fragment>
     <fragment
         android:id="@+id/transferFragment"
-        android:name="dev.airon.bankfinance.presenter.features.transfer.TransferFragment"
+        android:name="dev.airon.bankfinance.presentation.features.transfer.TransferFragment"
         android:label="fragment_transfer"
         tools:layout="@layout/fragment_transfer" >
         <argument
             android:name="deposit"
-            app:argType="dev.airon.bankfinance.data.model.Deposit" />
+            app:argType="dev.airon.bankfinance.domain.model.Deposit" />
+        <action
+            android:id="@+id/action_transferFragment_to_transferReceiptFragment"
+            app:destination="@id/transferReceiptFragment" />
     </fragment>
     <fragment
         android:id="@+id/depositReceiptFragment"
-        android:name="dev.airon.bankfinance.presenter.features.deposit.DepositReceiptFragment"
+        android:name="dev.airon.bankfinance.presentation.features.deposit.DepositReceiptFragment"
         android:label="fragment_deposit_receipt"
         tools:layout="@layout/fragment_deposit_receipt" >
         <argument
@@ -141,7 +147,7 @@
     </fragment>
     <fragment
         android:id="@+id/extractFragment"
-        android:name="dev.airon.bankfinance.presenter.features.extract.ExtractFragment"
+        android:name="dev.airon.bankfinance.presentation.features.extract.ExtractFragment"
         android:label="fragment_extract"
         tools:layout="@layout/fragment_extract" >
         <action
@@ -153,7 +159,7 @@
     </fragment>
     <fragment
         android:id="@+id/rechargeReceiptFragment"
-        android:name="dev.airon.bankfinance.presenter.features.recharge.RechargeReceiptFragment"
+        android:name="dev.airon.bankfinance.presentation.features.recharge.RechargeReceiptFragment"
         android:label="RechargeReceiptFragment" >
         <argument
             android:name="IdRecharge"
@@ -161,12 +167,20 @@
     </fragment>
     <fragment
         android:id="@+id/creditCardFragment"
-        android:name="dev.airon.bankfinance.presenter.features.creditCard.CreditCardFragment"
+        android:name="dev.airon.bankfinance.presentation.features.creditCard.CreditCardFragment"
         android:label="fragment_credit_card"
         tools:layout="@layout/fragment_credit_card" />
     <fragment
         android:id="@+id/walletFragment"
-        android:name="dev.airon.bankfinance.presenter.wallet.WalletFragment"
+        android:name="dev.airon.bankfinance.presentation.wallet.WalletFragment"
         android:label="fragment_wallet"
         tools:layout="@layout/fragment_wallet" />
+    <fragment
+        android:id="@+id/transferReceiptFragment"
+        android:name="dev.airon.bankfinance.presentation.features.transfer.TransferReceiptFragment"
+        android:label="TransferReceiptFragment" />
+    <fragment
+        android:id="@+id/receiveFragment"
+        android:name="dev.airon.bankfinance.presentation.features.receive.ReceiveFragment"
+        android:label="ReceiveFragment" />
 </navigation>

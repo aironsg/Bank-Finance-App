@@ -3,11 +3,9 @@ package dev.airon.bankfinance.data.repository.creditCard
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
-import dev.airon.bankfinance.data.model.Account
-import dev.airon.bankfinance.data.model.CreditCard
-import dev.airon.bankfinance.util.FirebaseHelper
+import dev.airon.bankfinance.domain.model.CreditCard
+import dev.airon.bankfinance.core.util.FirebaseHelper
 import javax.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 

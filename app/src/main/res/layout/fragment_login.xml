@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fillViewport="true"
     android:paddingTop="32dp"
-    tools:context=".presenter.auth.login.LoginFragment">
+    tools:context=".presentation.auth.login.LoginFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

@@ -4,8 +4,8 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import dev.airon.bankfinance.data.model.User
-import dev.airon.bankfinance.util.FirebaseHelper
+import dev.airon.bankfinance.domain.model.User
+import dev.airon.bankfinance.core.util.FirebaseHelper
 import javax.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 

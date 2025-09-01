@@ -8,7 +8,7 @@
     android:fillViewport="true"
     android:fitsSystemWindows="true"
     android:theme="@style/Theme.BankFinance.TelaComAppBarDiferente"
-    tools:context=".presenter.auth.recover.RecoverFragment">
+    tools:context=".presentation.auth.recover.RecoverFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
