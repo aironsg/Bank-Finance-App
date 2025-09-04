@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/bg_deposit_receipt_top"
     android:fillViewport="true"
-
-    tools:context=".presentation.features.transfer.TransferFragment">
+    tools:context=".presentation.ui.features.transfer.TransferFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

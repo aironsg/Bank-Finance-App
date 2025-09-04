@@ -7,6 +7,7 @@ import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
 import dev.airon.bankfinance.domain.model.Deposit
 import dev.airon.bankfinance.core.util.FirebaseHelper
+import dev.airon.bankfinance.domain.repository.deposit.DepositRepository
 import javax.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 

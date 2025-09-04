@@ -7,7 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import dev.airon.bankfinance.databinding.FragmentWalletBinding
-import dev.airon.bankfinance.presentation.auth.login.LoginViewModel
+import dev.airon.bankfinance.presentation.ui.auth.login.LoginViewModel
+
 import kotlin.getValue
 
 

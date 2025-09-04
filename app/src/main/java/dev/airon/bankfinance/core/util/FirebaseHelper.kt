@@ -6,12 +6,34 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dev.airon.bankfinance.R
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
 
 class FirebaseHelper {
     companion object {
         fun isAuthenticated() = FirebaseAuth.getInstance().currentUser != null
 
         fun getUserId() = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+        fun getUser() = FirebaseAuth.getInstance().currentUser
+
+        suspend fun getUserName(): String? = suspendCancellableCoroutine { cont ->
+            val uid = getUserId()
+            if (uid.isEmpty()) {
+                cont.resume(null)
+                return@suspendCancellableCoroutine
+            }
+
+            val ref = FirebaseDatabase.getInstance().getReference("profile").child(uid)
+            ref.child("name").get().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    cont.resume(task.result?.value as? String)
+                } else {
+                    cont.resume(null)
+                }
+            }
+        }
+
 
         fun getGeneratedId() = FirebaseDatabase.getInstance().reference.push().key ?: ""
 

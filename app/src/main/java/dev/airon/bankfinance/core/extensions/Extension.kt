@@ -1,28 +1,31 @@
 package dev.airon.bankfinance.core.extensions
 
 import android.os.Build
-import android.widget.EditText
-import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
-import dev.airon.bankfinance.R
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import dev.airon.bankfinance.R
 import dev.airon.bankfinance.core.util.FirebaseHelper
+import dev.airon.bankfinance.core.util.SecurityUtils.hashPassword
 import dev.airon.bankfinance.databinding.BottomsheetPasswordTransactionBinding
 import dev.airon.bankfinance.databinding.LayoutBottomSheetBinding
-import dev.airon.bankfinance.core.util.SecurityUtils.hashPassword
 import java.text.NumberFormat
 import java.util.Locale
-import kotlin.text.iterator
 
 //responsavel por inicializar a toolbar
-fun Fragment.initToolbar(toolbar: Toolbar, homeAsUpEnabled: Boolean = true, isToolbarDefaultColor: Boolean = false) {
+fun Fragment.initToolbar(
+    toolbar: Toolbar,
+    homeAsUpEnabled: Boolean = true,
+    isToolbarDefaultColor: Boolean = false
+) {
     (activity as AppCompatActivity).setSupportActionBar(toolbar)
     (activity as AppCompatActivity).title = ""
     (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(homeAsUpEnabled)
@@ -31,7 +34,7 @@ fun Fragment.initToolbar(toolbar: Toolbar, homeAsUpEnabled: Boolean = true, isTo
     val arrowDrawable = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_back)
 
     // Verifique se a toolbar está usando a cor padrão (color_default)
-    if (isToolbarDefaultColor){
+    if (isToolbarDefaultColor) {
         // Se for, defina a cor do drawable para a cor padrão
         arrowDrawable?.setTint(ContextCompat.getColor(requireContext(), R.color.white))
     } else {
@@ -62,13 +65,15 @@ fun Fragment.showBottomSheet(
     titleButton: Int? = null,
     message: String?,
     onClick: () -> Unit = {}
-){
+) {
     val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
     val bottomSheetBinding = LayoutBottomSheetBinding.inflate(layoutInflater, null, false)
 
-    bottomSheetBinding.textTitle.text = getString(titleDialog ?: R.string.title_default_bottom_sheet)
+    bottomSheetBinding.textTitle.text =
+        getString(titleDialog ?: R.string.title_default_bottom_sheet)
     bottomSheetBinding.textMessage.text = message ?: getString(R.string.default_error_alert)
-    bottomSheetBinding.btnOk.text = getString(titleButton ?: R.string.title_default_button_bottom_sheet)
+    bottomSheetBinding.btnOk.text =
+        getString(titleButton ?: R.string.title_default_button_bottom_sheet)
     bottomSheetBinding.btnOk.setOnClickListener {
         onClick.invoke()
         bottomSheetDialog.dismiss()
@@ -87,11 +92,14 @@ fun Fragment.bottomSheetPasswordTransaction(
     onPasswordConfirmed: () -> Unit = {}
 ) {
     val bottomSheetDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialog)
-    val bottomSheetBinding = BottomsheetPasswordTransactionBinding.inflate(layoutInflater, null, false)
+    val bottomSheetBinding =
+        BottomsheetPasswordTransactionBinding.inflate(layoutInflater, null, false)
 
-    bottomSheetBinding.textTitle.text = getString(titleDialog ?: R.string.title_default_bottom_sheet)
+    bottomSheetBinding.textTitle.text =
+        getString(titleDialog ?: R.string.title_default_bottom_sheet)
     bottomSheetBinding.textMessage.text = message ?: getString(R.string.default_error_alert)
-    bottomSheetBinding.btnOk.text = getString(titleButton ?: R.string.title_default_button_bottom_sheet)
+    bottomSheetBinding.btnOk.text =
+        getString(titleButton ?: R.string.title_default_button_bottom_sheet)
 
     val editPassword = bottomSheetBinding.editPasswordTransaction
     val btnConfirm = bottomSheetBinding.btnOk
@@ -125,8 +133,6 @@ fun Fragment.bottomSheetPasswordTransaction(
     bottomSheetDialog.setContentView(bottomSheetBinding.root)
     bottomSheetDialog.show()
 }
-
-
 
 
 fun formatPhoneNumber(phone: String): String {
@@ -245,7 +251,8 @@ fun EditText.addMoneyMask() {
 
 fun Fragment.hideKeyboard() {
     val activity = requireActivity()
-    val inputMethodManager = activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
+    val inputMethodManager =
+        activity.getSystemService(AppCompatActivity.INPUT_METHOD_SERVICE) as InputMethodManager
     val view = activity.currentFocus ?: View(activity)
     inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }
@@ -257,14 +264,19 @@ fun String.onlyDigits(): String {
 fun String.toCpfMask(): String {
     val digits = this.onlyDigits()
     return if (digits.length == 11) {
-        "${digits.substring(0,3)}.${digits.substring(3,6)}.${digits.substring(6,9)}-${digits.substring(9,11)}"
+        "${digits.substring(0, 3)}.${digits.substring(3, 6)}.${
+            digits.substring(
+                6,
+                9
+            )
+        }-${digits.substring(9, 11)}"
     } else this
 }
 
 fun String.toRgMask(): String {
     val digits = this.onlyDigits()
     return if (digits.length == 8) {
-        "${digits.substring(0,1)}.${digits.substring(1,4)}.${digits.substring(4,7)}"
+        "${digits.substring(0, 1)}.${digits.substring(1, 4)}.${digits.substring(4, 7)}"
     } else this
 }
 

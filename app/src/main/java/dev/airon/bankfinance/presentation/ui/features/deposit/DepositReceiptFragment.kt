@@ -1,19 +1,20 @@
 package dev.airon.bankfinance.presentation.ui.features.deposit
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
-import dev.airon.bankfinance.domain.model.Deposit
-import dev.airon.bankfinance.databinding.FragmentDepositReceiptBinding
 import dev.airon.bankfinance.core.util.GetMask
 import dev.airon.bankfinance.core.util.StateView
+import dev.airon.bankfinance.databinding.FragmentDepositReceiptBinding
+import dev.airon.bankfinance.domain.model.Deposit
+import dev.airon.bankfinance.presentation.ui.features.deposit.DepositReceiptFragmentArgs
 
 @AndroidEntryPoint
 class DepositReceiptFragment : Fragment() {

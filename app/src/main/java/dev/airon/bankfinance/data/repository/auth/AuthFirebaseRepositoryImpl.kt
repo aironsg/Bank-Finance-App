@@ -2,6 +2,7 @@ package dev.airon.bankfinance.data.repository.auth
 
 import com.google.firebase.auth.FirebaseAuth
 import dev.airon.bankfinance.domain.model.User
+import dev.airon.bankfinance.domain.repository.auth.AuthFirebaseRepository
 import jakarta.inject.Inject
 import kotlin.coroutines.suspendCoroutine
 

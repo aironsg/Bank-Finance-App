@@ -1,20 +1,20 @@
 package dev.airon.bankfinance.presentation.ui.features.extract
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import dev.airon.bankfinance.data.enum.TransactionOperation
-import dev.airon.bankfinance.databinding.FragmentExtractBinding
-import dev.airon.bankfinance.presentation.home.TransactionsAdapter
-import dev.airon.bankfinance.core.util.StateView
 import dev.airon.bankfinance.core.extensions.initToolbar
 import dev.airon.bankfinance.core.extensions.showBottomSheet
-import kotlin.getValue
+import dev.airon.bankfinance.core.util.StateView
+import dev.airon.bankfinance.data.enum.TransactionOperation
+import dev.airon.bankfinance.databinding.FragmentExtractBinding
+import dev.airon.bankfinance.presentation.ui.features.extract.ExtractFragmentDirections
+import dev.airon.bankfinance.presentation.ui.home.TransactionsAdapter
 
 @AndroidEntryPoint
 class ExtractFragment : Fragment() {

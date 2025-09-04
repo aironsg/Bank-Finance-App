@@ -7,6 +7,9 @@ import dagger.hilt.android.components.ViewModelComponent
 import dev.airon.bankfinance.data.repository.auth.AuthFirebaseRepositoryImpl
 import dev.airon.bankfinance.data.repository.deposit.DepositRepositoryImpl
 import dev.airon.bankfinance.data.repository.transaction.TransactionRepositoryImpl
+import dev.airon.bankfinance.domain.repository.auth.AuthFirebaseRepository
+import dev.airon.bankfinance.domain.repository.deposit.DepositRepository
+import dev.airon.bankfinance.domain.repository.transaction.TransactionRepository
 
 @Module
 @InstallIn(ViewModelComponent::class)

@@ -9,7 +9,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.databinding.FragmentTransferReceiptBinding
-import dev.airon.bankfinance.presentation.features.recharge.RechargeReceiptViewModel
+import dev.airon.bankfinance.presentation.ui.features.recharge.RechargeReceiptViewModel
+
 
 @AndroidEntryPoint
 class TransferReceiptFragment : Fragment() {

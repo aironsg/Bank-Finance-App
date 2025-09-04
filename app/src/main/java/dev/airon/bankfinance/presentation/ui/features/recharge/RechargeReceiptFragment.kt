@@ -16,6 +16,7 @@ import dev.airon.bankfinance.databinding.FragmentRechargeReceiptBinding
 import dev.airon.bankfinance.core.util.GetMask
 import dev.airon.bankfinance.core.util.StateView
 import dev.airon.bankfinance.core.extensions.formatPhoneNumber
+import dev.airon.bankfinance.presentation.ui.features.recharge.RechargeReceiptFragmentArgs
 
 @AndroidEntryPoint
 class RechargeReceiptFragment : Fragment() {
