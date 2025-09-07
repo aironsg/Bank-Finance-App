@@ -17,6 +17,8 @@ import com.google.firebase.database.ValueEventListener
 import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import dev.airon.bankfinance.core.extensions.addEmailValidation
+import dev.airon.bankfinance.core.extensions.addMoneyMask
 import dev.airon.bankfinance.core.extensions.bottomSheetPasswordTransaction
 import dev.airon.bankfinance.core.extensions.initToolbar
 import dev.airon.bankfinance.core.extensions.showBottomSheet
@@ -57,8 +59,8 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupListeners() {
-        binding.editValuePix.addTextChangedListener { validateForm() }
-        binding.editKeyPix.addTextChangedListener { validateForm() }
+        binding.editValuePix.addMoneyMask() // ✅ máscara de valor (R$)
+        binding.editKeyPix.addEmailValidation() // ✅ validação de email
 
         binding.btnConfirmTransaction.setOnClickListener { validateTransfer() }
         binding.btnQrCode.setOnClickListener { startQrScanner() }
@@ -88,7 +90,7 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
 
         if (isFormValid) {
             binding.frameLayout.visibility = android.view.View.VISIBLE
-            val amount = amountText!!.toFloatOrNull() ?: 0f
+            val amount = amountText.toFloatOrNull() ?: 0f
             val method = when (selectedPaymentMethod) {
                 PaymentMethod.CREDIT_CARD -> "Cartão de Crédito"
                 PaymentMethod.BALANCE -> "Saldo Bancário"
@@ -201,7 +203,7 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
         }
 
         val userRef = FirebaseDatabase.getInstance().getReference("profile")
-        userRef.orderByChild("phone").equalTo(pixKey)
+        userRef.orderByChild("email").equalTo(pixKey)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {

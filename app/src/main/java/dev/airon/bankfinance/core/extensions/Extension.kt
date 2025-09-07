@@ -3,6 +3,7 @@ package dev.airon.bankfinance.core.extensions
 import android.os.Build
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
@@ -386,4 +387,22 @@ fun EditText.addPhoneMask() {
         override fun afterTextChanged(s: Editable?) {}
     })
 }
+
+fun EditText.addEmailValidation() {
+    this.addTextChangedListener(object : TextWatcher {
+        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            val email = s.toString()
+            if (Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                this@addEmailValidation.error = null
+            } else {
+                this@addEmailValidation.error = "Email inválido"
+            }
+        }
+
+        override fun afterTextChanged(s: Editable?) {}
+    })
+}
+
 

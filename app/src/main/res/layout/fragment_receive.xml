@@ -104,6 +104,7 @@
                 android:layout_marginTop="24dp"
                 android:background="@drawable/bg_button_qr_code"
                 android:text="Copiar Código Pix"
+                android:textColor="@color/white"
                 android:drawableRight="@drawable/ic_copy_and_paste"
                 android:drawableTint="@color/white"
                 app:backgroundTint="@color/color_card_secondary"

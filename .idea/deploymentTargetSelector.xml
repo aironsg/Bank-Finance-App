@@ -4,14 +4,17 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-08-07T23:32:27.691533100Z">
+        <DropdownSelection timestamp="2025-09-06T23:45:29.552896600Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jacye\AppData\Local\Android\Android12PlayStore.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\jacye\.android\avd\Android12.avd" />
             </handle>
           </Target>
         </DropdownSelection>
         <DialogSelection />
+      </SelectionState>
+      <SelectionState runConfigName="calcula saldo corretamente com transacoes de entrada e saida()">
+        <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>
   </component>

@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.navigation.ui.ktx)
     implementation(libs.androidx.benchmark.common)
     testImplementation(libs.junit)
+    testImplementation("org.mockito:mockito-core:4.11.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
