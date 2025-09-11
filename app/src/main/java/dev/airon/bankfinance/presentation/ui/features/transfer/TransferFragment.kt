@@ -2,21 +2,23 @@ package dev.airon.bankfinance.presentation.ui.features.transfer
 
 
 
-import android.content.Intent
 import android.os.Build
+import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
-import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.zxing.integration.android.IntentIntegrator
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import dev.airon.bankfinance.core.extensions.addEmailValidation
 import dev.airon.bankfinance.core.extensions.addMoneyMask
 import dev.airon.bankfinance.core.extensions.bottomSheetPasswordTransaction
@@ -27,11 +29,13 @@ import dev.airon.bankfinance.core.util.GetMask
 import dev.airon.bankfinance.core.util.PixPayloadParser
 import dev.airon.bankfinance.core.util.StateView
 import dev.airon.bankfinance.data.enum.PaymentMethod
+import dev.airon.bankfinance.data.enum.TransactionOperation
 import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.databinding.FragmentTransferBinding
 import dev.airon.bankfinance.domain.model.CreditCard
 import dev.airon.bankfinance.domain.model.Transaction
 import dev.airon.bankfinance.presentation.ui.home.HomeViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -43,14 +47,24 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
     private var balance: Float = 0f
     private var selectedPaymentMethod: PaymentMethod? = null
     private var isBalanceVisible = false
-
+    private var recipientName: String = ""
+    private var recipientId: String? = null
     private var _binding: FragmentTransferBinding? = null
     private val binding get() = _binding!!
 
+    private val qrCodeLauncher = registerForActivityResult(ScanContract()) { result ->
+        if (result.contents != null) {
+            handleQrResult(result.contents)
+        } else {
+            showBottomSheet(message = "Leitura cancelada")
+        }
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onViewCreated(view: android.view.View, savedInstanceState: android.os.Bundle?) {
+    override fun onViewCreated(view: android.view.View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding = FragmentTransferBinding.bind(view)
+
         initToolbar(binding.toolbar, isToolbarDefaultColor = true)
         observeTransactions()
         initRadioGroup()
@@ -59,8 +73,8 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun setupListeners() {
-        binding.editValuePix.addMoneyMask() // ✅ máscara de valor (R$)
-        binding.editKeyPix.addEmailValidation() // ✅ validação de email
+        binding.editValuePix.addMoneyMask()
+        binding.editKeyPix.addEmailValidation()
 
         binding.btnConfirmTransaction.setOnClickListener { validateTransfer() }
         binding.btnQrCode.setOnClickListener { startQrScanner() }
@@ -86,27 +100,28 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
     private fun validateForm() {
         val amountText = binding.editValuePix.text?.toString()
         val pixKey = binding.editKeyPix.text?.toString()
-        val isFormValid = !amountText.isNullOrBlank() && !pixKey.isNullOrBlank() && selectedPaymentMethod != null
+        val isFormValid = !amountText.isNullOrBlank() &&
+                !pixKey.isNullOrBlank() &&
+                selectedPaymentMethod != null
 
         if (isFormValid) {
-            binding.frameLayout.visibility = android.view.View.VISIBLE
-            val amount = amountText.toFloatOrNull() ?: 0f
+            binding.frameLayout.visibility = View.VISIBLE
+
+            val amount = amountText?.replace("[^\\d,.]".toRegex(), "")
+                ?.replace(",", ".")
+                ?.toFloatOrNull() ?: 0f
+
             val method = when (selectedPaymentMethod) {
                 PaymentMethod.CREDIT_CARD -> "Cartão de Crédito"
                 PaymentMethod.BALANCE -> "Saldo Bancário"
                 else -> ""
             }
 
-            // Busca o nome do usuário de forma suspensa
-            lifecycleScope.launch {
-                val name = FirebaseHelper.getUserName() ?: "Usuário"
-                binding.textUserName.text = name
-                binding.textAmountTransaction.text = GetMask.getFormatedValue(amount)
-                binding.textPhoneNumber.text = pixKey
-                binding.textMethodPaymentValue.text = method
-            }
+            binding.textAmountTransaction.text = GetMask.getFormatedValue(amount)
+            binding.textPhoneNumber.text = pixKey
+            binding.textMethodPaymentValue.text = method
         } else {
-            binding.frameLayout.visibility = android.view.View.GONE
+            binding.frameLayout.visibility = View.GONE
         }
     }
 
@@ -116,19 +131,21 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
         val pixKey = binding.editKeyPix.text.toString()
 
         if (amountText.isEmpty()) {
-            Toast.makeText(requireContext(), "Digite um valor", Toast.LENGTH_SHORT).show()
+            showBottomSheet(message = "Digite um valor")
             return
         }
         if (pixKey.isEmpty()) {
-            Toast.makeText(requireContext(), "Digite ou leia uma chave Pix", Toast.LENGTH_SHORT).show()
+            showBottomSheet(message = "Digite ou leia uma chave Pix")
             return
         }
         if (selectedPaymentMethod == null) {
-            Toast.makeText(requireContext(), "Selecione um método de pagamento", Toast.LENGTH_SHORT).show()
+            showBottomSheet(message = "Selecione um método de pagamento")
             return
         }
 
-        val amount = amountText.toFloat()
+        val amount = amountText.replace("[^\\d,.]".toRegex(), "")
+            .replace(",", ".").toFloatOrNull() ?: 0f
+
         when (selectedPaymentMethod) {
             PaymentMethod.BALANCE -> {
                 if (amount > balance) {
@@ -147,114 +164,6 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
                 }
             }
             else -> Unit
-        }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun confirmationTransfer(pixKey: String, amount: Float) {
-        showBottomSheet(
-            titleDialog = R.string.txt_information_data_recharge_alert,
-            message = "Valor: R$ ${GetMask.getFormatedValue(amount)}\n" +
-                    "Chave Pix: $pixKey\n" +
-                    "Método de Pagamento: ${PaymentMethod.getOperation(selectedPaymentMethod!!)}\n" +
-                    "Deseja confirmar a transferência?",
-            titleButton = R.string.txt_button_bottomSheet_confirm,
-            onClick = {
-                bottomSheetPasswordTransaction(
-                    message = "Informe sua senha para confirmar a transferência",
-                    titleButton = R.string.txt_button_bottomSheet_confirm
-                ) {
-                    sendTransfer(pixKey, amount)
-                }
-            }
-        )
-    }
-
-
-    private fun sendTransfer(pixKey: String, amount: Float) {
-        lifecycleScope.launch {
-            val senderName = FirebaseHelper.getUserName() ?: "Usuário"
-            val senderId = FirebaseHelper.getUserId()
-            val recipientId = pixKey // se a chave Pix estiver associada ao UID do usuário, use aqui
-
-            transferViewModel.sendPix(senderName, recipientName, pixKey, amount, senderId, recipientId)
-                .observe(viewLifecycleOwner) { stateView ->
-                    when (stateView) {
-                        is StateView.Loading -> binding.progressBar.visibility = android.view.View.VISIBLE
-                        is StateView.Success -> {
-                            binding.progressBar.visibility = android.view.View.GONE
-                            Toast.makeText(requireContext(), "Transferência realizada com sucesso", Toast.LENGTH_SHORT).show()
-                        }
-                        is StateView.Error -> {
-                            binding.progressBar.visibility = android.view.View.GONE
-                            showBottomSheet(message = stateView.message)
-                        }
-                    }
-                }
-        }
-    }
-
-    var recipientName: String = ""
-    private fun searchPixKey() {
-        val pixKey = binding.editKeyPix.text.toString().replace("[()\\s-]".toRegex(), "")
-        if (pixKey.isEmpty()) {
-            Toast.makeText(requireContext(), "Digite a chave Pix", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val userRef = FirebaseDatabase.getInstance().getReference("profile")
-        userRef.orderByChild("email").equalTo(pixKey)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (snapshot.exists()) {
-                        for (child in snapshot.children) {
-                            recipientName = child.child("name").getValue(String::class.java) ?: "Usuário"
-                            binding.textPhoneNumber.text = pixKey
-                            binding.textUserName.text = recipientName
-                            validateForm()
-                        }
-                    } else {
-                        showBottomSheet(message = "Usuário não encontrado")
-                    }
-                }
-                override fun onCancelled(error: DatabaseError) {
-                    showBottomSheet(message = "Erro: ${error.message}")
-                }
-            })
-    }
-
-    private fun observeTransactions() {
-        homeViewModel.getTransactions().observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Success -> {
-                    balance = calculateBalance(stateView.data ?: emptyList())
-                    updateBalanceUI()
-                }
-                is StateView.Error -> showBottomSheet(message = stateView.message)
-                else -> Unit
-            }
-        }
-    }
-
-    private fun calculateBalance(transactions: List<Transaction>): Float {
-        var cashIn = 0f
-        var cashOut = 0f
-        transactions.forEach { t ->
-            if (t.type == TransactionType.CASH_IN) cashIn += t.amount
-            else cashOut += t.amount
-        }
-        return cashIn - cashOut
-    }
-
-    private fun updateBalanceUI() {
-        if (isBalanceVisible) {
-            binding.balanceValue.text =
-                getString(R.string.text_formated_value, GetMask.getFormatedValue(balance))
-            binding.balanceValue.visibility = android.view.View.VISIBLE
-            binding.toggleVisibility.setImageResource(R.drawable.ic_no_visibility)
-        } else {
-            binding.balanceValue.visibility = android.view.View.GONE
-            binding.toggleVisibility.setImageResource(R.drawable.ic_visibility)
         }
     }
 
@@ -282,29 +191,178 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
         })
     }
 
-    private fun startQrScanner() {
-        val integrator = IntentIntegrator.forSupportFragment(this)
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE)
-        integrator.setPrompt("Aponte para o QR Code Pix")
-        integrator.setBeepEnabled(false)
-        integrator.setOrientationLocked(true)
-        integrator.initiateScan()
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun confirmationTransfer(pixKey: String, amount: Float) {
+        showBottomSheet(
+            titleDialog = R.string.txt_information_data_transfer_pix_alert,
+            message = "Valor: R$ ${GetMask.getFormatedValue(amount)}\n" +
+                    "Chave Pix: $pixKey\n" +
+                    "Método de Pagamento: ${PaymentMethod.getOperation(selectedPaymentMethod!!)}\n" +
+                    "Deseja confirmar a transferência?",
+            titleButton = R.string.txt_button_bottomSheet_confirm,
+            onClick = {
+                bottomSheetPasswordTransaction(
+                    message = "Informe sua senha para confirmar a transferência",
+                    titleButton = R.string.txt_button_bottomSheet_confirm
+                ) {
+                    sendTransfer(pixKey, amount)
+                }
+            }
+        )
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        val result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
-        if (result != null && result.contents != null) {
-            handleQrResult(result.contents)
-        } else {
-            super.onActivityResult(requestCode, resultCode, data)
+    private fun sendTransfer(pixKey: String, amount: Float) {
+        lifecycleScope.launch {
+            val senderId = FirebaseHelper.getUserId()
+            val senderName = FirebaseHelper.getUserName() ?: "Usuário"
+
+            if (recipientId.isNullOrEmpty()) {
+                showBottomSheet(message = "Destinatário inválido")
+                return@launch
+            }
+
+            transferViewModel.sendPix(
+                senderName = senderName,
+                recipientName = recipientName,
+                recipientPix = pixKey,
+                amount = amount,
+                senderId = senderId,
+                recipientId = recipientId!!,
+                paymentMethod = selectedPaymentMethod!!
+            ).observe(viewLifecycleOwner) { stateView ->
+                when (stateView) {
+                    is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
+                    is StateView.Success -> {
+                        val transactionId = stateView.data!!.transaction.id
+
+                        lifecycleScope.launch {
+                            // 🔹 busca no Firebase já com todos os dados
+                            transferViewModel.getTransfer(transactionId)
+                                .observe(viewLifecycleOwner) { transferState ->
+                                    binding.progressBar.visibility = View.GONE
+                                    when (transferState) {
+                                        is StateView.Success -> {
+                                            val transactionPix = transferState.data
+                                            if (transactionPix != null) {
+                                                val action =
+                                                    TransferFragmentDirections
+                                                        .actionTransferFragmentToTransferReceiptFragment(transactionPix)
+                                                findNavController().navigate(action)
+                                            } else {
+                                                showBottomSheet(message = "Não foi possível carregar a transação.")
+                                            }
+                                        }
+                                        is StateView.Error -> {
+                                            showBottomSheet(message = transferState.message)
+                                        }
+                                        else -> Unit
+                                    }
+                                }
+                        }
+                    }
+
+                    is StateView.Error -> {
+                        binding.progressBar.visibility = View.GONE
+                        showBottomSheet(message = stateView.message)
+                    }
+                }
+            }
         }
+    }
+
+    private fun searchPixKey() {
+        val pixKey = binding.editKeyPix.text.toString().replace("[()\\s-]".toRegex(), "")
+        if (pixKey.isEmpty()) {
+            showBottomSheet(message = "Digite a chave Pix")
+            return
+        }
+
+        val userRef = FirebaseDatabase.getInstance().getReference("profile")
+        userRef.orderByChild("email").equalTo(pixKey)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        for (child in snapshot.children) {
+                            recipientId = child.key
+                            recipientName = child.child("name").getValue(String::class.java) ?: "Usuário"
+                            binding.textPhoneNumber.text = pixKey
+                            binding.textUserName.text = recipientName
+                            validateForm()
+                            showBottomSheet(
+                                message = "Usuário $recipientName foi localizado com sucesso!"
+                            )
+                        }
+                    } else {
+                        showBottomSheet(message = "Usuário não encontrado")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    showBottomSheet(message = "Erro: ${error.message}")
+                }
+            })
+    }
+
+    private fun observeTransactions() {
+        homeViewModel.getTransactions().observe(viewLifecycleOwner) { stateView ->
+            when (stateView) {
+                is StateView.Success -> {
+                    val transactions = stateView.data ?: emptyList()
+                    balance = calculateBalance(transactions)
+                    updateBalanceUI()
+                }
+                is StateView.Error -> {
+                    showBottomSheet(message = stateView.message)
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    private fun calculateBalance(transactions: List<Transaction>): Float {
+        var cashIn = 0f
+        var cashOut = 0f
+        transactions.forEach { t ->
+            when (t.type) {
+                TransactionType.CASH_IN, TransactionType.PIX_IN -> cashIn += t.amount
+                TransactionType.CASH_OUT, TransactionType.PIX_OUT -> cashOut += t.amount
+                else -> Unit
+            }
+        }
+        return cashIn - cashOut
+    }
+
+    private fun updateBalanceUI() {
+        if (isBalanceVisible) {
+            binding.balanceValue.text =
+                getString(R.string.text_formated_value, GetMask.getFormatedValue(balance))
+            binding.balanceValue.visibility = View.VISIBLE
+            binding.toggleVisibility.setImageResource(R.drawable.ic_no_visibility)
+        } else {
+            binding.balanceValue.visibility = View.GONE
+            binding.toggleVisibility.setImageResource(R.drawable.ic_visibility)
+        }
+    }
+
+    private fun startQrScanner() {
+        val options = ScanOptions().apply {
+            setDesiredBarcodeFormats(ScanOptions.QR_CODE)
+            setPrompt("Aponte a câmera para o QR Code Pix")
+            setBeepEnabled(true)
+            setOrientationLocked(false)
+        }
+        qrCodeLauncher.launch(options)
     }
 
     private fun handleQrResult(payload: String) {
         val parsed = PixPayloadParser.parse(payload)
-        binding.editKeyPix.setText(parsed?.keyValue)
-        binding.editValuePix.setText(parsed?.amount.toString())
-        validateForm()
+
+        if (parsed == null) {
+            showBottomSheet(message = "QR Code inválido ou mal formatado")
+        } else {
+            binding.editKeyPix.setText(parsed.keyValue)
+            validateForm()
+        }
     }
 
     override fun onDestroyView() {

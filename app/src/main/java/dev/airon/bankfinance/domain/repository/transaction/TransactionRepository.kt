@@ -9,4 +9,6 @@ interface TransactionRepository {
     suspend fun getTransactions(): List<Transaction>
     suspend fun getTransactionsById(userId: String): List<Transaction>
     suspend fun sendTransactionByPix(transactionPix: TransactionPix): Boolean
+
+    suspend fun getTransactionPixById(id: String): TransactionPix?
 }

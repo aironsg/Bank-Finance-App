@@ -12,7 +12,7 @@ enum class TransactionOperation {
         DEPOSIT -> "Depósito"
         RECHARGE -> "Recarga"
         CREDIT_CARD_PURCHASE -> "Compra no Cartão de Crédito"
-        PIX -> "Transferência via PIX"
+        PIX -> "Transferência  PIX"
       }
     }
   }

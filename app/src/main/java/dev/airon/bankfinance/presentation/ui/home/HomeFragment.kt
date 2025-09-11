@@ -28,6 +28,8 @@ import dev.airon.bankfinance.presentation.ui.features.account.AccountViewModel
 
 import loadProfileImage
 
+
+
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
 
@@ -116,10 +118,6 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment_to_transferFragment)
         }
 
-        binding.cardReceiveValues.setOnClickListener {
-            findNavController().navigate(R.id.action_homeFragment_to_receiveFragment)
-        }
-
 
     }
 
@@ -157,7 +155,7 @@ class HomeFragment : Fragment() {
                     findNavController().navigate(action)
                 }else ->{
 
-                }
+            }
             }
 
 
@@ -190,55 +188,54 @@ class HomeFragment : Fragment() {
     private fun showBalance(transactions: List<Transaction>) {
         var cashIn = 0f
         var cashOut = 0f
-        transactions.forEach { transaction ->
-            if (transaction.type == TransactionType.CASH_IN) {
-                cashIn += transaction.amount
-            }
 
-            if (transaction.type == TransactionType.CASH_OUT) {
-                cashOut += transaction.amount
+        transactions.forEach { transaction ->
+            when (transaction.type) {
+                TransactionType.CASH_IN, TransactionType.PIX_IN -> {
+                    cashIn += transaction.amount
+                }
+                TransactionType.CASH_OUT, TransactionType.PIX_OUT -> {
+                    cashOut += transaction.amount
+                }
+                else -> Unit
             }
         }
 
+        val totalBalance = cashIn - cashOut
 
         binding.cardBalance.txtTotalBalanceValue.text =
-            getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn - cashOut))
+            getString(R.string.text_formated_value, GetMask.getFormatedValue(totalBalance))
+
         if (transactions.isEmpty()) {
             binding.tvEmptyTransactions.visibility = View.VISIBLE
             binding.recyclerViewTransactions.visibility = View.GONE
         } else {
             binding.tvEmptyTransactions.visibility = View.GONE
             binding.recyclerViewTransactions.visibility = View.VISIBLE
-//            binding.recyclerViewTransactions.adapter = TransactionsAdapter(transactions)
         }
+
         binding.cardBalance.txtTotalBalanceValue.setTextColor(
-            resources.getColor(
-                R.color.white,
-                null
-            )
+            resources.getColor(R.color.white, null)
         )
 
-
-        //dados apenas para teste de UI
+        // Detalhes de entradas e saídas
         binding.cardBalance.txtSentValue.text =
             getString(R.string.text_formated_value, GetMask.getFormatedValue(cashOut))
         binding.cardBalance.txtReceivedValue.text =
             getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn))
+
+        // Toggle visibilidade
         binding.cardBalance.btnToggleBalance.setOnClickListener {
             if (binding.cardBalance.txtTotalBalanceValue.isVisible) {
                 binding.cardBalance.txtTotalBalanceValue.visibility = View.GONE
                 binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_down)
-
-
             } else {
                 binding.cardBalance.txtTotalBalanceValue.visibility = View.VISIBLE
                 binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_up)
-
             }
         }
-
-
     }
+
 
 
     override fun onDestroy() {
@@ -246,3 +243,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
+
+
+
+

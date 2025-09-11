@@ -5,12 +5,9 @@ import dev.airon.bankfinance.data.repository.wallet.WalletRepositoryImpl
 import javax.inject.Inject
 
 class GetWalletUseCase @Inject constructor(
-    private val walletDataSourceImpl: WalletRepositoryImpl
+    private val walletRepositoryImpl: WalletRepositoryImpl
 ) {
-
-    suspend fun invoke() : Wallet {
-        return walletDataSourceImpl.getWallet()
+    suspend operator fun invoke(): Wallet {
+        return walletRepositoryImpl.getWallet()
     }
-
-
 }

@@ -5,77 +5,86 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import dagger.hilt.android.AndroidEntryPoint
+import dev.airon.bankfinance.core.extensions.showBottomSheet
+import dev.airon.bankfinance.core.util.GetMask
+import dev.airon.bankfinance.core.util.StateView
+import dev.airon.bankfinance.data.enum.PaymentMethod
+import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.databinding.FragmentTransferReceiptBinding
+import dev.airon.bankfinance.domain.model.Transaction
+import dev.airon.bankfinance.domain.model.TransactionPix
 import dev.airon.bankfinance.presentation.ui.features.recharge.RechargeReceiptViewModel
-
+import kotlinx.coroutines.Dispatchers
 
 @AndroidEntryPoint
 class TransferReceiptFragment : Fragment() {
+
     private var _binding: FragmentTransferReceiptBinding? = null
     private val binding get() = _binding!!
-//    private val args: RechargeReceiptFragmentArgs by navArgs()
-    private val viewModel: RechargeReceiptViewModel by viewModels()
 
+    private val args: TransferReceiptFragmentArgs by navArgs()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentTransferReceiptBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val transactionPix = args.transactionPix
+        if (transactionPix != null) {
+            configData(transactionPix)
+        } else {
+            showErrorAndReturn()
+        }
         initListener()
     }
 
-
-    private fun initListener(){
+    private fun initListener() {
         binding.btnConfirmationTransaction.setOnClickListener {
             findNavController().popBackStack()
         }
     }
 
-//    private fun getRecharge(){
-//        viewModel.getRecharge(args.IdRecharge).observe(viewLifecycleOwner){ stateView ->
-//             when(stateView){
-//                is StateView.Loading -> {
-//
-//                }
-//                is StateView.Success -> {
-//                    stateView.data?.let {
-//                        configData(it)
-//                    }
-//
-//
-//                }
-//                is StateView.Error -> {
-//                    Toast.makeText(requireContext(), "Ocorreu um erro.", Toast.LENGTH_SHORT).show()
-//                    findNavController().popBackStack()
-//                }
-//            }
-//        }
-//
-//    }
+    private fun configData(transactionPix: TransactionPix) {
+        val transfer = transactionPix.transaction
+        val pixDetails = transactionPix.pixDetails
 
-//    private fun configData(recharge: Recharge) {
-//        binding.textCodeTransaction.text = recharge.id
-//        binding.textAmountTransaction.text = GetMask.getFormatedValue(recharge.amount)
-//        binding.textDateTransaction.text = GetMask.getFormatedDate(recharge.date, GetMask.DAY_MONTH_YEAR)
-//        binding.textHourTransaction.text = GetMask.getFormatedDate(recharge.hour, GetMask.HOUR_MINUTE)
-//        binding.textValueKeyPix.text = formatPhoneNumber(recharge.phoneNumber)
-//        binding.textMethodPaymentValue.text = PaymentMethod.getOperation(recharge.typeRecharge)
-//    }
-
-
-    override fun onDestroy() {
-        super.onDestroy()
-        _binding = null
+        binding.textCodeTransaction.text = transfer.id
+        binding.textAmountTransaction.text =
+            GetMask.getFormatedValue(transfer.amount)
+        binding.textDateTransaction.text =
+            GetMask.getFormatedDate(transfer.date, GetMask.DAY_MONTH_YEAR)
+        binding.textHourTransaction.text =
+            GetMask.getFormatedDate(transfer.date, GetMask.HOUR_MINUTE)
+        binding.textUserName.text = pixDetails.recipientName
+        binding.textValueKeyPix.text = pixDetails.recipientPix
+        binding.textMethodPaymentValue.text =
+            PaymentMethod.getOperation(transactionPix.paymentMethod)
     }
 
+    private fun showErrorAndReturn() {
+        if (isAdded) {
+            showBottomSheet(message = "Erro ao carregar recibo.") {
+                findNavController().popBackStack()
+            }
+        }
+    }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
+

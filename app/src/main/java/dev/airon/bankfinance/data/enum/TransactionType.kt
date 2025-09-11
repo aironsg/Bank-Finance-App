@@ -3,26 +3,19 @@ package dev.airon.bankfinance.data.enum
 enum class TransactionType {
     CASH_IN,
     CASH_OUT,
-    PIX,
+    PIX_IN,
+    PIX_OUT,
     CREDIT_CARD;
 
-
-   companion object {
-        fun getType(operation: TransactionOperation): Char {
-            return when(operation){
-                TransactionOperation.DEPOSIT -> {
-                    'D'
-                }
-
-                TransactionOperation.RECHARGE -> {
-                    'R'
-                }
-                TransactionOperation.CREDIT_CARD_PURCHASE -> {
-                    'C'
-                }
+    companion object {
+        fun getType(operation: TransactionOperation, isOutgoing: Boolean = false): Char {
+            return when (operation) {
+                TransactionOperation.DEPOSIT -> 'D'
+                TransactionOperation.RECHARGE -> 'R'
+                TransactionOperation.CREDIT_CARD_PURCHASE -> 'C'
                 TransactionOperation.PIX -> {
-                    'P'}
-
+                    if (isOutgoing) 'O' else 'P' // Out / In
+                }
             }
         }
     }

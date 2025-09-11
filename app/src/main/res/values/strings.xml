@@ -38,6 +38,10 @@
     <string name="nothing_to_update">Nenhuma atualização foi realizada nesse momento</string>
     <string name="text_confirm_button_bottom_sheet">Confirmar</string>
     <string name="txt_information_data_recharge_alert">Verifique os dados da recarga</string>
+    <string name="txt_information_data_transfer_pix_alert">Verifique os dados da Transferência</string>
+    <string name="txt_information_insufficient_funds">Você tem saldo insuficiente</string>
+    <string name="txt_information_insufficient_credit_limit">Você tem limite insuficiente no cartão de credito</string>
+
 
 
 </resources>

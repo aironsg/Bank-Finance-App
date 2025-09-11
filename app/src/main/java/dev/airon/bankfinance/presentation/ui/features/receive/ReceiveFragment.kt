@@ -41,13 +41,7 @@ class ReceiveFragment : Fragment() {
     private fun setupQRCode() {
         val user = FirebaseHelper.getUser()
 
-        val pixData = """
-            KEY_TYPE:PHONE
-            KEY_VALUE:${user?.phoneNumber}
-            BENEFICIARY_NAME:${user?.displayName ?: "Usuário"}
-            AMOUNT:0.0
-            TX_ID:${user?.uid}
-        """.trimIndent()
+        val pixData = user?.email.toString()
 
         val qrBitmap = QRCodeGenerator.generate(pixData)
         binding.ivQRCode.setImageBitmap(qrBitmap)
@@ -61,7 +55,7 @@ class ReceiveFragment : Fragment() {
             val clipboard = requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("Pix Code", binding.btnCopyAndPaste.tag.toString())
             clipboard.setPrimaryClip(clip)
-            Toast.makeText(requireContext(), "Código Pix copiado!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Chave Pix copiada com sucesso!", Toast.LENGTH_SHORT).show()
         }
     }
 

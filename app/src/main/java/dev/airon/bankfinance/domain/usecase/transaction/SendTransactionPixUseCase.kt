@@ -10,4 +10,8 @@ class SendTransactionPixUseCase @Inject constructor(
     suspend operator fun invoke(transactionPix: TransactionPix): Boolean {
         return repository.sendTransactionByPix(transactionPix)
     }
+
+    suspend fun getTransactionPixById(id: String): TransactionPix? {
+        return repository.getTransactionPixById(id)
+    }
 }

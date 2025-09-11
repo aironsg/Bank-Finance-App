@@ -79,7 +79,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/img_success" />
 
 
-
             <TextView
                 android:id="@+id/text_information_recharge_detail"
                 android:layout_width="match_parent"
@@ -167,16 +166,39 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_code_transaction"
                 tools:layout_editor_absoluteX="16dp" />
 
-            <!--            Code Transaction-->
+            <!--           Recipient User-->
+            <TextView
+                android:id="@+id/text_user_recipient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Destinatário"
+                android:layout_marginVertical="10dp"
+                android:textColor="@color/blue_final"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view" />
+
+            <TextView
+                android:id="@+id/text_user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/inter_semibold"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/text_value"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_user_recipient"
+                tools:text="nome do usuario" />
+
+            <!--           Value Transaction-->
             <TextView
                 android:id="@+id/text_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:text="Valor da Transação"
+                android:layout_marginTop="10dp"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/view" />
+                app:layout_constraintTop_toBottomOf="@+id/text_user_recipient" />
 
             <TextView
                 android:id="@+id/text_amount_transaction"
@@ -189,7 +211,7 @@
                 app:layout_constraintTop_toTopOf="@+id/text_value"
                 tools:text="R$ 150,00" />
 
-            <!--            Number Phone-->
+            <!--            Key Pix-->
             <TextView
                 android:id="@+id/text_key_pix"
                 android:layout_width="wrap_content"
@@ -234,6 +256,22 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_type_method"
                 tools:text="Cartão de credito" />
+
+            <ProgressBar
+                android:id="@+id/progress_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginVertical="16dp"
+                android:layout_marginTop="403dp"
+                android:indeterminateTint="@color/color_default"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/text_information_recharge_detail"
+                tools:visibility="visible" />
 
 
             <androidx.appcompat.widget.AppCompatButton

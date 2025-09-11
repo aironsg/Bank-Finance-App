@@ -33,9 +33,9 @@ import dev.airon.bankfinance.databinding.FragmentRechargeBinding
 import dev.airon.bankfinance.domain.model.CreditCard
 import dev.airon.bankfinance.domain.model.Recharge
 import dev.airon.bankfinance.domain.model.Transaction
-import dev.airon.bankfinance.presentation.ui.features.recharge.RechargeFragmentDirections
 import dev.airon.bankfinance.presentation.ui.home.HomeViewModel
 import dev.airon.bankfinance.presentation.ui.home.TransactionsAdapter
+
 
 @AndroidEntryPoint
 class RechargeFragment : Fragment() {
@@ -51,7 +51,7 @@ class RechargeFragment : Fragment() {
     private var balance: Float = 0f
     private lateinit var typeOperation: TransactionOperation
     private lateinit var transactionType: TransactionType
-    private var isBalanceVisible = false // controle de visibilidade
+    private var isBalanceVisible = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -120,14 +120,14 @@ class RechargeFragment : Fragment() {
             phoneNumber = phone,
             typeRecharge = selectedPaymentMethod!!,
 
-        )
+            )
 
         when (selectedPaymentMethod) {
             PaymentMethod.BALANCE -> {
                 if (recharge.amount > balance) {
                     showBottomSheet(message = "Saldo insuficiente para recarga")
                 } else {
-                   confirmationRecharge(recharge)
+                    confirmationRecharge(recharge)
 //                    saveRecharge(recharge)
                 }
                 typeOperation = TransactionOperation.RECHARGE
@@ -394,4 +394,6 @@ class RechargeFragment : Fragment() {
         _binding = null
     }
 }
+
+
 
