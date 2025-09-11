@@ -59,6 +59,8 @@ dependencies {
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
     implementation(libs.androidx.benchmark.common)
+    implementation(libs.androidx.navigation.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.navigation.ui.ktx)
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:4.11.0")
     androidTestImplementation(libs.androidx.junit)

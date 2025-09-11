@@ -102,70 +102,94 @@ class TransactionRepositoryImpl @Inject constructor(
         return snapshot.children.mapNotNull { it.getValue(Transaction::class.java) }
     }
 
-    override suspend fun sendTransactionByPix(transactionPix: TransactionPix): Boolean {
+    override suspend fun sendTransactionByPix(transactionPix: TransactionPix): TransactionPix {
+        // Gera id se vazio
         val transactionId =
             transactionPix.transaction.id.ifEmpty { transactionReference.push().key ?: "" }
 
-        // 🔹 Criando versões separadas: PIX_OUT (remetente) e PIX_IN (destinatário)
+        // Criar as duas versões: remetente (PIX_OUT) e destinatário (PIX_IN)
         val senderTransaction = transactionPix.transaction.copy(
             id = transactionId,
             type = TransactionType.PIX_OUT
         )
-
         val recipientTransaction = transactionPix.transaction.copy(
             id = transactionId,
             type = TransactionType.PIX_IN
         )
 
-        // ✅ Mapa do remetente
-        // Aqui garantimos que a versão PIX_OUT já contenha:
-        // - pixDetails completos (nome do remetente, destinatário, chave Pix e taxa)
-        // - paymentMethod
-        // - date (ServerValue.TIMESTAMP)
+        // Mapa comum dos detalhes PIX
+        val commonPixDetails = mapOf(
+            "sendName" to transactionPix.pixDetails.sendName,
+            "recipientName" to transactionPix.pixDetails.recipientName,
+            "recipientPix" to transactionPix.pixDetails.recipientPix,
+            "fee" to transactionPix.pixDetails.fee
+        )
+
+        // Monta os mapas a salvar (inserimos ServerValue.TIMESTAMP para "date")
         val senderMap = senderTransaction.toMap().toMutableMap().apply {
-            put("pixDetails", mapOf(
-                "sendName" to transactionPix.pixDetails.sendName,
-                "recipientName" to transactionPix.pixDetails.recipientName,
-                "recipientPix" to transactionPix.pixDetails.recipientPix,
-                "fee" to transactionPix.pixDetails.fee
-            ))
+            put("pixDetails", commonPixDetails)
             put("paymentMethod", transactionPix.paymentMethod.name)
             put("date", ServerValue.TIMESTAMP)
         }
 
-        // ✅ Mapa do destinatário
-        // Estrutura idêntica à do remetente, mas com type = PIX_IN.
-        // O app do destinatário vai consumir esses dados depois, quando abrir o app.
         val recipientMap = recipientTransaction.toMap().toMutableMap().apply {
-            put("pixDetails", mapOf(
-                "sendName" to transactionPix.pixDetails.sendName,
-                "recipientName" to transactionPix.pixDetails.recipientName,
-                "recipientPix" to transactionPix.pixDetails.recipientPix,
-                "fee" to transactionPix.pixDetails.fee
-            ))
+            put("pixDetails", commonPixDetails)
             put("paymentMethod", transactionPix.paymentMethod.name)
             put("date", ServerValue.TIMESTAMP)
         }
 
-        // 🔹 Caminhos no Firebase
+        // Referências onde salvar
         val senderRef = database.reference
             .child("transaction")
-            .child(senderTransaction.senderId) // branch do remetente
+            .child(senderTransaction.senderId)
             .child(transactionId)
 
         val recipientRef = database.reference
             .child("transaction")
-            .child(recipientTransaction.recipientId) // branch do destinatário
+            .child(recipientTransaction.recipientId)
             .child(transactionId)
 
-        // 🔹 Salva PIX_OUT no remetente (quem vai abrir o recibo imediatamente)
+        // Salva ambos (await para garantir persistência)
         senderRef.setValue(senderMap).await()
-
-        // 🔹 Salva PIX_IN no destinatário (vai ver depois quando abrir o app)
         recipientRef.setValue(recipientMap).await()
 
-        return true
+        // Agora buscamos de volta a versão salva no remetente para garantir que "date" foi preenchido pelo servidor
+        val snapshot = senderRef.get().await()
+
+        // Tenta desserializar para Transaction; se falhar, tenta usar parseTransaction(map)
+        val savedTransaction = snapshot.getValue(Transaction::class.java)
+            ?: run {
+                val map = snapshot.value as? Map<*, *> ?: emptyMap<Any, Any>()
+                parseTransaction(map) // parseTransaction já existe em sua classe (reaproveite)
+            }
+
+        // Recupera pixDetails do snapshot (robusto contra tipos Long/Double)
+        val pixDetailsMap = snapshot.child("pixDetails").value as? Map<String, Any> ?: emptyMap()
+        val feeValue = when (val fee = pixDetailsMap["fee"]) {
+            is Double -> fee
+            is Long -> fee.toDouble()
+            else -> 0.0
+        }
+
+        val pixDetails = PixDetails(
+            sendName = pixDetailsMap["sendName"].toString(),
+            recipientName = pixDetailsMap["recipientName"].toString(),
+            recipientPix = pixDetailsMap["recipientPix"].toString(),
+            fee = feeValue
+        )
+
+        val paymentMethod = snapshot.child("paymentMethod").getValue(String::class.java)?.let {
+            try { PaymentMethod.valueOf(it) } catch (e: IllegalArgumentException) { PaymentMethod.BALANCE }
+        } ?: PaymentMethod.BALANCE
+
+        // Retorna o objeto completo, pronto para navegar ao recibo
+        return TransactionPix(
+            transaction = savedTransaction,
+            pixDetails = pixDetails,
+            paymentMethod = paymentMethod
+        )
     }
+
 
 
     override suspend fun getTransactionPixById(id: String): TransactionPix? {

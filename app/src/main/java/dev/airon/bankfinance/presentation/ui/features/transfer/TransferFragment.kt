@@ -233,34 +233,14 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
                 when (stateView) {
                     is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                     is StateView.Success -> {
-                        val transactionId = stateView.data!!.transaction.id
+                        binding.progressBar.visibility = View.GONE
 
-                        lifecycleScope.launch {
-                            // 🔹 busca no Firebase já com todos os dados
-                            transferViewModel.getTransfer(transactionId)
-                                .observe(viewLifecycleOwner) { transferState ->
-                                    binding.progressBar.visibility = View.GONE
-                                    when (transferState) {
-                                        is StateView.Success -> {
-                                            val transactionPix = transferState.data
-                                            if (transactionPix != null) {
-                                                val action =
-                                                    TransferFragmentDirections
-                                                        .actionTransferFragmentToTransferReceiptFragment(transactionPix)
-                                                findNavController().navigate(action)
-                                            } else {
-                                                showBottomSheet(message = "Não foi possível carregar a transação.")
-                                            }
-                                        }
-                                        is StateView.Error -> {
-                                            showBottomSheet(message = transferState.message)
-                                        }
-                                        else -> Unit
-                                    }
-                                }
-                        }
+                        val transactionPix = stateView.data!!
+                        // Aqui navega passando o objeto TransactionPix (SafeArgs - Parcelable)
+                        val action = TransferFragmentDirections
+                            .actionTransferFragmentToTransferReceiptFragment(transactionPix)
+                        findNavController().navigate(action)
                     }
-
                     is StateView.Error -> {
                         binding.progressBar.visibility = View.GONE
                         showBottomSheet(message = stateView.message)
@@ -269,6 +249,7 @@ class TransferFragment : Fragment(R.layout.fragment_transfer) {
             }
         }
     }
+
 
     private fun searchPixKey() {
         val pixKey = binding.editKeyPix.text.toString().replace("[()\\s-]".toRegex(), "")

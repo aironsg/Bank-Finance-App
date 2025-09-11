@@ -42,10 +42,10 @@ class TransferViewModel @Inject constructor(
             emit(StateView.Loading())
 
             val transaction = Transaction(
-                id = "", // será gerado no Firebase
+                id = "", // será gerado no repo
                 operation = TransactionOperation.PIX,
                 amount = amount,
-                type = TransactionType.PIX_OUT, // tipo inicial, mas o repo já cria PIX_IN para o destinatário
+                type = TransactionType.PIX_OUT,
                 senderId = senderId,
                 recipientId = recipientId
             )
@@ -59,51 +59,15 @@ class TransferViewModel @Inject constructor(
 
             val transactionPix = TransactionPix(transaction, pixDetails, paymentMethod)
 
-            // 🔹 Apenas uma chamada, repo cria as duas versões
-            sendTransactionPixUseCase(transactionPix)
+            // Agora o useCase retorna o TransactionPix completo (com id + date)
+            val saved = sendTransactionPixUseCase(transactionPix)
 
-            emit(StateView.Success(transactionPix))
+            emit(StateView.Success(saved))
         } catch (e: Exception) {
             emit(StateView.Error(e.message))
         }
     }
 
-    fun saveTransaction(transaction: Transaction): LiveData<StateView<Transaction>> = liveData(Dispatchers.IO) {
-        try {
-            emit(StateView.Loading())
-            saveTransactionUseCase(transaction)
-            emit(StateView.Success(transaction))
-        } catch (e: Exception) {
-            emit(StateView.Error(e.message))
-        }
-    }
-
-    fun getTransactionPixById(transactionId: String): LiveData<TransactionPix?> {
-        val result = MutableLiveData<TransactionPix?>()
-
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val transactionPix = sendTransactionPixUseCase.getTransactionPixById(transactionId)
-                result.postValue(transactionPix)
-            } catch (e: Exception) {
-                result.postValue(null)
-            }
-        }
-
-        return result
-    }
-
-
-
-    fun getTransactions(): LiveData<StateView<List<Transaction>>> = liveData(Dispatchers.IO) {
-        try {
-            emit(StateView.Loading())
-            val transactions = getTransactionsUseCase.invoke()
-            emit(StateView.Success(transactions))
-        } catch (ex: Exception) {
-            emit(StateView.Error(ex.message))
-        }
-    }
 
     fun getTransfer(id: String): LiveData<StateView<TransactionPix>> = liveData(Dispatchers.IO) {
         try {
@@ -116,6 +80,16 @@ class TransferViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             emit(StateView.Error(e.message ?: "Erro desconhecido"))
+        }
+    }
+
+    fun getTransactions(): LiveData<StateView<List<Transaction>>> = liveData(Dispatchers.IO) {
+        try {
+            emit(StateView.Loading())
+            val transactions = getTransactionsUseCase.invoke()
+            emit(StateView.Success(transactions))
+        } catch (ex: Exception) {
+            emit(StateView.Error(ex.message))
         }
     }
 }

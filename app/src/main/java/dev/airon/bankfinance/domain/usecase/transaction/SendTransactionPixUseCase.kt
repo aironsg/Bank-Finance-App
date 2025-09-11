@@ -7,7 +7,8 @@ import jakarta.inject.Inject
 class SendTransactionPixUseCase @Inject constructor(
     private val repository: TransactionRepositoryImpl
 ) {
-    suspend operator fun invoke(transactionPix: TransactionPix): Boolean {
+    // agora devolve o TransactionPix salvo
+    suspend operator fun invoke(transactionPix: TransactionPix): TransactionPix {
         return repository.sendTransactionByPix(transactionPix)
     }
 

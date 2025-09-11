@@ -186,11 +186,13 @@
         tools:layout="@layout/fragment_wallet" />
     <fragment
         android:id="@+id/transferReceiptFragment"
-        android:name="dev.airon.bankfinance.presentation.ui.features.transfer.TransferReceiptFragment"
-        android:label="TransferReceiptFragment" >
+        android:name="dev.airon.bankfinance.presentation.ui.features.transfer.TransferReceiptFragment" >
         <argument
             android:name="transactionPix"
             app:argType="dev.airon.bankfinance.domain.model.TransactionPix" />
+        <action
+            android:id="@+id/action_transferReceiptFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
 
     <fragment
