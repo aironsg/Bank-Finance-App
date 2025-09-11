@@ -73,7 +73,7 @@ _
 
 ```bash
 # Clone este repositório
-gitclone git@github.com:aironsg/Bank-Finance-App.git
+git clone git@github.com:aironsg/Bank-Finance-App.git
 
 # Abra o projeto no Android Studio
 # Configure seu arquivo google-services.json com sua conta Firebase
@@ -136,5 +136,6 @@ para mais detalhes.
 
 
 ---
+
 
 
