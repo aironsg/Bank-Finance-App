@@ -40,7 +40,6 @@ class HomeFragment : Fragment() {
     private val accountViewModel: AccountViewModel by viewModels()
     private lateinit var transactionAdapter: TransactionsAdapter
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,11 +56,9 @@ class HomeFragment : Fragment() {
         getTransactions()
         getUserProfile()
         initNavigationDeposit()
-
-
     }
 
-    private fun getUserProfile(){
+    private fun getUserProfile() {
         val userId = FirebaseHelper.getUserId()
         val nameRef = FirebaseDatabase.getInstance()
             .getReference("profile")
@@ -97,7 +94,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun initNavigationDeposit() {
-
         binding.cardNewDeposit.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_depositFragment)
         }
@@ -105,11 +101,14 @@ class HomeFragment : Fragment() {
         binding.btnAllTransactions.setOnClickListener {
             findNavController().navigate(R.id.action_homeFragment_to_extractFragment)
         }
+
+        binding.btnReceiveValues.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_receiveFragment)
+        }
     }
 
-    private fun initListener(){
+    private fun initListener() {
         binding.btnLogout.setOnClickListener {
-
             FirebaseAuth.getInstance().signOut()
             findNavController().navigate(R.id.action_homeFragment_to_authentication)
         }
@@ -118,7 +117,9 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_homeFragment_to_transferFragment)
         }
 
-
+        binding.btnAllTransactions.setOnClickListener {
+            findNavController().navigate(R.id.action_homeFragment_to_extractFragment)
+        }
     }
 
     private fun getTransactions() {
@@ -126,14 +127,12 @@ class HomeFragment : Fragment() {
             when (stateView) {
                 is StateView.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
-
                 }
 
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.GONE
                     transactionAdapter.submitList(stateView.data?.reversed()?.take(6))
                     showBalance(stateView.data ?: emptyList())
-
                 }
 
                 is StateView.Error -> {
@@ -142,23 +141,59 @@ class HomeFragment : Fragment() {
                 }
             }
         }
-
-
     }
 
     private fun configRecyclerView() {
         transactionAdapter = TransactionsAdapter { transaction ->
-
-            when(transaction.operation){
+            when (transaction.operation) {
                 TransactionOperation.DEPOSIT -> {
-                    val action = HomeFragmentDirections.actionHomeFragmentToDepositReceiptFragment(transaction.id)
+                    val action = HomeFragmentDirections
+                        .actionHomeFragmentToDepositReceiptFragment(transaction.id)
                     findNavController().navigate(action)
-                }else ->{
-
+                }
+                TransactionOperation.PIX -> {
+                    // Aqui buscamos o TransactionPix completo antes de navegar
+                    val txId = transaction.id
+                    homeViewModel.getTransactionPix(txId).observe(viewLifecycleOwner) { state ->
+                        when (state) {
+                            is StateView.Loading<*> -> {
+                                // opcional: mostrar um loading leve (p.ex. ProgressBar peque no layout)
+                            }
+                            is StateView.Success<*> -> {
+                                val transactionPix = state.data
+                                if (transactionPix != null) {
+                                    val action = HomeFragmentDirections
+                                        .actionHomeFragmentToTransferReceiptFragment(transactionPix)
+                                    findNavController().navigate(action)
+                                } else {
+                                    showBottomSheet(message = "Recibo não encontrado para esta transação")
+                                }
+                            }
+                            is StateView.Error<*> -> {
+                                showBottomSheet(message = state.message)
+                            }
+                        }
+                    }
+                }
+                TransactionOperation.CARD_PAYMENT -> {
+                    // Usamos relatedCardId no transaction para navegar ao recibo do cartão (se houver)
+                    val cardId = transaction.relatedCardId ?: transaction.id // fallback
+                    val action = HomeFragmentDirections
+                        .actionHomeFragmentToCreditCardReceiptFragment(
+                            cardId = cardId,
+                            amountPaid = transaction.amount
+                        )
+                    findNavController().navigate(action)
+                }
+                TransactionOperation.RECHARGE -> {
+                    val action = HomeFragmentDirections
+                        .actionHomeFragmentToRechargeReceiptFragment(transaction.id)
+                    findNavController().navigate(action)
+                }
+                else -> {
+                    showBottomSheet(message = "Recibo não implementado para esta operação")
+                }
             }
-            }
-
-
         }
 
         with(binding.recyclerViewTransactions) {
@@ -183,7 +218,6 @@ class HomeFragment : Fragment() {
             recycler.visibility = View.VISIBLE
         }
     }
-
 
     private fun showBalance(transactions: List<Transaction>) {
         var cashIn = 0f
@@ -236,14 +270,11 @@ class HomeFragment : Fragment() {
         }
     }
 
-
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
-
 
 
 

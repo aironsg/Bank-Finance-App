@@ -52,11 +52,21 @@ class TransactionsAdapter(
 
 
             holder.binding.textTransactionType.text = TransactionType.getType(it).toString()
-            holder.binding.textTransactionType.background = if(transaction.type == TransactionType.CASH_IN) {
-                ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_cash_in)
-            } else {
-                ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_cash_out)
+            holder.binding.textTransactionType.background = when (transaction.operation) {
+                TransactionOperation.DEPOSIT -> ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_deposit)
+                TransactionOperation.PIX -> ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_pix)
+                TransactionOperation.CARD_PAYMENT -> ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_card_payment)
+                TransactionOperation.CASH_OUT -> ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_cash_out)
+                TransactionOperation.RECHARGE -> ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_recharge)
+                TransactionOperation.CREDIT_CARD_PURCHASE -> ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_credit_purchase)
+                else -> if (transaction.type == TransactionType.CASH_IN) {
+                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_cash_in)
+                } else {
+                    ContextCompat.getDrawable(holder.itemView.context, R.drawable.bg_round_cash_out)
+                }
             }
+
+
 
 
         }

@@ -56,87 +56,49 @@ class DepositFormFragment : Fragment() {
     }
 
     private fun validateDeposit() {
+        val amountText = binding.editAmount.text.toString()
+            .replace("[R$\\s.]".toRegex(), "")
+            .replace(",", ".")
 
-        var amount =
-            binding.editAmount.text.toString().replace("[R$\\s.]".toRegex(), "").replace(",", ".")
-        if (amount.isNotEmpty()) {
+        if (amountText.isNotEmpty()) {
             hideKeyboard()
-            var deposit = Deposit(amount = amount.toFloat())
-
-            saveDeposit(deposit)
+            // O ID será gerado no construtor de Deposit, date será preenchido pelo servidor
+            val newDeposit = Deposit(amount = amountText.toFloat())
+            processDeposit(newDeposit) // Chama o método atualizado do ViewModel
         } else {
             Toast.makeText(requireContext(), "Digite um valor", Toast.LENGTH_SHORT).show()
         }
-
     }
 
-    private fun saveDeposit(deposit: Deposit) {
-        depositViewModel.saveDeposit(deposit).observe(viewLifecycleOwner) { stateView ->
+
+
+    private fun processDeposit(deposit: Deposit) {
+        depositViewModel.processNewDeposit(deposit).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE
                 }
-
                 is StateView.Success -> {
-
-
-                    stateView.data?.let {
-                        saveTransaction(it)
-
+                    binding.progressBar.visibility = View.INVISIBLE // Esconda o progressbar
+                    // Sucesso! O depósito foi salvo, a wallet foi atualizada e a transação foi registrada.
+                    // Agora, navegue para o recibo usando o ID do depósito que foi retornado.
+                    stateView.data?.let { savedDeposit ->
+                        val action = DepositFormFragmentDirections
+                            .actionDepositFragmentToDepositReceiptFragment(savedDeposit.id)
+                        findNavController().navigate(action)
                     }
                 }
-
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(
                         message = getString(
-                            FirebaseHelper.validError(
-                                stateView.message ?: ""
-                            )
+                            FirebaseHelper.validError(stateView.message ?: "")
                         )
                     )
                 }
             }
         }
     }
-
-    private fun saveTransaction(deposit: Deposit) {
-        val transaction = Transaction(
-            id = deposit.id,
-            operation = TransactionOperation.DEPOSIT,
-            date = deposit.date,
-            amount = deposit.amount,
-            type = TransactionType.CASH_IN
-        )
-
-        depositViewModel.saveTransaction(transaction).observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-
-                is StateView.Success -> {
-
-                    val action =
-                        DepositFormFragmentDirections
-                            .actionDepositFragmentToDepositReceiptFragment(deposit.id)
-                    findNavController().navigate(action)
-                }
-
-                is StateView.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(
-                        message = getString(
-                            FirebaseHelper.validError(
-                                stateView.message ?: ""
-                            )
-                        )
-                    )
-                }
-            }
-        }
-    }
-
 
     override fun onDestroy() {
         super.onDestroy()

@@ -9,6 +9,10 @@ import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.airon.bankfinance.core.util.StateView
+import dev.airon.bankfinance.core.util.StateView.Error
+import dev.airon.bankfinance.core.util.StateView.Loading
+import dev.airon.bankfinance.core.util.StateView.Success
+import dev.airon.bankfinance.domain.usecase.transaction.GetTransactionPixUseCase
 import dev.airon.bankfinance.domain.usecase.transaction.GetTransactionsUseCase
 import dev.airon.bankfinance.domain.usecase.wallet.GetWalletUseCase
 
@@ -20,41 +24,40 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getWalletUseCase: GetWalletUseCase,
-    private val getTransactionsUseCase: GetTransactionsUseCase
+    private val getTransactionsUseCase: GetTransactionsUseCase,
+    private val getTransactionPixUseCase: GetTransactionPixUseCase // <-- novo caso de uso
+) : ViewModel() {
 
-): ViewModel(){
-
-//    private val _transactions  = MutableLiveData<List<Transaction>>()
-//    val transactions : LiveData<List<Transaction>> = _transactions
-
-    fun getWallet() = liveData(Dispatchers.IO){
-
+    fun getWallet() = liveData(Dispatchers.IO) {
         try {
-
             emit(StateView.Loading())
             val wallet = getWalletUseCase.invoke()
-            emit(StateView.Success(wallet))
-
-        }catch (ex: Exception){
-            emit(StateView.Error(ex.message))
+            emit(Success(wallet))
+        } catch (ex: Exception) {
+            emit(Error(ex.message))
         }
     }
 
-    fun getTransactions() = liveData(Dispatchers.IO){
-
+    fun getTransactions() = liveData(Dispatchers.IO) {
         try {
-
             emit(StateView.Loading())
             val transactions = getTransactionsUseCase.invoke()
-            emit(StateView.Success(transactions))
-
-        }catch (ex: Exception){
-            emit(StateView.Error(ex.message))
+            emit(Success(transactions))
+        } catch (ex: Exception) {
+            emit(Error(ex.message))
         }
     }
 
-
-
-
-
+    /**
+     * Busca o TransactionPix completo — usado pela Home/Extract para abrir recibos de PIX
+     */
+    fun getTransactionPix(transactionId: String) = liveData(Dispatchers.IO) {
+        try {
+            emit(Loading())
+            val transactionPix = getTransactionPixUseCase.invoke(transactionId) // suspenso
+            emit(Success(transactionPix))
+        } catch (ex: Exception) {
+            emit(Error(ex.message))
+        }
+    }
 }

@@ -15,7 +15,8 @@ data class Transaction(
     val amount: Float = 0f,
     val type: @RawValue TransactionType? = null,           // ✅ @RawValue para enum
     val senderId: String = "",
-    val recipientId: String = ""
+    val recipientId: String = "",
+    val relatedCardId: String? = null
 ) : Parcelable {
     fun toMap(): Map<String, Any?> {
         return mapOf(
@@ -25,7 +26,8 @@ data class Transaction(
             "amount" to amount,
             "type" to type,
             "senderId" to senderId,
-            "recipientId" to recipientId
+            "recipientId" to recipientId,
+            "relatedCardId" to relatedCardId
         )
     }
 }

@@ -4,7 +4,7 @@ import dev.airon.bankfinance.domain.model.CreditCard
 
 interface CreditCardRepository {
 
-    suspend fun getAllCreditCards(): List<String>
+
 
     suspend fun getCreditCard(): CreditCard
     suspend fun addCreditCardToUser(creditCard: CreditCard)
@@ -15,4 +15,6 @@ interface CreditCardRepository {
     suspend fun updateCreditCard(creditCard: String): Boolean
 
     suspend fun deleteCreditCard(id: String): Boolean
+
+    suspend fun payCreditCard(id: String, amount: Float): Boolean
 }

@@ -4,16 +4,20 @@ enum class TransactionOperation {
     DEPOSIT,
     CREDIT_CARD_PURCHASE,
     PIX,
+    CARD_PAYMENT,
+    CASH_OUT,
     RECHARGE;
 
-  companion object {
-    fun getOperation(operation: TransactionOperation): String {
-      return when (operation) {
-        DEPOSIT -> "Depósito"
-        RECHARGE -> "Recarga"
-        CREDIT_CARD_PURCHASE -> "Compra no Cartão de Crédito"
-        PIX -> "Transferência  PIX"
-      }
+    companion object {
+        fun getOperation(operation: TransactionOperation): String {
+            return when (operation) {
+                DEPOSIT -> "Depósito"
+                RECHARGE -> "Recarga"
+                CREDIT_CARD_PURCHASE -> "Compra no Cartão de Crédito"
+                PIX -> "Transferência PIX"
+                CARD_PAYMENT -> "Pagamento de Cartão"
+                CASH_OUT -> "Saque"
+            }
+        }
     }
-  }
 }

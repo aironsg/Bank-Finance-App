@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_semibold"
                 android:gravity="center"
-                android:text="Recibo"
+                android:text="@string/title_receipt"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="italic"
@@ -57,6 +57,7 @@
                 android:id="@+id/img_success"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
+                android:contentDescription="@string/description_icon_transaction_success"
                 android:src="@drawable/ic_checked"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -84,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/inter"
-                android:text="Seu depósito ficará disponível em até 24 horas."
+                android:text="@string/txt_information_deposit"
                 android:textAlignment="center"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -98,7 +99,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Detalhe da transação"
+                android:text="@string/txt_transaction_details"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@+id/text_subTitle"
                 tools:layout_editor_absoluteX="16dp" />
@@ -110,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Data"
+                android:text="@string/txt_date"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_information_recharge_detail" />
@@ -124,7 +125,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_information_recharge_detail"
-                tools:text="01/01/2025" />
+                tools:text="@string/txt_date_number" />
 
             <!--            Hour Transaction-->
             <TextView
@@ -132,7 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Horário"
+                android:text="@string/txt_hour"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_date_deposit" />
@@ -146,14 +147,14 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_date_deposit"
-                tools:text="22:15" />
+                tools:text="@string/txt_hour_number" />
 
             <!--            Code Transaction-->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Código da Transação"
+                android:text="@string/txt_cod_transaction"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_hour" />
@@ -166,9 +167,8 @@
                 android:fontFamily="@font/inter_semibold"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
-
                 app:layout_constraintTop_toBottomOf="@+id/text_hour_deposit"
-                tools:text="jkhjnbdjibdvk541512241" />
+                tools:text="541512241" />
 
             <View
                 android:id="@+id/view"
@@ -183,7 +183,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Valor da Transação"
+                android:text="@string/txt_value_transaction"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view" />
@@ -196,9 +196,8 @@
                 android:fontFamily="@font/inter_semibold"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
-
                 app:layout_constraintTop_toBottomOf="@+id/view"
-                tools:text="R$ 150,00" />
+                tools:text="@string/txt_value_transaction_number" />
 
 
             <androidx.appcompat.widget.AppCompatButton
@@ -208,7 +207,7 @@
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/bg_button_deposit_receipt"
-                android:text="Retornar"
+                android:text="@string/title_button_return"
                 android:textColor="@color/blue_final"
 
                 app:layout_constraintBottom_toBottomOf="parent"

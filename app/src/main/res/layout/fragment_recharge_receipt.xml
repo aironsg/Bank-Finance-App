@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_semibold"
                 android:gravity="center"
-                android:text="Recibo"
+                android:text="@string/title_receipt"
                 android:textColor="@color/white"
                 android:textSize="24sp"
                 android:textStyle="italic"
@@ -58,6 +58,8 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:src="@drawable/ic_checked"
+                android:contentDescription="@string/description_icon_transaction_success"
+
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/inter_semibold"
-                android:text="Recarga efetuada com sucesso!"
+                android:text="@string/txt_recharge_success"
                 android:textAlignment="center"
                 android:textColor="@color/color_deposit_confirm"
                 android:textSize="22sp"
@@ -84,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:fontFamily="@font/inter"
-                android:text="Sua recarga estará disponível em alguns minutos."
+                android:text="@string/txt_information_recharge"
                 android:textColor="@color/black"
                 android:textAlignment="center"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -98,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="32dp"
                 android:fontFamily="@font/inter_bold"
-                android:text="Detalhe da recarga"
+                android:text="@string/txt_information_recharge_details"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@+id/text_subTitle"
                 tools:layout_editor_absoluteX="16dp" />
@@ -110,7 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Data"
+                android:text="@string/txt_date"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_information_recharge_detail" />
@@ -124,7 +126,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_information_recharge_detail"
-                tools:text="01/01/2025" />
+                tools:text="@string/txt_date_number" />
 
             <!--            Hour Transaction-->
             <TextView
@@ -132,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Horário"
+                android:text="@string/txt_hour"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/date_recharge" />
@@ -146,7 +148,7 @@
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_date_recharge"
-                tools:text="22:15" />
+                tools:text="@string/txt_hour_number" />
 
             <!--            Code Transaction-->
             <TextView
@@ -154,7 +156,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Código da Recarga"
+                android:text="@string/txt_cod_recharge"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_hour" />
@@ -185,7 +187,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Valor da Transação"
+                android:text="@string/txt_value_transaction"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/view" />
@@ -200,7 +202,7 @@
 
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_value"
-                tools:text="R$ 150,00" />
+                tools:text="@string/txt_value_transaction_number" />
 
             <!--            Number Phone-->
             <TextView
@@ -208,7 +210,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Numero do Telefone"
+                android:text="@string/txt_phone"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_value" />
@@ -220,10 +222,9 @@
                 android:fontFamily="@font/inter_semibold"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/text_number"
-
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_number"
-                tools:text="(88) 9-9999-8888" />
+                tools:text="@string/txt_phone_number" />
 
  <!--            Method Payment-->
             <TextView
@@ -231,7 +232,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:text="Tipo de pagamento"
+                android:text="@string/txt_payment_type"
                 android:textColor="@color/blue_final"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/text_number" />
@@ -246,7 +247,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/text_type_method"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/text_type_method"
-                tools:text="Cartão de credito" />
+                tools:text="@string/txt_payment_type_value" />
 
 
             <androidx.appcompat.widget.AppCompatButton
@@ -256,7 +257,7 @@
                 android:layout_marginHorizontal="24dp"
                 android:layout_marginBottom="32dp"
                 android:background="@drawable/bg_button_deposit_receipt"
-                android:text="Retornar"
+                android:text="@string/title_button_return"
                 android:textColor="@color/blue_final"
 
                 app:layout_constraintBottom_toBottomOf="parent"

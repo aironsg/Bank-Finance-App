@@ -5,6 +5,7 @@
 
     <!--    //Generic messages-->
     <string name="txt_button_bottomSheet_confirm">Confirmar</string>
+    <string name="txt_button_confirm">Confirmar</string>
 
     <!--    HomeFragment-->
     <string name="text_formated_value">R$ %1$s</string>
@@ -39,9 +40,75 @@
     <string name="text_confirm_button_bottom_sheet">Confirmar</string>
     <string name="txt_information_data_recharge_alert">Verifique os dados da recarga</string>
     <string name="txt_information_data_transfer_pix_alert">Verifique os dados da Transferência</string>
+    <string name="txt_information_data_payment">Verifique os dados do Pagamento</string>
     <string name="txt_information_insufficient_funds">Você tem saldo insuficiente</string>
     <string name="txt_information_insufficient_credit_limit">Você tem limite insuficiente no cartão de credito</string>
-
+    <string name="hint_digit_your_password">digite sua senha</string>
+    <string name="txt_bottom_sheet">bottomsheet</string>
+    <string name="txt_title">title</string>
+    <string name="txt_message">message</string>
+    <string name="txt_total_balance">Saldo Total</string>
+    <string name="txt_information_button_overview_balance">botao que mostra ou esconde o saldo</string>
+    <string name="txt_description_image_values_received">imagem valores recebidos</string>
+    <string name="txt_received">Recebido</string>
+    <string name="txt_description_values_send">imagem valores enviados</string>
+    <string name="txt_send">Enviado</string>
+    <string name="txt_branch">AGÊNCIA</string>
+    <string name="txt_branch_number">1234</string>
+    <string name="txt_account">CONTA</string>
+    <string name="txt_account_number">1234567</string>
+    <string name="txt_cod_sec">CÓD. SEG.</string>
+    <string name="txt_cod_sec_number">123</string>
+    <string name="description_logo_in_credit_card">logo do app no cartão de crédito</string>
+    <string name="txt_credit_card">CRÉDITO</string>
+    <string name="title_credit_card">BF Credit Card</string>
+    <string name="txt_number_card">1234 4567 8901 2345</string>
+    <string name="txt_date_card">01/36</string>
+    <string name="txt_name_user_card">Nome do Titular</string>
+    <string name="title_button_payment_credit_card">Pagar fatura</string>
+    <string name="txt_limit_credit_card">Limite disponível:</string>
+    <string name="txt_limit_value">0,00</string>
+    <string name="txt_balance_credit_card">Saldo Cartão:</string>
+    <string name="txt_balance_credit_card_value">0,00</string>
+    <string name="txt_information_error_credit_card">Error ao encontrar o cartão de crédito</string>
+    <string name="title_deposit_fragment">Depositar</string>
+    <string name="txt_information_deposit_value">Informe o valor a ser depositado</string>
+    <string name="txt_value_deposit">Valor do depósito</string>
+    <string name="txt_value_deposit_number">R$0,00</string>
+    <string name="title_receipt">Recibo</string>
+    <string name="description_icon_transaction_success">icone de informação de transação realizada com sucesso</string>
+    <string name="txt_information_deposit">Seu depósito ficará disponível em até 24 horas.</string>
+    <string name="txt_transaction_details">Detalhe da transação</string>
+    <string name="txt_date">Data</string>
+    <string name="txt_date_number">01/01/2025</string>
+    <string name="txt_hour">Horário</string>
+    <string name="txt_hour_number">22:15</string>
+    <string name="txt_cod_transaction">Código da Transação</string>
+    <string name="txt_value_transaction">Valor da Transação</string>
+    <string name="txt_value_transaction_number">R$ 150,00</string>
+    <string name="title_button_return">Retornar</string>
+    <string name="txt_recharge_success">Recarga efetuada com sucesso!</string>
+    <string name="txt_information_recharge">Sua recarga estará disponível em alguns minutos.</string>
+    <string name="txt_information_recharge_details">Detalhe da recarga</string>
+    <string name="txt_cod_recharge">Código da Recarga</string>
+    <string name="txt_phone">Numero do Telefone</string>
+    <string name="txt_phone_number">(88) 9-9999-8888</string>
+    <string name="txt_payment_type">Tipo de pagamento</string>
+    <string name="txt_payment_type_value">Cartão de credito</string>
+    <string name="txt_transfer_success">Transferência efetuada com sucesso!</string>
+    <string name="txt_recipient">Destinatário</string>
+    <string name="txt_user">nome do usuario</string>
+    <string name="txt_transaction_value">Valor da Transação</string>
+    <string name="txt_transaction_value_number">R$ 150,00</string>
+    <string name="txt_key_pix">Chave PIX</string>
+    <string name="txt_key_pix_number">jdhfijh-kmsfdlmsfld</string>
+    <string name="title_extract">Extrato</string>
+    <string name="txt_information_transaction_empty">Você ainda não realizou nenhuma transação.</string>
+    <string name="txt_description_button_logout">botão de sair do app\n</string>
+    <string name="txt_payment_credit_card_success">Pagamento do Cartão de Crédito Realizado com sucesso!</string>
+    <string name="txt_information_credit_card_balance">Seu Saldo será liberado em instantes</string>
+    <string name="txt_cod_payment">Codigo do pagamento</string>
+    <string name="txt_information_details_payment_credit_card">Detalha do Pagamento do cartão de crédito</string>
 
 
 </resources>

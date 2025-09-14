@@ -18,28 +18,25 @@ class DepositViewModel @Inject constructor(
 ) : ViewModel(){
 
 
-    fun saveDeposit(deposit: Deposit) = liveData(Dispatchers.IO){
 
+    /**
+     * Inicia o processo de salvar um depósito.
+     * O SaveDepositUseCase agora também lida com a atualização da wallet e o registro da transação.
+     *
+     * Casos de Teste Unitário (para o ViewModel):
+     * - `saveDeposit_callsSaveDepositUseCase_withCorrectDeposit`: Verifica se saveDepositUseCase é chamado.
+     * - `saveDeposit_whenUseCaseSucceeds_emitsSuccessWithDeposit`: Verifica a emissão de StateView.Success.
+     * - `saveDeposit_whenUseCaseFails_emitsErrorWithMessage`: Verifica a emissão de StateView.Error.
+     */
+    fun processNewDeposit(deposit: Deposit) = liveData(Dispatchers.IO) { // Renomeado para clareza
         try {
-
             emit(StateView.Loading())
-            val result = saveDepositUseCase.invoke(deposit)
-            emit(StateView.Success(result))
-
-        }catch (ex: Exception){
-            emit(StateView.Error(ex.message))
-        }
-    }
-
-    fun saveTransaction(transaction: Transaction) = liveData(Dispatchers.IO){
-
-        try {
-
-            emit(StateView.Loading())
-            saveTransactionUseCase.invoke(transaction)
-            emit(StateView.Success(Unit))
-
-        }catch (ex: Exception){
+            // Teste: "saveDeposit_callsSaveDepositUseCase_withCorrectDeposit"
+            val savedDepositWithDate = saveDepositUseCase.invoke(deposit) // UseCase agora faz todo o trabalho
+            // Teste: "saveDeposit_whenUseCaseSucceeds_emitsSuccessWithDeposit"
+            emit(StateView.Success(savedDepositWithDate)) // Retorna o depósito salvo (útil para o recibo)
+        } catch (ex: Exception) {
+            // Teste: "saveDeposit_whenUseCaseFails_emitsErrorWithMessage"
             emit(StateView.Error(ex.message))
         }
     }

@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/inter_semibold"
-            android:text="Saldo Total"
+            android:text="@string/txt_total_balance"
             android:textColor="@android:color/white"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,6 +32,7 @@
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:layout_marginStart="8dp"
+            android:contentDescription="@string/txt_information_button_overview_balance"
             android:src="@drawable/ic_arrow_drop_up"
             app:layout_constraintBottom_toBottomOf="@id/tv_total_balance_label"
             app:layout_constraintStart_toEndOf="@id/tv_total_balance_label"
@@ -63,6 +64,7 @@
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
+                android:contentDescription="@string/txt_description_image_values_received"
                 android:src="@drawable/ic_arrow_down_circle_fill"
 
                 />
@@ -76,7 +78,7 @@
 
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Recebido"
+                    android:text="@string/txt_received"
                     android:textColor="@color/txt_color_card"
                     android:textSize="16sp" />
 
@@ -112,6 +114,7 @@
                 android:layout_width="26dp"
                 android:layout_height="26dp"
                 android:backgroundTint="@color/blue_final"
+                android:contentDescription="@string/txt_description_values_send"
                 android:src="@drawable/ic_arrow_up_circle_fill"
                 tools:layout_editor_absoluteX="187dp"
                 tools:layout_editor_absoluteY="97dp" />
@@ -124,7 +127,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Enviado"
+                    android:text="@string/txt_send"
                     android:textColor="@color/txt_color_card"
                     android:textSize="16sp" />
 

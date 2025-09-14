@@ -1,9 +1,6 @@
-<?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="oval">
-
     <gradient
-        android:startColor="@color/color_transfer_start"
-        android:centerColor="@color/color_transfer_middle"
-        android:endColor="@color/color_transfer_last"/>
-
+        android:startColor="@color/color_cash_out_start"
+        android:centerColor="@color/color_cash_out_middle"
+        android:endColor="@color/color_cash_out_last"/>
 </shape>

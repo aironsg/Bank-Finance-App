@@ -51,6 +51,23 @@ class TransactionRepositoryImpl @Inject constructor(
                 }
         }
     }
+    private fun parseTransaction(map: Map<*, *>): Transaction {
+        return Transaction(
+            id = map["id"] as? String ?: "",
+            operation = (map["operation"] as? String)?.let { TransactionOperation.valueOf(it) },
+            date = (map["date"] as? Long) ?: 0L,
+            amount = when (val raw = map["amount"]) {
+                is Long -> raw.toFloat()
+                is Double -> raw.toFloat()
+                is String -> raw.toFloatOrNull() ?: 0f
+                else -> 0f
+            },
+            type = (map["type"] as? String)?.let { TransactionType.valueOf(it) },
+            senderId = map["senderId"] as? String ?: "",
+            recipientId = map["recipientId"] as? String ?: "",
+            relatedCardId = map["relatedCardId"] as? String  // 🔹 suporte ao vínculo com cartão
+        )
+    }
 
     override suspend fun getTransactions(): List<Transaction> {
         return suspendCoroutine { continuation ->
@@ -76,22 +93,7 @@ class TransactionRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun parseTransaction(map: Map<*, *>): Transaction {
-        return Transaction(
-            id = map["id"] as? String ?: "",
-            operation = (map["operation"] as? String)?.let { TransactionOperation.valueOf(it) },
-            date = (map["date"] as? Long) ?: 0L,
-            amount = when (val raw = map["amount"]) {
-                is Long -> raw.toFloat()
-                is Double -> raw.toFloat()
-                is String -> raw.toFloatOrNull() ?: 0f
-                else -> 0f
-            },
-            type = (map["type"] as? String)?.let { TransactionType.valueOf(it) },
-            senderId = map["senderId"] as? String ?: "",
-            recipientId = map["recipientId"] as? String ?: ""
-        )
-    }
+
 
     override suspend fun getTransactionsById(userId: String): List<Transaction> {
         val snapshot = transactionReference

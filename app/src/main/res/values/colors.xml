@@ -1,16 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="color_default">#27A7E7</color>
     <color name="color_hint_default">#7DC5F6</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="blue_primary">#B3E0F4 </color>
+    <color name="blue_primary">#B3E0F4</color>
     <color name="blue_secondary">#27A7E7</color>
     <color name="blue_final">#1A5A90</color>
 
-
-
+    <!-- Mensagens e status -->
     <color name="boxStrokeColor_error">#F2061E</color>
     <color name="txt_message_bottom_sheet">#438883</color>
     <color name="color_deposit_confirm">#438883</color>
@@ -19,37 +17,43 @@
     <color name="color_transaction_pending">#F95B51</color>
     <color name="color_transaction_date">#666666</color>
 
-
-    <!--    Color gradiente-->
+    <!-- Gradientes para TRANSFERÊNCIA (Pix) -->
     <color name="color_transfer_start">#C30D12</color>
     <color name="color_transfer_middle">#E83B3E</color>
     <color name="color_transfer_last">#E47177</color>
 
+    <!-- Gradientes para DEPÓSITO -->
     <color name="color_deposit_start">#0D9C30</color>
     <color name="color_deposit_middle">#3BE83B</color>
     <color name="color_deposit_last">#77E471</color>
 
+    <!-- Gradientes para PAGAMENTO DE CARTÃO -->
+    <color name="color_card_payment_start">#FF7F50</color>
+    <color name="color_card_payment_middle">#FF5722</color>
+    <color name="color_card_payment_last">#D64500</color>
+
+    <!-- Gradientes para SAQUE -->
+    <color name="color_cash_out_start">#9C27B0</color>
+    <color name="color_cash_out_middle">#BA68C8</color>
+    <color name="color_cash_out_last">#CE93D8</color>
+
+    <!-- Gradiente para botões padrão -->
     <color name="color_button_start">#27A7E7</color>
     <color name="color_button_middle">#2196F3</color>
     <color name="color_button_last">#2272EB</color>
 
-<!--    Color gradient card-->
-    <color name="color_card_primary">#FF7F50 </color>
-    <color name="color_card_secondary">#D64500  </color>
+    <!-- Color gradient card -->
+    <color name="color_card_primary">#FF7F50</color>
+    <color name="color_card_secondary">#D64500</color>
 
-    <!--    color card-->
+    <!-- Card design -->
     <color name="color_card">#2F7E79</color>
     <color name="txt_color_card">#D0E5E4</color>
 
     <color name="green">#4CAF50</color>
     <color name="red">#F44336</color>
 
-
-
+    <!-- Gradient topo home -->
     <color name="gradient_top_home_start">#429690</color>
     <color name="gradient_top_home_last">#2A7C76</color>
-
-
-
-
 </resources>

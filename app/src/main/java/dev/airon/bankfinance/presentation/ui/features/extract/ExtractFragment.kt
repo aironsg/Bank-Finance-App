@@ -32,7 +32,6 @@ class ExtractFragment : Fragment() {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initToolbar(binding.toolbar)
@@ -40,46 +39,69 @@ class ExtractFragment : Fragment() {
         getTransactions()
     }
 
-
-
     private fun getTransactions() {
         extractViewModel.getTransactions().observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
-                is StateView.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-
-                }
-
+                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.GONE
                     transactionAdapter.submitList(stateView.data?.reversed())
-
-
                 }
-
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.GONE
                     showBottomSheet(message = stateView.message)
                 }
             }
         }
-
-
     }
 
     private fun configRecyclerView() {
         transactionAdapter = TransactionsAdapter { transaction ->
-
-            when(transaction.operation){
+            when (transaction.operation) {
                 TransactionOperation.DEPOSIT -> {
-                    val action = ExtractFragmentDirections.actionExtractFragmentToDepositReceiptFragment(transaction.id)
+                    val action = ExtractFragmentDirections
+                        .actionExtractFragmentToDepositReceiptFragment(transaction.id)
                     findNavController().navigate(action)
-                }else ->{
+                }
+                TransactionOperation.PIX -> {
+                    extractViewModel.getTransactionPix(transaction.id).observe(viewLifecycleOwner) { state ->
+                        when (state) {
+                            is StateView.Success -> {
+                                state.data?.let { transactionPix ->
+                                    val action = ExtractFragmentDirections
+                                        .actionExtractFragmentToTransferReceiptFragment(transactionPix)
+                                    findNavController().navigate(action)
+                                }
+                            }
+                            is StateView.Error -> {
+                                showBottomSheet(message = state.message)
+                            }
+                            else -> Unit
+                        }
+                    }
+                }
+                TransactionOperation.CARD_PAYMENT -> {
+                    val cardId = transaction.relatedCardId ?: run {
+                        showBottomSheet(message = "ID do cartão não encontrado para este pagamento")
+                        return@TransactionsAdapter
+                    }
 
+                    val action = ExtractFragmentDirections
+                        .actionExtractFragmentToCreditCardReceiptFragment(
+                            cardId = cardId,
+                            amountPaid = transaction.amount
+                        )
+                    findNavController().navigate(action)
+                }
+                TransactionOperation.RECHARGE -> {
+                    val action = ExtractFragmentDirections
+                        .actionExtractFragmentToRechargeReceiptFragment(transaction.id)
+                    findNavController().navigate(action)
+                }
+                else -> {
+                    showBottomSheet(message = "Recibo não implementado para esta operação")
+                }
             }
-            }
-
-
         }
 
         with(binding.recyclerViewTransactions) {
@@ -88,11 +110,9 @@ class ExtractFragment : Fragment() {
         }
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
-
-
 }
+
