@@ -22,6 +22,6 @@ object CreditCardGenerator {
     }
 
     fun generateLimit(): Float {
-        return listOf(500f, 1000f, 2000f, 5000f).random()
+        return listOf(500f, 1000f, 2000f, 3000f).random()
     }
 }

@@ -1,129 +1,94 @@
-package dev.airon.bankfinance.data.repository.creditCard
+package dev.airon.bankfinance.data.repository.creditcard
 
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
+import android.util.Log
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
-import dev.airon.bankfinance.domain.model.CreditCard
 import dev.airon.bankfinance.core.util.FirebaseHelper
 import dev.airon.bankfinance.core.util.InsufficientBalanceException
-import dev.airon.bankfinance.data.repository.wallet.WalletRepositoryImpl
+import dev.airon.bankfinance.domain.model.CreditCard
 import dev.airon.bankfinance.domain.repository.creditCard.CreditCardRepository
+import dev.airon.bankfinance.domain.repository.wallet.WalletRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import kotlin.coroutines.suspendCoroutine
 
 class CreditCardRepositoryImpl @Inject constructor(
     private val database: FirebaseDatabase,
-    private val walletRepository: WalletRepositoryImpl
+    private val walletRepository: WalletRepository
 ) : CreditCardRepository {
 
-    private val userId = FirebaseHelper.getUserId()
-    private val creditCardReference = database.reference
-        .child("creditCard")
-        .child(userId)
-
-
+    private val currentUserId: String get() = FirebaseHelper.getUserId()
+    private val userCreditCardRef get() = database.reference.child("creditCard").child(currentUserId)
 
     override suspend fun getCreditCard(): CreditCard {
-        return suspendCoroutine { continuation ->
-            creditCardReference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val creditCard = snapshot.getValue(CreditCard::class.java)
-                    creditCard?.let {
-                        continuation.resumeWith(Result.success(it))
-                    }
+        val snapshot = userCreditCardRef.get().await()
+        if (!snapshot.exists()) throw Exception("Cartão de crédito não encontrado para o usuário '$currentUserId'.")
 
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    continuation.resumeWith(Result.failure(error.toException()))
-                }
-
-            })
-
+        // Tenta desserializar direto
+        val direct = try {
+            snapshot.getValue(CreditCard::class.java)
+        } catch (e: Exception) {
+            null
         }
-    }
+        if (direct != null) return direct.copy(id = currentUserId)
 
-    override suspend fun addCreditCardToUser(creditCard: CreditCard) {
-        // Não necessário no seu fluxo atual
-        throw UnsupportedOperationException("Não suportado para cartão único por usuário")
+        // Se não é direto, pode ser que o snapshot contenha filhos (ex: childCardId -> cardObject)
+        val firstChildSnapshot = snapshot.children.firstOrNull()
+        val cardFromChild = firstChildSnapshot?.getValue(CreditCard::class.java)
+        if (cardFromChild != null) return cardFromChild.copy(id = firstChildSnapshot.key ?: currentUserId)
+
+        throw Exception("Erro ao ler os dados do cartão de crédito (formato inesperado).")
     }
 
     override suspend fun initCreditCard(creditCard: CreditCard) {
-        return suspendCoroutine { continuation ->
-            creditCardReference
-                .setValue(creditCard)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        continuation.resumeWith(Result.success(Unit))
-                    } else {
-                        task.exception?.let {
-                            continuation.resumeWith(Result.failure(it))
-                        }
-                    }
-                }
-        }
+        val cardToSave = creditCard.copy(id = currentUserId)
+        userCreditCardRef.setValue(cardToSave).await()
     }
 
-    override suspend fun updateCreditCard(creditCard: String): Boolean {
-        throw UnsupportedOperationException("Não implementado")
+    override suspend fun addCreditCardToUser(creditCard: CreditCard) {
+        // no fluxo atual há apenas 1 cartão por usuário -> usa init
+        initCreditCard(creditCard)
     }
 
     override suspend fun deleteCreditCard(id: String): Boolean {
-        throw UnsupportedOperationException("Não suportado para cartão único por usuário")
+        userCreditCardRef.removeValue().await()
+        return true
     }
 
-
+    /**
+     * Paga a fatura: deduz da wallet do usuário e zera a fatura (balance) do cartão.
+     * Atualiza também o limite disponível se sua model tratar limit como disponível.
+     */
     override suspend fun payCreditCard(cardId: String, amount: Float): Boolean {
-        return suspendCoroutine { continuation ->
-            val creditCardRef = database.reference
-                .child("creditCard")
-                .child(FirebaseHelper.getUserId())
+        // 1) Ler cartão e fatura
+        val card = getCreditCard()
+        val currentBill = card.balance
 
-            creditCardRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    if (!snapshot.exists()) {
-                        continuation.resumeWith(Result.failure(Exception("Cartão não encontrado")))
-                        return
-                    }
-
-                    val card = snapshot.getValue(CreditCard::class.java)
-                    if (card == null) {
-                        continuation.resumeWith(Result.failure(Exception("Erro ao ler dados do cartão")))
-                        return
-                    }
-
-                    val billAmount = card.balance ?: 0f
-                    if (billAmount <= 0f) {
-                        continuation.resumeWith(Result.failure(Exception("Nenhuma fatura pendente")))
-                        return
-                    }
-
-                    if (billAmount != amount) {
-                        continuation.resumeWith(Result.failure(Exception("Valor informado não confere com a fatura atual")))
-                        return
-                    }
-
-                    // 🔹 Atualiza somente o campo balance, preservando o objeto
-                    creditCardRef.child("balance").setValue(0f)
-                        .addOnSuccessListener {
-                            continuation.resumeWith(Result.success(true))
-                        }
-                        .addOnFailureListener { e ->
-                            continuation.resumeWith(Result.failure(e))
-                        }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    continuation.resumeWith(Result.failure(error.toException()))
-                }
-            })
+        if (currentBill <= 0f) {
+            throw Exception("Nenhuma fatura pendente para este cartão.")
         }
+
+        // o fluxo atual exige pagar o valor exato da fatura
+        if (kotlin.math.abs(currentBill - amount) > 0.001f) {
+            throw Exception("Valor informado para pagamento não corresponde à fatura atual.")
+        }
+
+        // 2) Ler wallet e validar saldo
+        val wallet = walletRepository.getWallet()
+        if (wallet.balance < amount) {
+            throw InsufficientBalanceException("Saldo insuficiente na conta (R$${"%.2f".format(wallet.balance)}).")
+        }
+
+        val newWalletBalance = wallet.balance - amount
+        // 3) Atualiza wallet e cartão atomically (updateChildren)
+        val updates = hashMapOf<String, Any?>(
+            "wallet/$currentUserId/balance" to newWalletBalance,
+            "creditCard/$currentUserId/balance" to 0f,
+            // se o `limit` na sua model representa limite disponível, atualize-o.
+            // Se `limit` representa limite total, não atualize. Aqui suponho que `limit` é limite total,
+            // então não alteramos. Caso o seu modelo trate `limit` como disponível, descomente:
+             "creditCard/$currentUserId/limit" to (card.limit + amount)
+        )
+
+        database.reference.updateChildren(updates).await()
+        return true
     }
-
-
-
-
-
 }

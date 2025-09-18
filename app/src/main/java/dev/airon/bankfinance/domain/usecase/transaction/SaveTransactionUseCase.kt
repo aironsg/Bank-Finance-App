@@ -2,15 +2,12 @@ package dev.airon.bankfinance.domain.usecase.transaction
 
 import dev.airon.bankfinance.domain.model.Transaction
 import dev.airon.bankfinance.data.repository.transaction.TransactionRepositoryImpl
+import dev.airon.bankfinance.domain.repository.transaction.TransactionRepository
 import javax.inject.Inject
-
 class SaveTransactionUseCase @Inject constructor(
-    private val transactionRepositoryImpl: TransactionRepositoryImpl
+    private val repository: TransactionRepository
 ) {
-
     suspend operator fun invoke(transaction: Transaction) {
-        transactionRepositoryImpl.saveTransaction(transaction)
+        repository.saveTransaction(transaction)
     }
-
-
 }

@@ -1,56 +1,57 @@
 package dev.airon.bankfinance.data.repository.transaction
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ServerValue
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.getValue
 import dev.airon.bankfinance.core.util.FirebaseHelper
+import dev.airon.bankfinance.core.util.InsufficientBalanceException
+import dev.airon.bankfinance.core.util.InsufficientLimitException
 import dev.airon.bankfinance.data.enum.PaymentMethod
 import dev.airon.bankfinance.data.enum.TransactionOperation
+import dev.airon.bankfinance.data.enum.TransactionSource
 import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.domain.model.PixDetails
 import dev.airon.bankfinance.domain.model.Transaction
 import dev.airon.bankfinance.domain.model.TransactionPix
+import dev.airon.bankfinance.domain.repository.creditCard.CreditCardRepository
 import dev.airon.bankfinance.domain.repository.transaction.TransactionRepository
-import kotlinx.coroutines.suspendCancellableCoroutine
+import dev.airon.bankfinance.domain.repository.wallet.WalletRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
+import kotlin.collections.get
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+
 class TransactionRepositoryImpl @Inject constructor(
-    private val database: FirebaseDatabase
+    private val database: FirebaseDatabase,
+    private val walletRepository: WalletRepository,
+    private val creditCardRepository: CreditCardRepository,
+    // walletRepository etc são usados apenas em sendTransactionByPix, mas mantemos fora aqui — injete se necessário
 ) : TransactionRepository {
 
-    private val transactionReference = database.reference
-        .child("transaction")
-        .child(FirebaseHelper.getUserId())
+    private val TAG = "TransactionRepository"
+    private fun userTransactionRef() =
+        database.reference.child("transaction").child(FirebaseHelper.getUserId())
 
     override suspend fun saveTransaction(transaction: Transaction) {
-        return suspendCoroutine { continuation ->
-            transactionReference
-                .child(transaction.id)
-                .setValue(transaction)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val dateReference = transactionReference
-                            .child(transaction.id)
-                            .child("date")
-
-                        dateReference.setValue(ServerValue.TIMESTAMP)
-                            .addOnCompleteListener {
-                                continuation.resumeWith(Result.success(Unit))
-                            }
-                    } else {
-                        task.exception?.let {
-                            continuation.resumeWith(Result.failure(it))
-                        }
-                    }
-                }
+        // Gera id se vazio e salva como map (com date ServerValue.TIMESTAMP)
+        val txRef = userTransactionRef()
+        val txId = transaction.id.ifEmpty {
+            txRef.push().key ?: System.currentTimeMillis().toString()
         }
+
+        val map = transaction.toMap().toMutableMap()
+        map["id"] = txId
+        map["date"] = ServerValue.TIMESTAMP
+
+        txRef.child(txId).setValue(map).await()
+
     }
+
     private fun parseTransaction(map: Map<*, *>): Transaction {
         return Transaction(
             id = map["id"] as? String ?: "",
@@ -65,139 +66,170 @@ class TransactionRepositoryImpl @Inject constructor(
             type = (map["type"] as? String)?.let { TransactionType.valueOf(it) },
             senderId = map["senderId"] as? String ?: "",
             recipientId = map["recipientId"] as? String ?: "",
-            relatedCardId = map["relatedCardId"] as? String  // 🔹 suporte ao vínculo com cartão
+            relatedCardId = map["relatedCardId"] as? String,
+            source = (map["source"] as? String)?.let {
+                try { TransactionSource.valueOf(it) } catch (_: Exception) { TransactionSource.WALLET }
+            } ?: TransactionSource.WALLET
+
         )
     }
 
     override suspend fun getTransactions(): List<Transaction> {
         return suspendCoroutine { continuation ->
-            transactionReference.addListenerForSingleValueEvent(object : ValueEventListener {
+            userTransactionRef().addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val transactions = mutableListOf<Transaction>()
                     for (ds in snapshot.children) {
                         try {
-                            val map = ds.value as? Map<*, *>
-                            val transaction = map?.let { parseTransaction(it) }
-                            transaction?.let { transactions.add(it) }
+                            val t = ds.getValue(Transaction::class.java)
+                            if (t != null) {
+                                transactions.add(t)
+                            } else {
+                                val map = ds.value as? Map<*, *>
+                                if (map != null) transactions.add(parseTransaction(map))
+                            }
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            Log.e(TAG, "Erro parseando transação ${ds.key}", e)
                         }
                     }
-                    continuation.resumeWith(Result.success(transactions))
+                    continuation.resume(transactions)
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    continuation.resumeWith(Result.failure(error.toException()))
+                    continuation.resumeWithException(error.toException())
                 }
             })
         }
     }
 
-
-
     override suspend fun getTransactionsById(userId: String): List<Transaction> {
-        val snapshot = transactionReference
-            .orderByChild("senderId")
-            .equalTo(userId)
-            .get().await()
-
+        val snapshot = database.reference.child("transaction").child(userId).get().await()
         return snapshot.children.mapNotNull { it.getValue(Transaction::class.java) }
     }
 
+
     override suspend fun sendTransactionByPix(transactionPix: TransactionPix): TransactionPix {
-        // Gera id se vazio
-        val transactionId =
-            transactionPix.transaction.id.ifEmpty { transactionReference.push().key ?: "" }
+        val originalTransaction = transactionPix.transaction
+        val pixDetails = transactionPix.pixDetails
+        val paymentMethod = transactionPix.paymentMethod
 
-        // Criar as duas versões: remetente (PIX_OUT) e destinatário (PIX_IN)
-        val senderTransaction = transactionPix.transaction.copy(
+        val transactionId = originalTransaction.id.ifEmpty {
+            database.reference.child("transaction").push().key
+                ?: System.currentTimeMillis().toString()
+        }
+
+        val senderId = originalTransaction.senderId
+        val recipientId = originalTransaction.recipientId
+        val amount = originalTransaction.amount
+
+        val updates = hashMapOf<String, Any?>()
+
+        // 🔹 Atualiza saldo conforme método de pagamento
+        if (paymentMethod == PaymentMethod.BALANCE) {
+            val senderWallet = walletRepository.getWallet(senderId)
+            if (senderWallet.balance < amount) throw InsufficientBalanceException("Saldo insuficiente")
+            updates["wallet/$senderId/balance"] = senderWallet.balance - amount
+        } else if (paymentMethod == PaymentMethod.CREDIT_CARD) {
+            val senderCard = creditCardRepository.getCreditCard()
+            if (senderCard.limit < amount) throw InsufficientLimitException("Limite insuficiente")
+            updates["creditCard/$senderId/balance"] = senderCard.balance + amount
+            updates["creditCard/$senderId/limit"] = senderCard.limit - amount
+        }
+
+        // 🔹 Sempre credita na wallet do destinatário
+        val recipientWallet = walletRepository.getWallet(recipientId)
+        updates["wallet/$recipientId/balance"] = recipientWallet.balance + amount
+
+        // 🔹 Transações (out e in)
+        val senderTransaction = originalTransaction.copy(
             id = transactionId,
-            type = TransactionType.PIX_OUT
-        )
-        val recipientTransaction = transactionPix.transaction.copy(
-            id = transactionId,
-            type = TransactionType.PIX_IN
+            type = TransactionType.PIX_OUT,
+            date = 0L,
+            source = if (paymentMethod == PaymentMethod.CREDIT_CARD) TransactionSource.CREDIT_CARD else TransactionSource.WALLET
         )
 
-        // Mapa comum dos detalhes PIX
+        val recipientTransaction = originalTransaction.copy(
+            id = transactionId,
+            type = TransactionType.PIX_IN,
+            date = 0L,
+            source = TransactionSource.WALLET // 🔹 Sempre cai na wallet
+        )
+
+
         val commonPixDetails = mapOf(
-            "sendName" to transactionPix.pixDetails.sendName,
-            "recipientName" to transactionPix.pixDetails.recipientName,
-            "recipientPix" to transactionPix.pixDetails.recipientPix,
-            "fee" to transactionPix.pixDetails.fee
+            "sendName" to pixDetails.sendName,
+            "recipientName" to pixDetails.recipientName,
+            "recipientPix" to pixDetails.recipientPix,
+            "fee" to pixDetails.fee
         )
 
-        // Monta os mapas a salvar (inserimos ServerValue.TIMESTAMP para "date")
         val senderMap = senderTransaction.toMap().toMutableMap().apply {
             put("pixDetails", commonPixDetails)
-            put("paymentMethod", transactionPix.paymentMethod.name)
+            put("paymentMethod", paymentMethod.name)
             put("date", ServerValue.TIMESTAMP)
         }
 
         val recipientMap = recipientTransaction.toMap().toMutableMap().apply {
             put("pixDetails", commonPixDetails)
-            put("paymentMethod", transactionPix.paymentMethod.name)
+            put("paymentMethod", paymentMethod.name)
             put("date", ServerValue.TIMESTAMP)
         }
 
-        // Referências onde salvar
-        val senderRef = database.reference
+        updates["transaction/$senderId/$transactionId"] = senderMap
+        updates["transaction/$recipientId/$transactionId"] = recipientMap
+
+        // 🔹 Executa todas as atualizações em batch
+        database.reference.updateChildren(updates).await()
+
+        // 🔹 Buscar transação salva para devolver completa
+        val savedSnapshot = database.reference
             .child("transaction")
-            .child(senderTransaction.senderId)
+            .child(senderId)
             .child(transactionId)
+            .get().await()
 
-        val recipientRef = database.reference
-            .child("transaction")
-            .child(recipientTransaction.recipientId)
-            .child(transactionId)
-
-        // Salva ambos (await para garantir persistência)
-        senderRef.setValue(senderMap).await()
-        recipientRef.setValue(recipientMap).await()
-
-        // Agora buscamos de volta a versão salva no remetente para garantir que "date" foi preenchido pelo servidor
-        val snapshot = senderRef.get().await()
-
-        // Tenta desserializar para Transaction; se falhar, tenta usar parseTransaction(map)
-        val savedTransaction = snapshot.getValue(Transaction::class.java)
+        val finalSavedTransaction = savedSnapshot.getValue(Transaction::class.java)
             ?: run {
-                val map = snapshot.value as? Map<*, *> ?: emptyMap<Any, Any>()
-                parseTransaction(map) // parseTransaction já existe em sua classe (reaproveite)
+                val map = savedSnapshot.value as? Map<*, *> ?: emptyMap<Any, Any>()
+                parseTransaction(map)
             }
 
-        // Recupera pixDetails do snapshot (robusto contra tipos Long/Double)
-        val pixDetailsMap = snapshot.child("pixDetails").value as? Map<String, Any> ?: emptyMap()
-        val feeValue = when (val fee = pixDetailsMap["fee"]) {
+        val finalPixDetailsMap = savedSnapshot.child("pixDetails").value as? Map<String, Any> ?: emptyMap()
+        val finalFeeValue = when (val fee = finalPixDetailsMap["fee"]) {
             is Double -> fee
             is Long -> fee.toDouble()
             else -> 0.0
         }
 
-        val pixDetails = PixDetails(
-            sendName = pixDetailsMap["sendName"].toString(),
-            recipientName = pixDetailsMap["recipientName"].toString(),
-            recipientPix = pixDetailsMap["recipientPix"].toString(),
-            fee = feeValue
+        val finalPixDetails = PixDetails(
+            sendName = finalPixDetailsMap["sendName"].toString(),
+            recipientName = finalPixDetailsMap["recipientName"].toString(),
+            recipientPix = finalPixDetailsMap["recipientPix"].toString(),
+            fee = finalFeeValue
         )
 
-        val paymentMethod = snapshot.child("paymentMethod").getValue(String::class.java)?.let {
-            try { PaymentMethod.valueOf(it) } catch (e: IllegalArgumentException) { PaymentMethod.BALANCE }
-        } ?: PaymentMethod.BALANCE
+        val finalPaymentMethod = savedSnapshot.child("paymentMethod").getValue(String::class.java)?.let {
+            try { PaymentMethod.valueOf(it) } catch (e: IllegalArgumentException) { paymentMethod }
+        } ?: paymentMethod
 
-        // Retorna o objeto completo, pronto para navegar ao recibo
         return TransactionPix(
-            transaction = savedTransaction,
-            pixDetails = pixDetails,
-            paymentMethod = paymentMethod
+            transaction = finalSavedTransaction,
+            pixDetails = finalPixDetails,
+            paymentMethod = finalPaymentMethod
         )
     }
 
 
 
     override suspend fun getTransactionPixById(id: String): TransactionPix? {
-        val snapshot = transactionReference.child(id).get().await()
+        val userId = FirebaseHelper.getUserId()
+        val snapshot = database.reference.child("transaction").child(userId).child(id).get().await()
+        if (!snapshot.exists()) return null
 
-        val transaction = snapshot.getValue(Transaction::class.java) ?: return null
+        val transaction = snapshot.getValue(Transaction::class.java) ?: run {
+            val map = snapshot.value as? Map<*, *> ?: return null
+            parseTransaction(map)
+        }
 
         val pixDetailsMap = snapshot.child("pixDetails").value as? Map<String, Any> ?: return null
         val feeValue = when (val fee = pixDetailsMap["fee"]) {
@@ -205,26 +237,16 @@ class TransactionRepositoryImpl @Inject constructor(
             is Long -> fee.toDouble()
             else -> 0.0
         }
-
         val pixDetails = PixDetails(
             sendName = pixDetailsMap["sendName"].toString(),
             recipientName = pixDetailsMap["recipientName"].toString(),
             recipientPix = pixDetailsMap["recipientPix"].toString(),
             fee = feeValue
         )
-
         val paymentMethod = snapshot.child("paymentMethod").getValue(String::class.java)?.let {
-            try {
-                PaymentMethod.valueOf(it)
-            } catch (e: IllegalArgumentException) {
-                PaymentMethod.BALANCE
-            }
+            try { PaymentMethod.valueOf(it) } catch (e: IllegalArgumentException) { PaymentMethod.BALANCE }
         } ?: PaymentMethod.BALANCE
 
-        return TransactionPix(
-            transaction = transaction,
-            pixDetails = pixDetails,
-            paymentMethod = paymentMethod
-        )
+        return TransactionPix(transaction = transaction, pixDetails = pixDetails, paymentMethod = paymentMethod)
     }
 }

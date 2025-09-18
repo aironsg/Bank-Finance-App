@@ -41,6 +41,15 @@ class GetMask {
             )
             return nf.format(value)
         }
+
+        fun maskCreditCardNumber(number: String): String {
+            return if (number.isNotBlank() && number.length >= 8) {
+                val firstFour = number.take(4)
+                val lastFour = number.takeLast(4)
+                "$firstFour **** **** $lastFour"
+            } else number.ifEmpty { "---- ---- ---- ----" }
+        }
+
     }
 
 

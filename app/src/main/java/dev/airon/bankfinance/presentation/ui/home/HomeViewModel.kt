@@ -25,7 +25,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getWalletUseCase: GetWalletUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
-    private val getTransactionPixUseCase: GetTransactionPixUseCase // <-- novo caso de uso
+    private val getTransactionPixUseCase: GetTransactionPixUseCase
 ) : ViewModel() {
 
     fun getWallet() = liveData(Dispatchers.IO) {
@@ -60,4 +60,15 @@ class HomeViewModel @Inject constructor(
             emit(Error(ex.message))
         }
     }
+
+    fun refreshWallet() = liveData(Dispatchers.IO) {
+        try {
+            emit(StateView.Loading())
+            val wallet = getWalletUseCase.invoke()
+            emit(StateView.Success(wallet))
+        } catch (ex: Exception) {
+            emit(StateView.Error(ex.message))
+        }
+    }
+
 }

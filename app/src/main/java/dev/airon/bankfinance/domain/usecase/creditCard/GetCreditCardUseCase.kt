@@ -1,11 +1,11 @@
 package dev.airon.bankfinance.domain.usecase.creditCard
 
 import dev.airon.bankfinance.domain.model.CreditCard
-import dev.airon.bankfinance.data.repository.creditCard.CreditCardRepositoryImpl
+import dev.airon.bankfinance.domain.repository.creditCard.CreditCardRepository
 import javax.inject.Inject
 
 class GetCreditCardUseCase @Inject constructor(
-    private val repository: CreditCardRepositoryImpl
+    private val repository: CreditCardRepository
 ) {
 
     suspend fun getCreditCard(): CreditCard{

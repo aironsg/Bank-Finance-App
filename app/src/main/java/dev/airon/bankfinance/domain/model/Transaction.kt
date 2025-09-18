@@ -3,6 +3,7 @@ package dev.airon.bankfinance.domain.model
 import android.os.Parcelable
 import dev.airon.bankfinance.data.enum.PaymentMethod
 import dev.airon.bankfinance.data.enum.TransactionOperation
+import dev.airon.bankfinance.data.enum.TransactionSource
 import dev.airon.bankfinance.data.enum.TransactionType
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
@@ -10,28 +11,30 @@ import kotlinx.parcelize.RawValue
 @Parcelize
 data class Transaction(
     var id: String = "",
-    val operation: @RawValue TransactionOperation? = null, // ✅ @RawValue para enum
-    val date: Long = 0,
+    val operation: @RawValue TransactionOperation? = null,
+    val date: Long = 0L,
     val amount: Float = 0f,
-    val type: @RawValue TransactionType? = null,           // ✅ @RawValue para enum
+    val type: @RawValue TransactionType? = null,
     val senderId: String = "",
     val recipientId: String = "",
-    val relatedCardId: String? = null
+    val relatedCardId: String? = null,
+    val source: TransactionSource = TransactionSource.WALLET
 ) : Parcelable {
+
     fun toMap(): Map<String, Any?> {
         return mapOf(
             "id" to id,
-            "operation" to operation,
+            "operation" to operation?.name,
             "date" to date,
             "amount" to amount,
-            "type" to type,
+            "type" to type?.name,
             "senderId" to senderId,
             "recipientId" to recipientId,
-            "relatedCardId" to relatedCardId
+            "relatedCardId" to relatedCardId,
+            "source" to source.name
         )
     }
 }
-
 @Parcelize
 data class PixDetails(
     val sendName: String = "",

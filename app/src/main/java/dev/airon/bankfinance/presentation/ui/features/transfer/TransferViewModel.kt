@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 @HiltViewModel
-class TransferViewModel @Inject constructor(
+class  TransferViewModel @Inject constructor(
     private val sendTransactionPixUseCase: SendTransactionPixUseCase,
     private val getTransactionsUseCase: GetTransactionsUseCase,
     private val saveTransactionUseCase: SaveTransactionUseCase

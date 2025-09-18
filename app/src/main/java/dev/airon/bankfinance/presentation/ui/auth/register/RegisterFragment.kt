@@ -40,7 +40,6 @@ import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import kotlin.random.Random
 
-
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
 
@@ -109,12 +108,11 @@ class RegisterFragment : Fragment() {
 
         hideKeyboard()
 
-        // 🔑 Gerar salt único e hash da senha de transação
         val salt = SecurityUtils.generateSalt()
-        Log.i("INFOTEST", "validateData: ${salt}")
         val hashedPasswordTransaction = SecurityUtils.hashPassword(passwordTransaction, salt)
 
-        val user = User(
+        // Criar usuário SEM ID inicialmente, o ID virá do Firebase Auth
+        val userToRegister = User(
             name = name,
             cpf = encryptData(cpf, secretKey),
             rg = encryptData(rg, secretKey),
@@ -123,91 +121,133 @@ class RegisterFragment : Fragment() {
             password = password,
             passwordTransaction = hashedPasswordTransaction,
             passwordSalt = salt
+            // id será preenchido após o registro no Firebase Auth
         )
-        registerUser(user)
+        registerUser(userToRegister)
     }
 
-    private fun registerUser(user: User) {
+    private fun registerUser(userToRegister: User) {
         registerViewModel.register(
-            user.name,
-            user.cpf,
-            user.rg,
-            user.phone,
-            user.email,
-            user.password,
-            user.passwordTransaction,
-             user.passwordSalt
+            userToRegister.name,
+            userToRegister.cpf,
+            userToRegister.rg,
+            userToRegister.phone,
+            userToRegister.email,
+            userToRegister.password,
+            userToRegister.passwordTransaction,
+            userToRegister.passwordSalt
         ).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
-                is StateView.Success -> stateView.data?.let { saveProfile(it) }
+                is StateView.Success -> {
+                    // Espera-se que stateView.data (User) agora tenha o 'id' preenchido
+                    // com o UID do Firebase Auth, retornado pelo RegisterViewModel/Repository.
+                    stateView.data?.let { registeredUserWithId ->
+                        if (registeredUserWithId.id.isNotBlank()) {
+                            Log.i("RegisterFragment", "Usuário registrado com ID: ${registeredUserWithId.id}")
+                            saveProfile(registeredUserWithId)
+                        } else {
+                            binding.progressBar.visibility = View.INVISIBLE
+                            showBottomSheet(message = "Falha ao obter ID do usuário após registro.")
+                            Log.e("RegisterFragment", "ID do usuário vazio após registro bem-sucedido.")
+                        }
+                    } ?: run {
+                        binding.progressBar.visibility = View.INVISIBLE
+                        showBottomSheet(message = "Dados do usuário não retornados após registro.")
+                        Log.e("RegisterFragment", "Dados do usuário nulos após registro bem-sucedido.")
+                    }
+                }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
+                    Log.e("RegisterFragment", "Erro no registro: ${stateView.message}")
                 }
             }
         }
     }
 
-    private fun saveProfile(user: User) {
-        profileViewModel.saveProfile(user).observe(viewLifecycleOwner) { stateView ->
+    private fun saveProfile(userWithId: User) { // userWithId já tem o ID do Firebase Auth
+        profileViewModel.saveProfile(userWithId).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
-                    initAccount(user)
+                    Log.i("RegisterFragment", "Perfil salvo para usuário ID: ${userWithId.id}. Iniciando criação de conta, wallet e cartão.")
+                    // Agora passamos o userWithId para a próxima etapa
+                    initializeFinancialEntities(userWithId)
+                    // Navega para Home APÓS todas as inicializações terem sido disparadas
+                    // Idealmente, você esperaria a conclusão de todas antes de navegar,
+                    // mas para simplificar, disparamos e navegamos.
+                    // Para uma UI mais robusta, considere usar coroutines com joinAll ou similar.
                     findNavController().navigate(R.id.action_global_homeFragment)
                 }
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE
                     showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
+                    Log.e("RegisterFragment", "Erro ao salvar perfil: ${stateView.message}")
                 }
             }
         }
     }
 
-    private fun initAccount(user: User) {
+    // Nova função para agrupar a inicialização de Account, Wallet e CreditCard
+    private fun initializeFinancialEntities(userWithId: User) {
+        val userId = userWithId.id // Usar o ID do usuário obtido do Firebase Auth
+
+        // 1. Criar e Inicializar a Conta Bancária
         val account = Account(
-            id = FirebaseHelper.getUserId(),
-            name = user.name,
-            branch = "0101",
+            id = userId, // ID da conta é o ID do usuário
+            name = userWithId.name,
+            branch = "0101", // Exemplo
             accountNumber = generateAccountNumber(),
-            balance = 0f
+            balance = 0f // Saldo inicial da conta bancária
         )
-        initWallet()
-        initCreditCard(account)
+        // Dispara a inicialização da conta
         accountViewModel.initAccount(account).observe(viewLifecycleOwner) { stateView ->
-            binding.progressBar.visibility = if (stateView is StateView.Loading) View.VISIBLE else View.INVISIBLE
+            if (stateView is StateView.Loading) Log.d("RegisterFragment", "Iniciando Account...")
+            if (stateView is StateView.Success) Log.i("RegisterFragment", "Account inicializada para usuário ID: $userId")
             if (stateView is StateView.Error) {
-                showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
+                Log.e("RegisterFragment", "Erro ao inicializar Account para ID $userId: ${stateView.message}")
+                // Você pode mostrar um BottomSheet aqui também ou tratar o erro
             }
         }
-    }
 
-    private fun initWallet() {
-        walletViewModel.initWallet(Wallet(userId = FirebaseHelper.getUserId()))
-            .observe(viewLifecycleOwner) { stateView ->
-                binding.progressBar.visibility = if (stateView is StateView.Loading) View.VISIBLE else View.INVISIBLE
-                if (stateView is StateView.Error) {
-                    showBottomSheet(message = getString(FirebaseHelper.validError(stateView.message ?: "")))
-                }
-            }
-    }
-
-    private fun initCreditCard(account: Account) {
-        val card = CreditCard(
-            id = FirebaseHelper.getUserId(),
-            number = CreditCardGenerator.generateNumber(),
-            account = account,
-            securityCode = CreditCardGenerator.generateSecurityCode(),
-            officialUser = account.name,
-            limit = CreditCardGenerator.generateLimit(),
-            validDate = CreditCardGenerator.generateValidDate(),
-            balance = 0f
+        // 2. Criar e Inicializar a Wallet
+        val wallet = Wallet(
+            id = userId, // ID da Wallet é o ID do usuário
+            userId = userId,
+            balance = 0f // Saldo inicial da wallet
         )
-        creditCardViewModel.initCreditCard(card).observe(viewLifecycleOwner) { stateView ->
-            binding.progressBar.visibility = if (stateView is StateView.Loading) View.VISIBLE else View.INVISIBLE
-            if (stateView is StateView.Error) showBottomSheet(message = "Erro ao criar cartão")
+        // Dispara a inicialização da wallet
+        walletViewModel.initWallet(wallet).observe(viewLifecycleOwner) { stateView ->
+            if (stateView is StateView.Loading) Log.d("RegisterFragment", "Iniciando Wallet...")
+            if (stateView is StateView.Success) Log.i("RegisterFragment", "Wallet inicializada para usuário ID: $userId")
+            if (stateView is StateView.Error) {
+                Log.e("RegisterFragment", "Erro ao inicializar Wallet para ID $userId: ${stateView.message}")
+            }
+        }
+
+        // 3. Criar e Inicializar o Cartão de Crédito
+        val creditCard = CreditCard(
+            id = userId, // ID do objeto CreditCard é o ID do usuário
+            number = CreditCardGenerator.generateNumber(),
+            account = account, // Associa a conta bancária
+            securityCode = CreditCardGenerator.generateSecurityCode(),
+            officialUser = userWithId.name,
+            limit = CreditCardGenerator.generateLimit(), // Defina um limite padrão
+            validDate = CreditCardGenerator.generateValidDate(),
+            balance = 0f // Fatura inicial do cartão é zero
+        )
+        // Dispara a inicialização do cartão de crédito
+        creditCardViewModel.initCreditCard(creditCard).observe(viewLifecycleOwner) { stateView ->
+            if (stateView is StateView.Loading) Log.d("RegisterFragment", "Iniciando CreditCard...")
+            if (stateView is StateView.Success) {
+                Log.i("RegisterFragment", "CreditCard inicializado para usuário ID: $userId com ID de objeto ${creditCard.id}")
+            }
+            if (stateView is StateView.Error) {
+                Log.e("RegisterFragment", "Erro ao inicializar CreditCard para ID $userId: ${stateView.message}")
+                showBottomSheet(message = "Erro ao criar cartão: ${stateView.message}")
+            }
         }
     }
 
@@ -225,7 +265,6 @@ class RegisterFragment : Fragment() {
         return Base64.encodeToString(cipher.doFinal(data.toByteArray(Charsets.UTF_8)), Base64.DEFAULT)
     }
 
-    // 🔐 Hash com salt único
     private fun hashPassword(password: String, salt: String): String {
         val iterations = 65536
         val keyLength = 256
@@ -235,17 +274,17 @@ class RegisterFragment : Fragment() {
         return Base64.encodeToString(hash, Base64.NO_WRAP)
     }
 
-    // 🔑 Gerar salt aleatório
     private fun generateSalt(): String {
         val bytes = ByteArray(16)
         Random.nextBytes(bytes)
         return Base64.encodeToString(bytes, Base64.NO_WRAP)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
+
 
 

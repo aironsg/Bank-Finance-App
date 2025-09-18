@@ -2,6 +2,7 @@ package dev.airon.bankfinance.presentation.ui.features.recharge
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,8 +35,6 @@ import dev.airon.bankfinance.domain.model.CreditCard
 import dev.airon.bankfinance.domain.model.Recharge
 import dev.airon.bankfinance.domain.model.Transaction
 import dev.airon.bankfinance.presentation.ui.home.HomeViewModel
-import dev.airon.bankfinance.presentation.ui.home.TransactionsAdapter
-
 
 @AndroidEntryPoint
 class RechargeFragment : Fragment() {
@@ -47,11 +46,9 @@ class RechargeFragment : Fragment() {
     private val rechargeViewModel: RechargeViewModel by viewModels()
     private val homeViewModel: HomeViewModel by viewModels()
 
-    private lateinit var transactionAdapter: TransactionsAdapter
     private var balance: Float = 0f
-    private lateinit var typeOperation: TransactionOperation
-    private lateinit var transactionType: TransactionType
     private var isBalanceVisible = false
+    private val logTag = "RechargeFragment"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -65,9 +62,8 @@ class RechargeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initToolbar(binding.toolbar, isToolbarDefaultColor = true)
-        observeTransactions()
+        observeWalletBalance() // 🔹 Agora pega do servidor
         getCreditCardNumber()
-        getTransactions()
         initRadioGroup()
         initListener()
         showMaskMoney()
@@ -79,19 +75,15 @@ class RechargeFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initListener() {
-        binding.btnRecharge.setOnClickListener { validateAndProcessRecharge() }
-
-        // Toggle saldo visível/oculto
+        binding.btnRecharge.setOnClickListener { validateRecharge() }
         binding.toggleVisibility.setOnClickListener {
             isBalanceVisible = !isBalanceVisible
             updateBalanceUI()
         }
     }
 
-
-
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun validateAndProcessRecharge() { // Renomeado
+    private fun validateRecharge() {
         val amountText = binding.editAmount.text.toString()
             .replace("[R$\\s.]".toRegex(), "")
             .replace(",", ".")
@@ -101,57 +93,57 @@ class RechargeFragment : Fragment() {
             .replace("-", "")
             .replace(" ", "")
 
-        // ... (validações de amountText, phone, selectedPaymentMethod como antes) ...
-        if (amountText.isEmpty() || phone.isEmpty() || selectedPaymentMethod == null) {
-            // Mostrar Toasts apropriados
-            if (amountText.isEmpty()) Toast.makeText(requireContext(), "Digite um valor", Toast.LENGTH_SHORT).show()
-            else if (phone.isEmpty()) Toast.makeText(requireContext(), "Digite um telefone", Toast.LENGTH_SHORT).show()
-            else Toast.makeText(requireContext(), "Selecione um método de pagamento", Toast.LENGTH_SHORT).show()
+        if (amountText.isEmpty()) {
+            Toast.makeText(requireContext(), "Digite um valor", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val amountValue = amountText.toFloatOrNull()
+        if (amountValue == null || amountValue <= 0f) {
+            Toast.makeText(requireContext(), "Valor inválido", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (phone.isEmpty()) {
+            Toast.makeText(requireContext(), "Digite um telefone", Toast.LENGTH_SHORT).show()
+            return
+        }
+        if (selectedPaymentMethod == null) {
+            Toast.makeText(requireContext(), "Selecione um método de pagamento", Toast.LENGTH_SHORT).show()
             return
         }
 
         hideKeyboard()
 
-        // O ID será gerado no construtor de Recharge.
-        // date e hour serão definidos pelo RechargeRepositoryImpl.
-        val rechargeToProcess = Recharge(
-            amount = amountText.toFloat(),
+        val recharge = Recharge(
+            amount = amountValue,
             phoneNumber = phone,
             typeRecharge = selectedPaymentMethod!!
         )
 
-        // As variáveis typeOperation e transactionType não são mais necessárias no Fragment,
-        // pois o SaveRechargeUseCase determinará o TransactionType com base no PaymentMethod.
-        // E TransactionOperation será sempre RECHARGE para este fluxo.
-
         when (selectedPaymentMethod) {
             PaymentMethod.BALANCE -> {
-                // A verificação de saldo da UI ainda é útil para feedback rápido
-                if (rechargeToProcess.amount > balance) {
-                    showBottomSheet(message = "Saldo em conta insuficiente para recarga.")
+                if (recharge.amount > balance) {
+                    showBottomSheet(message = "Saldo insuficiente para recarga")
                 } else {
-                    confirmAndExecuteRecharge(rechargeToProcess)
+                    confirmationRecharge(recharge)
                 }
             }
             PaymentMethod.CREDIT_CARD -> {
-                fetchCreditCardLimit { limit ->
-                    if (rechargeToProcess.amount > limit) {
-                        showBottomSheet(message = "Limite do cartão insuficiente para recarga.")
+                fetchCreditCardLimit { availableLimit ->
+                    if (recharge.amount > availableLimit) {
+                        showBottomSheet(message = "Limite do cartão insuficiente para recarga")
                     } else {
-                        // IMPORTANTE: A atualização do cartão acontece ANTES de chamar o UseCase.
-                        // Idealmente, o UseCase também lidaria com isso para atomicidade,
-                        // mas para esta refatoração, manteremos assim.
-                        updateBalanceCreditCard(rechargeToProcess.amount) // Isso é assíncrono
-                        confirmAndExecuteRecharge(rechargeToProcess)
+                        confirmationRecharge(recharge)
                     }
                 }
             }
-            else -> Toast.makeText(requireContext(), "Método de pagamento inválido", Toast.LENGTH_SHORT).show()
+            else -> {
+                Toast.makeText(requireContext(), "Método de pagamento inválido", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun confirmAndExecuteRecharge(recharge: Recharge) { // Renomeado
+    private fun confirmationRecharge(recharge: Recharge) {
         showBottomSheet(
             titleDialog = R.string.txt_information_data_recharge_alert,
             message = "Valor: R$ ${GetMask.getFormatedValue(recharge.amount)}\n" +
@@ -164,40 +156,32 @@ class RechargeFragment : Fragment() {
                     message = "Informe sua senha para confirmar a recarga",
                     titleButton = R.string.txt_button_bottomSheet_confirm
                 ) {
-                    // Chama o método do ViewModel que agora invoca o UseCase refatorado
-                    executeRechargeProcessing(recharge)
+                    doSaveRecharge(recharge)
                 }
-            }
-        )
+            })
     }
 
-    private fun executeRechargeProcessing(recharge: Recharge) { // Novo método
-        rechargeViewModel.processNewRecharge(recharge).observe(viewLifecycleOwner) { stateView ->
+    private fun doSaveRecharge(recharge: Recharge) {
+        binding.btnRecharge.isEnabled = false
+        rechargeViewModel.saveRecharge(recharge).observe(viewLifecycleOwner) { stateView ->
             when (stateView) {
                 is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
                 is StateView.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    // Sucesso! Recarga salva, wallet atualizada (se aplicável), transação registrada.
-                    // Navega para o recibo.
-                    stateView.data?.let { savedRecharge ->
-                        val action = RechargeFragmentDirections
-                            .actionRechargeFragmentToRechargeReceiptFragment(savedRecharge.id)
-                        findNavController().navigate(action)
-                    }
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnRecharge.isEnabled = true
+                    val saved = stateView.data ?: recharge
+                    val action = RechargeFragmentDirections
+                        .actionRechargeFragmentToRechargeReceiptFragment(saved.id)
+                    findNavController().navigate(action)
                 }
                 is StateView.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    showBottomSheet(
-                        message = getString( // Se FirebaseHelper.validError retorna Int (ID de string)
-                            FirebaseHelper.validError(stateView.message ?: "")
-                        )
-                        // ou apenas: message = stateView.message // Se validError não for necessário aqui
-                    )
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnRecharge.isEnabled = true
+                    showBottomSheet(message = stateView.message)
                 }
             }
         }
     }
-
 
     private fun initRadioGroup() {
         binding.radioGroupOptions.setOnCheckedChangeListener { _, checkedId ->
@@ -209,22 +193,29 @@ class RechargeFragment : Fragment() {
         }
     }
 
-    /** 🔹 Observa a lista de transações para atualizar saldo */
-    private fun observeTransactions() {
-        homeViewModel.getTransactions().observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Loading -> Unit
+    /** 🔹 Agora buscamos o saldo diretamente da Wallet no servidor */
+    private fun observeWalletBalance() {
+        homeViewModel.refreshWallet().observe(viewLifecycleOwner) { state ->
+            when (state) {
                 is StateView.Success -> {
-                    balance = calculateBalance(stateView.data ?: emptyList())
+                    val wallet = state.data
+                    wallet?.let { balance = it.balance }
                     updateBalanceUI()
                 }
-                is StateView.Error -> showBottomSheet(message = stateView.message)
+                is StateView.Error -> {
+                    showBottomSheet(message = state.message)
+                }
+                else -> Unit
             }
         }
     }
 
     private fun getCreditCardNumber() {
         val userId = FirebaseHelper.getUserId()
+        if (userId.isBlank()) {
+            binding.creditCardNumber.text = "Usuário não logado"
+            return
+        }
         val creditCardRef = FirebaseDatabase.getInstance()
             .getReference("creditCard")
             .child(userId)
@@ -232,80 +223,43 @@ class RechargeFragment : Fragment() {
         creditCardRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
-                    for (child in snapshot.children) {
-                        val creditCard = child.getValue(CreditCard::class.java)
-                        creditCard?.number?.let {
-                            binding.creditCardNumber.text = maskCreditCardNumber(it)
-                        }
+                    val creditCard = snapshot.getValue(CreditCard::class.java)
+                    if (creditCard != null) {
+                        binding.creditCardNumber.text = GetMask.maskCreditCardNumber(creditCard.number)
+                    } else {
+                        binding.creditCardNumber.text = "Dados do cartão inválidos"
                     }
                 } else {
-                    binding.creditCardNumber.text = "Número do cartão não encontrado"
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {}
-        })
-    }
-
-    private fun updateBalanceCreditCard(valueRecharge: Float) {
-        val userId = FirebaseHelper.getUserId()
-        val creditCardRef = FirebaseDatabase.getInstance()
-            .getReference("creditCard")
-            .child(userId)
-
-        creditCardRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    for (child in snapshot.children) {
-                        val creditCard = child.getValue(CreditCard::class.java)
-                        val cardKey = child.key
-
-                        if (creditCard != null && cardKey != null) {
-                            val currentLimit = creditCard.limit
-                            val currentBalanceDue = creditCard.balance
-
-                            val newLimit = currentLimit - valueRecharge
-                            val newBalanceDue = currentBalanceDue + valueRecharge
-
-                            creditCardRef.child(cardKey).updateChildren(
-                                mapOf(
-                                    "limit" to newLimit,
-                                    "balance" to newBalanceDue
-                                )
-                            ).addOnSuccessListener {
-                                // OK
-                            }.addOnFailureListener { e ->
-                                showBottomSheet(message = "Erro ao atualizar cartão: ${e.message}")
-                            }
-                        }
-                    }
-                } else {
-                    showBottomSheet(message = "Nenhum cartão cadastrado encontrado")
+                    binding.creditCardNumber.text = "Cartão não encontrado"
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                showBottomSheet(message = "Erro ao acessar dados do cartão: ${error.message}")
+                binding.creditCardNumber.text = "Erro ao buscar cartão"
             }
         })
     }
 
     private fun fetchCreditCardLimit(onResult: (Float) -> Unit) {
         val userId = FirebaseHelper.getUserId()
+        if (userId.isBlank()) {
+            onResult(0f)
+            return
+        }
         val creditCardRef = FirebaseDatabase.getInstance()
             .getReference("creditCard")
             .child(userId)
 
         creditCardRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                var limit = 0f
+                var available = 0f
                 if (snapshot.exists()) {
-                    for (child in snapshot.children) {
-                        val card = child.getValue(CreditCard::class.java)
-                        card?.let { limit = it.limit }
+                    val creditCard = snapshot.getValue(CreditCard::class.java)
+                    if (creditCard != null) {
+                        available = creditCard.limit - creditCard.balance
                     }
                 }
-                onResult(limit)
+                onResult(available)
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -314,28 +268,12 @@ class RechargeFragment : Fragment() {
         })
     }
 
-    private fun maskCreditCardNumber(number: String): String {
-        return if (number.length >= 8) {
-            val firstFour = number.take(4)
-            val lastFour = number.takeLast(4)
-            "$firstFour **** **** $lastFour"
-        } else number
-    }
-
-    private fun calculateBalance(transactions: List<Transaction>): Float {
-        var cashIn = 0f
-        var cashOut = 0f
-        transactions.forEach { t ->
-            if (t.type == TransactionType.CASH_IN) cashIn += t.amount
-            else cashOut += t.amount
-        }
-        return cashIn - cashOut
-    }
-
     private fun updateBalanceUI() {
         if (isBalanceVisible) {
-            binding.balanceValue.text =
-                getString(R.string.text_formated_value, GetMask.getFormatedValue(balance))
+            binding.balanceValue.text = getString(
+                R.string.text_formated_value,
+                GetMask.getFormatedValue(balance)
+            )
             binding.balanceValue.visibility = View.VISIBLE
             binding.toggleVisibility.setImageResource(R.drawable.ic_no_visibility)
         } else {
@@ -344,34 +282,14 @@ class RechargeFragment : Fragment() {
         }
     }
 
-    private fun getTransactions() {
-        rechargeViewModel.getTransactions().observe(viewLifecycleOwner) { stateView ->
-            when (stateView) {
-                is StateView.Loading -> binding.progressBar.visibility = View.VISIBLE
-                is StateView.Success -> {
-                    binding.progressBar.visibility = View.GONE
-                    balance = calculateBalance(stateView.data ?: emptyList())
-                    updateBalanceUI()
-                }
-                is StateView.Error -> {
-                    binding.progressBar.visibility = View.GONE
-                    showBottomSheet(message = stateView.message)
-                }
-            }
-        }
-    }
-
-
-
-
-
-
-
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onDestroyView() {
+        super.onDestroyView()
         _binding = null
     }
 }
+
+
+
 
 
 

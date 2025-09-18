@@ -23,18 +23,7 @@ class RechargeViewModel @Inject constructor(
 ) : ViewModel(){
 
 
-
-    /**
-     * Inicia o processo de salvar uma recarga.
-     * O SaveRechargeUseCase agora lida com a atualização da wallet (se aplicável) e o registro da transação.
-     *
-     * Casos de Teste Unitário (para o ViewModel):
-     * - `processNewRecharge_callsSaveRechargeUseCase_withCorrectRecharge`: Verifica se saveRechargeUseCase é chamado.
-     * - `processNewRecharge_whenUseCaseSucceeds_emitsSuccessWithRecharge`: Verifica StateView.Success.
-     * - `processNewRecharge_whenUseCaseFailsWithInsufficientBalance_emitsError`: Verifica StateView.Error para InsufficientBalanceException.
-     * - `processNewRecharge_whenUseCaseFailsWithOtherError_emitsError`: Verifica StateView.Error para outras exceções.
-     */
-    fun processNewRecharge(recharge: Recharge) = liveData(Dispatchers.IO) { // Renomeado para clareza
+    fun saveRecharge(recharge: Recharge) = liveData(Dispatchers.IO) { // Renomeado para clareza
         try {
             emit(StateView.Loading())
             // Teste: "processNewRecharge_callsSaveRechargeUseCase_withCorrectRecharge"

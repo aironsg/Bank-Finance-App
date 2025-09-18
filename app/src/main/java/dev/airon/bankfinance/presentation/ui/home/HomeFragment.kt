@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,11 +22,8 @@ import dev.airon.bankfinance.data.enum.TransactionOperation
 import dev.airon.bankfinance.data.enum.TransactionType
 import dev.airon.bankfinance.databinding.FragmentHomeBinding
 import dev.airon.bankfinance.domain.model.Transaction
-import dev.airon.bankfinance.presentation.ui.home.HomeFragmentDirections
 import dev.airon.bankfinance.presentation.ui.features.account.AccountViewModel
-
 import loadProfileImage
-
 
 
 @AndroidEntryPoint
@@ -54,6 +50,7 @@ class HomeFragment : Fragment() {
         initListener()
         configRecyclerView()
         getTransactions()
+        getWalletBalance() // 🔹 Busca o saldo real no servidor
         getUserProfile()
         initNavigationDeposit()
     }
@@ -132,12 +129,33 @@ class HomeFragment : Fragment() {
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.GONE
                     transactionAdapter.submitList(stateView.data?.reversed()?.take(6))
-                    showBalance(stateView.data ?: emptyList())
+                    showSentReceived(stateView.data ?: emptyList()) // 🔹 só enviados/recebidos
                 }
 
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.GONE
                     showBottomSheet(message = stateView.message)
+                }
+            }
+        }
+    }
+
+    private fun getWalletBalance() {
+        homeViewModel.refreshWallet().observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is StateView.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+                is StateView.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    val wallet = state.data
+                    binding.cardBalance.txtTotalBalanceValue.text =
+                        getString(R.string.text_formated_value, GetMask.getFormatedValue(wallet?.balance
+                            ?: 0f))
+                }
+                is StateView.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    showBottomSheet(message = state.message)
                 }
             }
         }
@@ -151,15 +169,12 @@ class HomeFragment : Fragment() {
                         .actionHomeFragmentToDepositReceiptFragment(transaction.id)
                     findNavController().navigate(action)
                 }
+
                 TransactionOperation.PIX -> {
-                    // Aqui buscamos o TransactionPix completo antes de navegar
                     val txId = transaction.id
                     homeViewModel.getTransactionPix(txId).observe(viewLifecycleOwner) { state ->
                         when (state) {
-                            is StateView.Loading<*> -> {
-                                // opcional: mostrar um loading leve (p.ex. ProgressBar peque no layout)
-                            }
-                            is StateView.Success<*> -> {
+                            is StateView.Success -> {
                                 val transactionPix = state.data
                                 if (transactionPix != null) {
                                     val action = HomeFragmentDirections
@@ -169,15 +184,16 @@ class HomeFragment : Fragment() {
                                     showBottomSheet(message = "Recibo não encontrado para esta transação")
                                 }
                             }
-                            is StateView.Error<*> -> {
+                            is StateView.Error -> {
                                 showBottomSheet(message = state.message)
                             }
+                            else -> Unit
                         }
                     }
                 }
+
                 TransactionOperation.CARD_PAYMENT -> {
-                    // Usamos relatedCardId no transaction para navegar ao recibo do cartão (se houver)
-                    val cardId = transaction.relatedCardId ?: transaction.id // fallback
+                    val cardId = transaction.relatedCardId ?: transaction.id
                     val action = HomeFragmentDirections
                         .actionHomeFragmentToCreditCardReceiptFragment(
                             cardId = cardId,
@@ -185,11 +201,13 @@ class HomeFragment : Fragment() {
                         )
                     findNavController().navigate(action)
                 }
+
                 TransactionOperation.RECHARGE -> {
                     val action = HomeFragmentDirections
                         .actionHomeFragmentToRechargeReceiptFragment(transaction.id)
                     findNavController().navigate(action)
                 }
+
                 else -> {
                     showBottomSheet(message = "Recibo não implementado para esta operação")
                 }
@@ -219,55 +237,26 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun showBalance(transactions: List<Transaction>) {
-        var cashIn = 0f
-        var cashOut = 0f
+    private fun showSentReceived(transactions: List<Transaction>) {
+        var sent = 0f
+        var received = 0f
 
         transactions.forEach { transaction ->
             when (transaction.type) {
-                TransactionType.CASH_IN, TransactionType.PIX_IN -> {
-                    cashIn += transaction.amount
+                TransactionType.PIX_OUT, TransactionType.CASH_OUT -> {
+                    sent += transaction.amount
                 }
-                TransactionType.CASH_OUT, TransactionType.PIX_OUT -> {
-                    cashOut += transaction.amount
+                TransactionType.PIX_IN, TransactionType.CASH_IN -> {
+                    received += transaction.amount
                 }
                 else -> Unit
             }
         }
 
-        val totalBalance = cashIn - cashOut
-
-        binding.cardBalance.txtTotalBalanceValue.text =
-            getString(R.string.text_formated_value, GetMask.getFormatedValue(totalBalance))
-
-        if (transactions.isEmpty()) {
-            binding.tvEmptyTransactions.visibility = View.VISIBLE
-            binding.recyclerViewTransactions.visibility = View.GONE
-        } else {
-            binding.tvEmptyTransactions.visibility = View.GONE
-            binding.recyclerViewTransactions.visibility = View.VISIBLE
-        }
-
-        binding.cardBalance.txtTotalBalanceValue.setTextColor(
-            resources.getColor(R.color.white, null)
-        )
-
-        // Detalhes de entradas e saídas
         binding.cardBalance.txtSentValue.text =
-            getString(R.string.text_formated_value, GetMask.getFormatedValue(cashOut))
+            getString(R.string.text_formated_value, GetMask.getFormatedValue(sent))
         binding.cardBalance.txtReceivedValue.text =
-            getString(R.string.text_formated_value, GetMask.getFormatedValue(cashIn))
-
-        // Toggle visibilidade
-        binding.cardBalance.btnToggleBalance.setOnClickListener {
-            if (binding.cardBalance.txtTotalBalanceValue.isVisible) {
-                binding.cardBalance.txtTotalBalanceValue.visibility = View.GONE
-                binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_down)
-            } else {
-                binding.cardBalance.txtTotalBalanceValue.visibility = View.VISIBLE
-                binding.cardBalance.btnToggleBalance.setImageResource(R.drawable.ic_arrow_drop_up)
-            }
-        }
+            getString(R.string.text_formated_value, GetMask.getFormatedValue(received))
     }
 
     override fun onDestroyView() {
@@ -275,6 +264,7 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
+
 
 
 
