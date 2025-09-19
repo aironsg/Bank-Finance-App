@@ -1,6 +1,7 @@
 package dev.airon.bankfinance.presentation.ui.auth.login
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -9,6 +10,8 @@ import android.widget.Toast
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import dev.airon.bankfinance.R
 import dev.airon.bankfinance.databinding.FragmentLoginBinding
@@ -83,9 +86,34 @@ class LoginFragment : Fragment() {
 
                 is StateView.Success -> {
                     binding.progressBar.visibility = View.INVISIBLE
+
+                    // 🔹 Obtém e salva o token FCM
+                    FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val token = task.result
+                            val userId = FirebaseHelper.getUserId()
+
+                            if (userId.isNotBlank()) {
+                                FirebaseDatabase.getInstance()
+                                    .getReference("fcmTokens")
+                                    .child(userId)
+                                    .setValue(token)
+                                    .addOnSuccessListener {
+                                        Log.d("LoginFragment", "Token FCM salvo com sucesso: $token")
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Log.e("LoginFragment", "Erro ao salvar token FCM: ${e.message}")
+                                    }
+                            }
+                        } else {
+                            Log.e("LoginFragment", "Erro ao obter token FCM", task.exception)
+                        }
+                    }
+
                     findNavController().navigate(R.id.action_global_homeFragment)
                     Toast.makeText(requireContext(), "Bem-Vindo!!!", Toast.LENGTH_SHORT).show()
                 }
+
 
                 is StateView.Error -> {
                     binding.progressBar.visibility = View.INVISIBLE

@@ -109,6 +109,7 @@
     <string name="txt_information_credit_card_balance">Seu Saldo será liberado em instantes</string>
     <string name="txt_cod_payment">Codigo do pagamento</string>
     <string name="txt_information_details_payment_credit_card">Detalha do Pagamento do cartão de crédito</string>
+    <string name="default_notification_channel_id">Você recebeu uma transferência\n</string>
 
 
 </resources>

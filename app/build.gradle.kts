@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.androidx.benchmark.common)
     implementation(libs.androidx.navigation.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.navigation.ui.ktx)
+//    implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)
     testImplementation("org.mockito:mockito-core:4.11.0")
     androidTestImplementation(libs.androidx.junit)
@@ -74,9 +75,10 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     //firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-messaging")
 
     //hilt
     implementation("com.google.dagger:hilt-android:2.56.2")
