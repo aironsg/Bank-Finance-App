@@ -49,7 +49,7 @@ O app foi construído com foco em **aprendizado**, **boas práticas de arquitetu
 ---
 
 ## 📸 Telas do Aplicativo
-_
+
 
 - Tela de Splash
   ![Splash](docs/images/splash.png)
@@ -152,6 +152,7 @@ Desenvolvido por [Airon silva](https://www.linkedin.com/in/airon-silva-dev/).
 
 
 ---
+
 
 
 
