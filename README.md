@@ -51,15 +51,32 @@ O app foi construído com foco em **aprendizado**, **boas práticas de arquitetu
 ## 📸 Telas do Aplicativo
 _
 
+- Tela de Splash
+  ![Splash](docs/images/splash.png)
+
 - Tela de Login  
   ![Login](docs/images/login.png)
 
+- Tela de Criação de conta 
+  ![Criar Conta](docs/images/register.jpeg)
+
 - Tela de Home  
-  ![Home](docs/images/home.png)
+  ![Home](docs/images/home.jpeg)
 
-- Recibo PIX  
-  ![Recibo PIX](docs/images/receipt_pix.png)
+- Recibo
+  ![Recibo](docs/images/recibo.jpeg)
 
+- Deposito
+  ![Deposito](docs/images/deposito.jpeg)
+
+- Transferencia
+  ![Transferencia](docs/images/transferencia.jpeg)
+
+- Cartão de Crédito
+  ![Cartao](docs/images/cartao.jpeg)
+
+- Perfil
+  ![perfil](docs/images/perfil.jpeg)
 ---
 
 ## 📦 Instalação
@@ -106,7 +123,7 @@ flowchart TD
 📥 Download do APK
 
 A versão mais recente pode ser baixada aqui:
-👉 Download APK
+👉 Download APK : https://drive.google.com/file/d/1utw_tm5P072HXbV1prg5asjU9ZMP-MJu/view?usp=sharing
 
 🧪 Testes
 
@@ -116,7 +133,7 @@ Camada de repositório e useCases isolados para testes independentes.
 
 📖 Próximos Passos
 
-Implementar notificações push para novas transferências.
+Implementar notificações push para novas transferências(feito, mas não ativado).
 
 Melhorar relatórios financeiros (gráficos de receitas/despesas).
 
@@ -131,8 +148,7 @@ Desenvolvido por [Airon silva](https://www.linkedin.com/in/airon-silva-dev/).
 
 📜 Licença
 
-Este projeto é distribuído sob a licença MIT. Veja o arquivo LICENSE
-para mais detalhes.
+...
 
 
 ---
